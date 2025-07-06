@@ -1,0 +1,2 @@
+# Fuerza LF en todos los .js
+*.js text eol=lf
