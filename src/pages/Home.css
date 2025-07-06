@@ -1,0 +1,25 @@
+.home-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;              /* llena el espacio que App-main le concede */
+  padding: 2rem;
+  text-align: center;
+}
+.home-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+.home-subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+.home-buttons {
+  margin-bottom: 1rem;
+}
+.home-animation {
+  margin-top: auto;     /* empuja la animación al fondo del contenedor */
+  width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
