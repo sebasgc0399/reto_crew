@@ -1,65 +1,74 @@
+/* --- Contenedor Principal --- */
+/* Lo integramos al layout de la app, eliminando el ancho fijo.
+   Usamos flexbox para distribuir el contenido verticalmente. */
 .challenge-detail {
-  padding: 2rem;
-  max-width: 600px;
-  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Ocupa todo el espacio vertical disponible en App-main */
+  /* El padding ya viene de App-main, no es necesario aquí */
 }
 
+/* --- Bloque de Información Superior --- */
+/* Agrupamos la información principal en un bloque visual. */
 .challenge-detail__title {
   color: var(--primary-color);
   margin-bottom: 0.5rem;
+  /* Hacemos la tipografía fluida y adaptable */
+  font-size: clamp(1.6rem, 5vw, 2rem);
 }
 
 .challenge-detail__dates {
   font-size: 0.9rem;
   color: #555;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee; /* Separador visual */
 }
 
 .challenge-detail__desc {
   margin-bottom: 1.5rem;
-}
-
-/* Participantes */
-.participants-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 2rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.participant-card {
-  display: flex;
-  align-items: center;
-  background: #f9f9f9;
-  padding: 0.75rem;
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.participant-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 0.75rem;
-}
-
-.participant-info p {
-  margin: 2px 0;
-  font-size: 0.85rem;
+  line-height: 1.6; /* Mejora la legibilidad */
   color: #333;
 }
 
-.no-participants {
-  font-style: italic;
-  color: #666;
-  margin-bottom: 2rem;
+/* --- Contador de Participantes --- */
+/* Le damos un estilo más prominente, como una estadística. */
+.challenge-detail__participants {
+  background-color: #f0f4ff; /* Un color de fondo suave asociado al primario */
+  color: var(--primary-color);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 1.5rem;
 }
 
-/* Botones */
+/* --- Bloque de Acciones (Botones) --- */
+/* Empujamos este bloque al final de la pantalla para una mejor UX móvil. */
 .challenge-detail__actions {
   display: flex;
   gap: 1rem;
+  margin-top: auto; /* ¡Magia! Empuja los botones hacia abajo */
+  padding-top: 1rem; /* Espacio por si el contenido llega justo hasta aquí */
 }
+
+/* Estilo base para los botones dentro de las acciones */
+.challenge-detail__actions .btn {
+  flex-grow: 1; /* Los botones comparten el espacio equitativamente */
+  text-align: center;
+}
+
+/* --- Estilos para Móvil (< 768px) --- */
+@media (max-width: 767px) {
+  /* En móvil, los botones se apilan para ser más fáciles de presionar */
+  .challenge-detail__actions {
+    flex-direction: column;
+  }
+}
+
+/*
+  NOTA: Los estilos para `.participants-list` y `.participant-card`
+  no se han incluido ya que el JSX proporcionado no los renderiza.
+  Los estilos actuales se enfocan en los elementos que sí se muestran.
+*/

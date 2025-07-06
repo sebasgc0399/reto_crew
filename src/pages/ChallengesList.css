@@ -1,15 +1,53 @@
+/* --- Contenedor Principal --- */
+/* Aseguramos que el contenedor ocupe todo el espacio y gestione a sus hijos. */
 .challenges-list-container {
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  /* Padding consistente con el resto de la app, que ya viene de App-main.
+     Podemos quitarlo o dejar uno pequeño si es necesario. */
+  padding: 1rem;
 }
+
+/* --- Encabezado de la Lista --- */
 .challenges-list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap; /* Permite que los elementos se apilen si no caben */
+  gap: 1rem; /* Espacio entre el título y el botón si se apilan */
   margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
 }
+
+.challenges-list-header h2 {
+  /* Tipografía fluida y consistente */
+  font-size: clamp(1.5rem, 5vw, 1.8rem);
+  color: var(--primary-color);
+  margin: 0; /* Quitamos el margen por defecto del h2 */
+}
+
+/* --- Rejilla de Retos (Grid Layout) --- */
+/* Cambiamos a CSS Grid para un layout más robusto.
+   Esta es la forma moderna y recomendada para rejillas de tarjetas. */
 .challenges-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  display: grid;
+  /* Crea columnas que se ajustan automáticamente.
+     - auto-fit: Llena el espacio con tantas columnas como quepan.
+     - minmax(280px, 1fr): Cada columna tendrá un mínimo de 280px
+       y crecerá para ocupar el espacio disponible (1fr).
+     Esto crea una rejilla perfectamente responsive sin media queries. */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem; /* Un poco más de espacio entre tarjetas */
+}
+
+/* --- Estilo para el Estado Vacío --- */
+/* Cuando no hay retos, mostramos un mensaje más centrado y visible. */
+.challenges-list-container > p {
+  text-align: center;
+  margin-top: 4rem;
+  font-size: 1.1rem;
+  color: #666;
+  font-style: italic;
 }

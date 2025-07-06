@@ -45,9 +45,9 @@ html, body, #root {
   display: flex;
   flex: 1;
   position: relative;
-  /* Esta es la clave para el contenido que SÍ debe hacer scroll */
-  overflow-y: auto; /* Permite el scroll vertical SOLO en esta área */
-  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+  overflow-y: auto; 
+  -webkit-overflow-scrolling: touch; 
+  background: #fff; /* <-- AÑADE EL FONDO BLANCO AQUÍ */
 }
 
 .App-main {
@@ -55,7 +55,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   transition: margin-left 0.3s ease;
-  background: #fff;
+  /* background: #fff; */ /* <-- QUITA EL FONDO DE AQUÍ */
   padding: 1rem;
 }
 
