@@ -1,87 +1,239 @@
+/* --- Sidebar Principal --- */
 .App-sidebar {
   position: fixed;
   top: 0;
   left: 0;
-  /* CAMBIO CRÍTICO: Usar 100dvh para consistencia con App.css y evitar problemas en móviles */
   height: 100dvh; 
-  width: 240px;
-  background: #f8f9fa;
-  padding: 1rem;
+  width: 280px; /* Un poco más ancho para mejor legibilidad */
+  background: #fff; /* Fondo blanco más limpio */
+  padding: 0; /* Quitamos el padding general para mejor control */
   box-sizing: border-box;
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 200;
-  border-right: 1px solid #e0e0e0; /* Un borde sutil para separar */
+  border-right: 1px solid #e0e0e0;
+  /* Añadimos una sombra base sutil */
+  box-shadow: 2px 0 8px rgba(0,0,0,0.02);
+  overflow-y: auto; /* Por si el contenido crece */
+  -webkit-overflow-scrolling: touch;
 }
 
 .App-sidebar.open {
   transform: translateX(0);
-  /* MEJORA VISUAL: Una sombra para dar profundidad y elevarlo sobre el contenido */
-  box-shadow: 4px 0px 15px rgba(0,0,0,0.1);
+  /* Sombra más pronunciada cuando está abierto */
+  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
 }
 
-/* ... el resto de tus estilos de sidebar son buenos y no necesitan cambios ... */
-
+/* --- Título del Sidebar --- */
 .sidebar-title {
-  margin: 0 0 1.5rem; /* Un poco más de margen inferior */
-  font-size: 1.2rem;
+  margin: 0;
+  padding: 1.5rem 1rem 1rem;
+  font-size: clamp(1.1rem, 4vw, 1.3rem);
   color: var(--primary-color);
   text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa; /* Fondo ligeramente diferente para el header */
 }
 
+/* --- Lista de Enlaces --- */
 .sidebar-list {
   list-style: none;
-  padding: 0;
+  padding: 1rem 0;
   margin: 0;
 }
 
 .sidebar-list li {
-  margin-bottom: 0.5rem;
+  margin: 0;
 }
 
+/* --- Enlaces del Sidebar --- */
 .sidebar-link,
 .sidebar-link--button {
-  display: flex; /* Usamos flex para alinear un posible ícono en el futuro */
+  display: flex;
   align-items: center;
   gap: 0.75rem;
   width: 100%;
   text-decoration: none;
   color: #333;
-  padding: 0.75rem; /* Padding más consistente y amigable al tacto */
-  border-radius: 6px; /* Bordes un poco más redondeados */
+  padding: 0.875rem 1.5rem;
   font-size: 1rem;
   font-weight: 500;
   background: none;
   border: none;
   text-align: left;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent; /* Indicador visual para el estado activo */
+  position: relative;
 }
 
 .sidebar-link:hover,
 .sidebar-link--button:hover {
-  background-color: #e2e6ea;
+  background-color: #f8f9fa;
+  color: var(--primary-color);
+  transform: translateX(2px); /* Micro-animación al hover */
 }
 
 .sidebar-link.sidebar-link--active {
-  background-color: var(--primary-color);
-  color: #fff;
-  font-weight: 500;
+  background-color: rgba(25, 118, 210, 0.08); /* Color primario con transparencia */
+  color: var(--primary-color);
+  font-weight: 600;
+  border-left-color: var(--primary-color); /* Indicador visual izquierdo */
 }
 
-/* Tus media queries están bien, no necesitan cambios */
+.sidebar-link.sidebar-link--active::before {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  background: var(--primary-color);
+  border-radius: 50%;
+}
+
+/* --- Botón de Logout Especial --- */
+.sidebar-link--button {
+  margin-top: auto; /* Empuja el botón hacia abajo */
+  color: #dc3545; /* Color rojo para logout */
+  border-top: 1px solid #f0f0f0;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.sidebar-link--button:hover {
+  background-color: #fff5f5;
+  color: #c82333;
+}
+
+/* --- Indicadores de Usuario (Opcional) --- */
+.sidebar-user-info {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+  margin-top: auto; /* Se posiciona al final */
+}
+
+.sidebar-user-info p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666;
+  text-align: center;
+}
+
+/* --- Responsive Desktop --- */
 @media (min-width: 768px) {
-  .App-main {
-    transition: margin-left 0.3s ease;
+  .App-sidebar {
+    width: 280px;
   }
-  .App-main.shifted {
-    margin-left: 240px;
+  
+  /* Mejoramos la interacción en desktop */
+  .sidebar-link:hover,
+  .sidebar-link--button:hover {
+    transform: translateX(4px);
+  }
+  
+  .sidebar-link.sidebar-link--active {
+    border-left-width: 4px;
   }
 }
 
+/* --- Responsive Mobile --- */
 @media (max-width: 767px) {
-  .App-header {
-    position: relative;
-    z-index: 300;
+  .App-sidebar {
+    width: 280px; /* Mantener el ancho en móviles */
   }
+  
+  .sidebar-title {
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+  
+  .sidebar-link,
+  .sidebar-link--button {
+    padding: 1rem 1.25rem;
+    font-size: 0.95rem;
+  }
+  
+  /* Desactivar animaciones de hover en táctiles */
+  .sidebar-link:hover,
+  .sidebar-link--button:hover {
+    transform: none;
+  }
+}
+
+/* --- Animación de entrada --- */
+.App-sidebar {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 1;
+  }
+}
+
+.App-sidebar.open {
+  animation: slideInLeftOpen 0.3s ease-out;
+}
+
+@keyframes slideInLeftOpen {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* --- Optimización para dispositivos táctiles --- */
+@media (hover: none) and (pointer: coarse) {
+  .sidebar-link:hover,
+  .sidebar-link--button:hover {
+    transform: none;
+    background-color: transparent;
+    color: #333;
+  }
+  
+  .sidebar-link:active,
+  .sidebar-link--button:active {
+    background-color: #f8f9fa;
+    color: var(--primary-color);
+  }
+  
+  .sidebar-link--button:active {
+    background-color: #fff5f5;
+    color: #c82333;
+  }
+}
+
+/* --- Accesibilidad --- */
+@media (prefers-reduced-motion: reduce) {
+  .App-sidebar,
+  .sidebar-link,
+  .sidebar-link--button {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .sidebar-link:hover,
+  .sidebar-link--button:hover {
+    transform: none !important;
+  }
+}
+
+/* --- Focus states para navegación por teclado --- */
+.sidebar-link:focus,
+.sidebar-link--button:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
+  background-color: #f8f9fa;
 }
