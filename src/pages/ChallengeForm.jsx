@@ -11,6 +11,9 @@ import {
 } from 'firebase/firestore';
 import { db }                        from '../firebaseConfig';
 import { useAuth }                   from '../contexts/AuthContext';
+import ReactDatePicker                from 'react-datepicker';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 import './ChallengeForm.css';
 
 export default function ChallengeForm() {
@@ -23,7 +26,7 @@ export default function ChallengeForm() {
   const [description, setDescription] = useState('');
   const [startDate, setStartDate]     = useState('');
   const [endDate, setEndDate]         = useState('');
-  const [refWeight, setRefWeight]     = useState(73.5);
+  const [refWeight, setRefWeight]     = useState('');
   const [loading, setLoading]         = useState(isEdit);
   const [error, setError]             = useState('');
 
@@ -125,26 +128,50 @@ export default function ChallengeForm() {
         <div className="date-group">
           <label>
             Fecha inicio *
-            <input
-              type="date"
-              value={startDate}
-              onChange={e => setStartDate(e.target.value)}
+            <ReactDatePicker
+              selected={startDate}
+              onChange={date => setStartDate(date)}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="dd/MM/yyyy"
+              className="react-datepicker__input"
               required
             />
           </label>
           <label>
             Fecha fin *
-            <input
-              type="date"
-              value={endDate}
-              onChange={e => setEndDate(e.target.value)}
+            <ReactDatePicker
+              selected={endDate}
+              onChange={date => setEndDate(date)}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="dd/MM/yyyy"
+              className="react-datepicker__input"
               required
             />
           </label>
         </div>
 
-        <label>
-          Peso de referencia (kg) *
+        <div className="form-group">
+          <label className="form-label">
+            Peso de referencia (kg) *
+            <Tippy
+              content={
+                <>
+                  <strong>Peso de referencia:</strong><br/>
+                  Valor base (ej. 73.5 kg) para normalizar esfuerzo:<br/>
+                  <em>puntos = reps × multiplier × (peso / PesodeReferencia)</em>
+                </>
+              }
+              placement="right"
+              delay={[200, 0]}
+              arrow={true}
+              // <- Esto hace que el tooltip se añada al <body>, no al contenedor
+              appendTo={() => document.body}
+              interactive={true}                     // permite hover sobre el propio tooltip
+              popperOptions={{ strategy: 'fixed' }}  // evita recortes inesperados
+            >
+              <span className="info-icon">ℹ️</span>
+            </Tippy>
+          </label>
           <input
             type="number"
             value={refWeight}
@@ -152,7 +179,7 @@ export default function ChallengeForm() {
             step="0.1"
             required
           />
-        </label>
+        </div>
 
         <button type="submit" className="btn btn-primary">
           {isEdit ? 'Guardar cambios' : 'Crear reto'}

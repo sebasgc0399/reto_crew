@@ -16,3 +16,15 @@ code {
   --primary-color: #1976d2;
   --secondary-color: #dc004e;
 }
+
+@import "react-datepicker/dist/react-datepicker.css";
+
+.tippy-box {
+  max-width: 240px !important;
+}
+
+.tippy-content {
+  white-space: normal !important;
+  font-size: 0.875rem;   /* opcional: un poco más pequeño */
+  line-height: 1.4;
+}

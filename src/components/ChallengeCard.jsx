@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate }    from 'react-router-dom';
 import { useAuth }        from '../contexts/AuthContext';
 import { doc, deleteDoc } from 'firebase/firestore';
+import { format }         from 'date-fns';
 import { db }             from '../firebaseConfig';
 import './ChallengeCard.css';
 
@@ -42,6 +43,9 @@ export default function ChallengeCard({ challenge, onDeleted }) {
     }
   };
 
+  const start = format(new Date(startDate.seconds * 1000), 'dd/MM/yyyy');
+  const end   = format(new Date(endDate.seconds * 1000),   'dd/MM/yyyy');
+
   return (
     <div className="challenge-card" style={{ position: 'relative' }}>
       {isOwner && (
@@ -64,8 +68,7 @@ export default function ChallengeCard({ challenge, onDeleted }) {
 
       <h3 className="challenge-card__title">{title}</h3>
       <p className="challenge-card__dates">
-        {new Date(startDate.seconds * 1000).toLocaleDateString()} →{' '}
-        {new Date(endDate.seconds * 1000).toLocaleDateString()}
+        {start} →{' '} {end}
       </p>
       <p className="challenge-card__participants">
         Participantes: {participantsCount}

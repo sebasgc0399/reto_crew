@@ -49,3 +49,41 @@
   color: red;
   text-align: center;
 }
+
+.react-datepicker__input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Agrupa el label + input */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+/* Hacemos que el label y su icono estén en línea */
+.form-label {
+  display: inline-flex;      /* inline-flex para que ocupe lo justo */
+  align-items: center;       /* alinea texto e icono verticalmente */
+  gap: 0.25rem;              /* espacio entre label y icono */
+  font-weight: 500;
+  margin-bottom: 0.25rem;    /* separa del input */
+}
+
+/* Icono de info */
+.info-icon {
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* (Opcional) Asegúrate que tu contenedor permita overflow visible */
+.challenge-form-container {
+  overflow: visible;
+}
+

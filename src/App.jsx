@@ -10,6 +10,7 @@ import ChallengesList          from './pages/ChallengesList';
 import ChallengeDetail         from './pages/ChallengeDetail';
 import ProtectedRoute          from './components/ProtectedRoute';
 import Sidebar                 from './components/Sidebar';
+import PublicRoute             from './components/PublicRoute';
 
 import './App.css';
 
@@ -48,8 +49,15 @@ export default function App() {
 
         <main className={`App-main ${user && sidebarOpen ? 'shifted' : ''}`}>
           <Routes>
-            {/* Ruta pública */}
-            <Route path="/" element={<Home />} />
+            {/* Ruta pública: Home solo si NO hay usuario */}
+  +         <Route
+              path="/"
+              element={
+                <PublicRoute>
+                  <Home />
+                </PublicRoute>
+              }
+            />
 
             {/* Listado de retos */}
             <Route
