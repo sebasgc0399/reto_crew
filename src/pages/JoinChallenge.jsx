@@ -59,6 +59,7 @@ export default function JoinChallenge() {
         doc(db, 'challenges', id, 'participants', user.uid),
         {
           uid:      user.uid,
+          name:     user.displayName || '',
           weight:   Number(weight),
           joinedAt: serverTimestamp()
         }
