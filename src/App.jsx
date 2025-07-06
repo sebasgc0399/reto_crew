@@ -2,16 +2,19 @@ import React, { useState }     from 'react';
 import { Routes, Route }       from 'react-router-dom';
 import { useAuth }             from './contexts/AuthContext';
 
-import Home                    from './pages/Home';
-import Dashboard               from './pages/Dashboard';
-import Settings                from './pages/Settings';
-import ChallengeForm           from './pages/ChallengeForm';
-import ChallengesList          from './pages/ChallengesList';
-import ChallengeDetail         from './pages/ChallengeDetail';
-import ProtectedRoute          from './components/ProtectedRoute';
-import Sidebar                 from './components/Sidebar';
-import PublicRoute             from './components/PublicRoute';
-import JoinChallenge           from './pages/JoinChallenge';
+import Home                   from './pages/Home';
+import Dashboard              from './pages/Dashboard';
+import Settings               from './pages/Settings';
+import ChallengesList         from './pages/ChallengesList';
+import ChallengeForm          from './pages/ChallengeForm';
+import ChallengeDetail        from './pages/ChallengeDetail';
+import JoinChallenge          from './pages/JoinChallenge';
+import EntryForm              from './pages/EntryForm';
+import ChallengeDashboard     from './pages/ChallengeDashboard';
+
+import ProtectedRoute         from './components/ProtectedRoute';
+import PublicRoute            from './components/PublicRoute';
+import Sidebar                from './components/Sidebar';
 
 import './App.css';
 
@@ -85,6 +88,26 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <ChallengeDetail />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Registrar */}
+            <Route
+              path="/challenges/:id/entry"
+              element={
+                <ProtectedRoute>
+                  <EntryForm />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Dashboard específico del reto */}
+            <Route
+              path="/challenges/:id/dashboard"
+              element={
+                <ProtectedRoute>
+                  <ChallengeDashboard />
                 </ProtectedRoute>
               }
             />
