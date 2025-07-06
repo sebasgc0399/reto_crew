@@ -1,66 +1,179 @@
+/* --- Contenedor Principal --- */
 .settings-container {
-  /* Eliminamos el ancho fijo y el margen para que ocupe todo el espacio */
-  width: 100%;
-  padding: 1rem; /* Padding interno para que el contenido no se pegue a los bordes */
   display: flex;
   flex-direction: column;
   flex: 1;
+  width: 100%;
+  max-width: 480px; /* Consistente con EntryForm */
+  margin: 0 auto;
+  padding: 1rem;
 }
 
+/* --- Título --- */
 .settings-container h2 {
   color: var(--primary-color);
-  margin-bottom: 2rem; /* Más espacio inferior para separar del formulario */
-  text-align: center;
   font-size: clamp(1.5rem, 5vw, 1.8rem);
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #eee;
+  text-align: center;
 }
 
+/* --- Formulario --- */
 .settings-form {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  max-width: 500px; /* Limitamos el ancho del formulario en pantallas grandes */
-  margin: 0 auto; /* Centramos el formulario dentro del contenedor */
+  gap: 1.5rem;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  /* Animación sutil para el formulario */
+  animation: slideUp 0.3s ease-out;
 }
 
+/* --- Labels --- */
 .settings-form label {
-  margin-bottom: 0.5rem; /* Un poco más de espacio */
-  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 600;
   color: #333;
+  font-size: 0.95rem;
 }
 
+/* --- Inputs --- */
 .settings-form input {
-  padding: 0.75rem; /* Hacemos los inputs un poco más grandes para el tacto */
+  padding: 0.75rem 1rem;
   font-size: 1rem;
-  margin-bottom: 1.5rem; /* Espacio entre cada campo */
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #f8f9fa; /* Fondo sutil para diferenciar el campo */
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
 }
 
-/* Estilo para el foco, mejora la accesibilidad */
 .settings-form input:focus {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 1px;
   border-color: var(--primary-color);
-  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
 }
 
+.settings-form input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* --- Botón --- */
 .settings-form .btn {
-  align-self: stretch;
-  padding: 0.75rem; /* Padding consistente */
+  padding: 0.875rem 1.5rem;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.5rem;
 }
 
+.settings-form .btn-primary {
+  background: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+}
+
+.settings-form .btn-primary:hover:not(:disabled) {
+  background: #1565c0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+}
+
+.settings-form .btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+}
+
+/* --- Estados de Loading --- */
+.settings-form .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.settings-form .btn:disabled:hover {
+  background: var(--primary-color);
+  transform: none;
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+}
+
+/* --- Mensajes de Estado --- */
 .status {
-  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
   font-size: 0.9rem;
+  font-weight: 500;
   text-align: center;
-  height: 20px; /* Le damos una altura fija para que no cause saltos en el layout al aparecer */
+  margin-top: 1rem;
+  /* Transición suave para la aparición */
+  opacity: 0;
+  transform: translateY(10px);
+  animation: statusAppear 0.3s ease-out forwards;
 }
+
 .status--success {
-  color: green;
+  background: #f0f9ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
 }
+
 .status--error {
-  color: red;
+  background: #fff5f5;
+  border: 1px solid #feb2b2;
+  color: #c53030;
+}
+
+/* --- Animaciones --- */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes statusAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Responsive para móviles pequeños --- */
+@media (max-width: 480px) {
+  .settings-container {
+    padding: 0.75rem;
+  }
+  
+  .settings-form {
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+  
+  .settings-form input {
+    padding: 0.625rem 0.875rem;
+  }
+  
+  .settings-form .btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
 }
