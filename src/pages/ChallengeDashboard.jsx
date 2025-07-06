@@ -28,19 +28,26 @@ export default function ChallengeDashboard() {
         )
       );
 
-      // Para cada participante, busca su nombre en /users/{uid}
       const parts = await Promise.all(
         pSnap.docs.map(async d => {
           const pData = d.data();
-          let name = d.id; // fallback al uid
-          try {
-            const uSnap = await getDoc(doc(db, 'users', d.id));
-            if (uSnap.exists() && uSnap.data().name) {
-              name = uSnap.data().name;
+          // **1ª opción: leer name del participante directamente**
+          let name = pData.name || '';
+
+          // 2ª opción: si no hay name, fallback a /users/{uid}
+          if (!name) {
+            try {
+              const uSnap = await getDoc(doc(db, 'users', d.id));
+              if (uSnap.exists() && uSnap.data().name) {
+                name = uSnap.data().name;
+              }
+            } catch (e) {
+              console.error('Error fetching user name for', d.id, e);
             }
-          } catch (e) {
-            console.error('Error fetching user name for', d.id, e);
           }
+          // sigue fallback si sigue vacío
+          if (!name) name = d.id;
+
           return {
             uid:         d.id,
             name,
