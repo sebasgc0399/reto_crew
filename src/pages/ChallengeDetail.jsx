@@ -1,157 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate }      from 'react-router-dom';
+// src/pages/ChallengeDetail.jsx
+import React, { useEffect, useState } from 'react';
+import { useParams, Link }            from 'react-router-dom';
+import { useAuth }                    from '../contexts/AuthContext';
 import {
-  collection,
   doc,
-  addDoc,
-  updateDoc,
   getDoc,
-  serverTimestamp,
-  Timestamp
+  collection,
+  getDocs
 } from 'firebase/firestore';
-import { useAuth }                   from '../contexts/AuthContext';
-import { db }                        from '../firebaseConfig';
+import { db }                         from '../firebaseConfig';
+import './ChallengeDetail.css';
 
-import TextField     from '../components/form/TextField';
-import TextAreaField from '../components/form/TextAreaField';
-import DateField     from '../components/form/DateField';
-import NumberField   from '../components/form/NumberField';
+export default function ChallengeDetail() {
+  const { id }        = useParams();
+  const { user }      = useAuth();
 
-import './ChallengeForm.css';
+  const [challenge, setChallenge]         = useState(null);
+  const [participantsCount, setCount]     = useState(0);
+  const [loading, setLoading]             = useState(true);
+  const [isParticipant, setIsParticipant] = useState(false);
 
-export default function ChallengeForm() {
-  const { id }       = useParams();
-  const isEdit       = Boolean(id);
-  const navigate     = useNavigate();
-  const { user }     = useAuth();
-
-  // Estados
-  const [title, setTitle]           = useState('');
-  const [description, setDescription] = useState('');
-  const [startDate, setStartDate]     = useState(null);
-  const [endDate, setEndDate]         = useState(null);
-  const [refWeight, setRefWeight]     = useState(73.5);
-  const [loading, setLoading]         = useState(isEdit);
-  const [error, setError]             = useState('');
-
-  // Carga en modo edición
   useEffect(() => {
-    if (!isEdit) return;
-    (async () => {
-      try {
-        const snap = await getDoc(doc(db, 'challenges', id));
-        if (!snap.exists()) {
-          setError('Reto no encontrado.');
-          return;
-        }
-        const data = snap.data();
-        setTitle(data.title);
-        setDescription(data.description || '');
-        setStartDate(new Date(data.startDate.seconds * 1000));
-        setEndDate(new Date(data.endDate.seconds * 1000));
-        setRefWeight(data.refWeight);
-      } catch (e) {
-        console.error(e);
-        setError('Error cargando datos.');
-      } finally {
+    async function fetchDetail() {
+      // 1) Datos del reto
+      const chSnap = await getDoc(doc(db, 'challenges', id));
+      if (!chSnap.exists()) {
+        console.warn('Reto no encontrado:', id);
         setLoading(false);
+        return;
       }
-    })();
-  }, [id, isEdit]);
+      setChallenge({ id: chSnap.id, ...chSnap.data() });
 
-  // Envío
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setError('');
-    if (!title || !startDate || !endDate || !refWeight) {
-      setError('Completa todos los campos obligatorios.');
-      return;
+      // 2) Conteo de participantes
+      const partsSnap = await getDocs(
+        collection(db, 'challenges', id, 'participants')
+      );
+      setCount(partsSnap.size);
+
+      // 3) ¿Está el usuario inscrito?
+      const myPartSnap = await getDoc(
+        doc(db, 'challenges', id, 'participants', user.uid)
+      );
+      setIsParticipant(myPartSnap.exists());
+
+      setLoading(false);
     }
+    fetchDetail();
+  }, [id, user.uid]);
 
-    try {
-      const payload = {
-        title,
-        description,
-        startDate: Timestamp.fromDate(startDate),
-        endDate:   Timestamp.fromDate(endDate),
-        refWeight: Number(refWeight)
-      };
+  if (loading) return <p>Cargando detalle del reto…</p>;
+  if (!challenge) return <p>Reto no encontrado.</p>;
 
-      if (isEdit) {
-        await updateDoc(doc(db, 'challenges', id), {
-          ...payload,
-          updatedAt: serverTimestamp()
-        });
-      } else {
-        await addDoc(collection(db, 'challenges'), {
-          ...payload,
-          createdBy: user.uid,
-          createdAt: serverTimestamp()
-        });
-      }
-
-      navigate('/challenges', { replace: true });
-    } catch (e) {
-      console.error(e);
-      setError('No se pudo guardar el reto.');
-    }
-  };
-
-  if (loading) return <p>Cargando datos…</p>;
+  const { title, description, startDate, endDate } = challenge;
+  const start = new Date(startDate.seconds * 1000).toLocaleDateString();
+  const end   = new Date(endDate.seconds * 1000).toLocaleDateString();
 
   return (
-    <div className="challenge-form-container">
-      <h2>{isEdit ? 'Editar Reto' : 'Crear Nuevo Reto'}</h2>
-      {error && <p className="error">{error}</p>}
+    <div className="challenge-detail">
+      <h2 className="challenge-detail__title">{title}</h2>
+      <p className="challenge-detail__dates">
+        {start} → {end}
+      </p>
+      {description && (
+        <p className="challenge-detail__desc">{description}</p>
+      )}
+      <p className="challenge-detail__participants">
+        Participantes: {participantsCount}
+      </p>
 
-      <form className="challenge-form" onSubmit={handleSubmit}>
-        <TextField
-          label="Título"
-          value={title}
-          onChange={setTitle}
-          required
-        />
-
-        <TextAreaField
-          label="Descripción"
-          value={description}
-          onChange={setDescription}
-          rows={4}
-        />
-
-        <div className="date-group">
-          <DateField
-            label="Fecha inicio"
-            selected={startDate}
-            onChange={setStartDate}
-            required
-          />
-          <DateField
-            label="Fecha fin"
-            selected={endDate}
-            onChange={setEndDate}
-            required
-          />
-        </div>
-
-        <NumberField
-          label="Peso de referencia (kg)"
-          value={refWeight}
-          onChange={setRefWeight}
-          required
-          tooltip={
-            <>
-              <strong>Peso de referencia:</strong><br/>
-              Valor base (ej. 73.5 kg) para normalizar esfuerzo:<br/>
-              <em>puntos = reps × multiplier × (peso / refWeight)</em>
-            </>
-          }
-        />
-
-        <button type="submit" className="btn btn-primary">
-          {isEdit ? 'Guardar cambios' : 'Crear reto'}
-        </button>
-      </form>
+      <div className="challenge-detail__actions">
+        {!isParticipant ? (
+          <Link to={`/challenges/${id}/join`}>
+            <button className="btn btn-primary">Unirse al reto</button>
+          </Link>
+        ) : (
+          <Link to={`/challenges/${id}/entry`}>
+            <button className="btn btn-primary">Registrar flexión</button>
+          </Link>
+        )}
+        <Link to={`/challenges/${id}/dashboard`}>
+          <button className="btn btn-outline-secondary">
+            Ver dashboard
+          </button>
+        </Link>
+      </div>
     </div>
   );
 }

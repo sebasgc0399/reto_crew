@@ -1,42 +1,48 @@
+// src/pages/ChallengeForm.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate }    from 'react-router-dom';
+import { useParams, useNavigate }      from 'react-router-dom';
 import {
   collection,
   doc,
   addDoc,
+  setDoc,
   updateDoc,
   getDoc,
   serverTimestamp,
   Timestamp
 } from 'firebase/firestore';
-import { db }                        from '../firebaseConfig';
 import { useAuth }                   from '../contexts/AuthContext';
-import ReactDatePicker                from 'react-datepicker';
-import Tippy from '@tippyjs/react';
-import 'tippy.js/dist/tippy.css';
+import { db }                        from '../firebaseConfig';
+
+import TextField     from '../components/form/TextField';
+import TextAreaField from '../components/form/TextAreaField';
+import DateField     from '../components/form/DateField';
+import NumberField   from '../components/form/NumberField';
+
 import './ChallengeForm.css';
+import '../components/form/FormField.css';
 
 export default function ChallengeForm() {
-  const { id } = useParams();
-  const isEdit = Boolean(id);
-  const navigate = useNavigate();
-  const { user } = useAuth();
+  const { id }       = useParams();
+  const isEdit       = Boolean(id);
+  const navigate     = useNavigate();
+  const { user }     = useAuth();
 
+  // Estados
   const [title, setTitle]             = useState('');
   const [description, setDescription] = useState('');
-  const [startDate, setStartDate]     = useState('');
-  const [endDate, setEndDate]         = useState('');
-  const [refWeight, setRefWeight]     = useState('');
+  const [startDate, setStartDate]     = useState(null);
+  const [endDate, setEndDate]         = useState(null);
+  const [userWeight, setUserWeight]   = useState('');  // Tu peso
   const [loading, setLoading]         = useState(isEdit);
   const [error, setError]             = useState('');
 
-  // Si estamos editando, carga los datos existentes
+  // Carga datos si estamos editando (opcional: podrías cargar peso previo)
   useEffect(() => {
     if (!isEdit) return;
     (async () => {
       try {
-        const docRef  = doc(db, 'challenges', id);
-        const snap    = await getDoc(docRef);
+        const snap = await getDoc(doc(db, 'challenges', id));
         if (!snap.exists()) {
           setError('Reto no encontrado.');
           setLoading(false);
@@ -45,50 +51,79 @@ export default function ChallengeForm() {
         const data = snap.data();
         setTitle(data.title);
         setDescription(data.description || '');
-        // Convertir Firestore Timestamp a yyyy-MM-dd
-        setStartDate(new Date(data.startDate.seconds * 1000)
-          .toISOString().substr(0,10));
-        setEndDate(new Date(data.endDate.seconds * 1000)
-          .toISOString().substr(0,10));
-        setRefWeight(data.refWeight);
+        setStartDate(new Date(data.startDate.seconds * 1000));
+        setEndDate(new Date(data.endDate.seconds * 1000));
+        // Si quieres cargar el peso actual del participante:
+        const pSnap = await getDoc(
+          doc(db, 'challenges', id, 'participants', user.uid)
+        );
+        if (pSnap.exists()) {
+          setUserWeight(pSnap.data().weight);
+        }
       } catch (e) {
         console.error(e);
-        setError('Error cargando datos del reto.');
+        setError('Error cargando datos.');
       } finally {
         setLoading(false);
       }
     })();
-  }, [id, isEdit]);
+  }, [id, isEdit, user.uid]);
 
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    if (!title || !startDate || !endDate || !refWeight) {
+
+    // Validación básica
+    if (
+      !title ||
+      !startDate ||
+      !endDate ||
+      !userWeight
+    ) {
       setError('Por favor completa todos los campos obligatorios.');
       return;
     }
+
     try {
       const payload = {
         title,
         description,
-        startDate: Timestamp.fromDate(new Date(startDate)),
-        endDate:   Timestamp.fromDate(new Date(endDate)),
-        refWeight: Number(refWeight),
+        startDate: Timestamp.fromDate(startDate),
+        endDate:   Timestamp.fromDate(endDate)
       };
 
+      let chRef;
       if (isEdit) {
-        // Editar
-        const docRef = doc(db, 'challenges', id);
-        await updateDoc(docRef, {
+        // EDITAR reto (no tocamos refWeight aquí)
+        await updateDoc(doc(db, 'challenges', id), {
           ...payload,
           updatedAt: serverTimestamp()
         });
+        chRef = { id };
       } else {
-        // Crear
-        await addDoc(collection(db, 'challenges'), {
+        // CREAR reto
+        chRef = await addDoc(collection(db, 'challenges'), {
           ...payload,
           createdBy:  user.uid,
           createdAt: serverTimestamp()
+        });
+      }
+
+      // AUTO-INSCRIBIR al creador
+      const weight      = Number(userWeight);
+      await setDoc(
+        doc(db, 'challenges', chRef.id, 'participants', user.uid),
+        {
+          uid:      user.uid,
+          weight,
+          joinedAt: serverTimestamp()
+        }
+      );
+
+      // Calcular promedio de pesos solo del creador (al principio)
+      if (!isEdit) {
+        await updateDoc(doc(db, 'challenges', chRef.id), {
+          refWeight: weight
         });
       }
 
@@ -107,79 +142,45 @@ export default function ChallengeForm() {
       {error && <p className="error">{error}</p>}
 
       <form className="challenge-form" onSubmit={handleSubmit}>
-        <label>
-          Título *
-          <input
-            type="text"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            required
-          />
-        </label>
+        <TextField
+          label="Título"
+          value={title}
+          onChange={setTitle}
+          required
+        />
 
-        <label>
-          Descripción
-          <textarea
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-          />
-        </label>
+        <TextAreaField
+          label="Descripción"
+          value={description}
+          onChange={setDescription}
+          rows={4}
+        />
 
         <div className="date-group">
-          <label>
-            Fecha inicio *
-            <ReactDatePicker
-              selected={startDate}
-              onChange={date => setStartDate(date)}
-              dateFormat="dd/MM/yyyy"
-              placeholderText="dd/MM/yyyy"
-              className="react-datepicker__input"
-              required
-            />
-          </label>
-          <label>
-            Fecha fin *
-            <ReactDatePicker
-              selected={endDate}
-              onChange={date => setEndDate(date)}
-              dateFormat="dd/MM/yyyy"
-              placeholderText="dd/MM/yyyy"
-              className="react-datepicker__input"
-              required
-            />
-          </label>
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">
-            Peso de referencia (kg) *
-            <Tippy
-              content={
-                <>
-                  <strong>Peso de referencia:</strong><br/>
-                  Valor base (ej. 73.5 kg) para normalizar esfuerzo:<br/>
-                  <em>puntos = reps × multiplier × (peso / PesodeReferencia)</em>
-                </>
-              }
-              placement="right"
-              delay={[200, 0]}
-              arrow={true}
-              // <- Esto hace que el tooltip se añada al <body>, no al contenedor
-              appendTo={() => document.body}
-              interactive={true}                     // permite hover sobre el propio tooltip
-              popperOptions={{ strategy: 'fixed' }}  // evita recortes inesperados
-            >
-              <span className="info-icon">ℹ️</span>
-            </Tippy>
-          </label>
-          <input
-            type="number"
-            value={refWeight}
-            onChange={e => setRefWeight(e.target.value)}
-            step="0.1"
+          <DateField
+            label="Fecha inicio"
+            selected={startDate}
+            onChange={setStartDate}
+            required
+          />
+          <DateField
+            label="Fecha fin"
+            selected={endDate}
+            onChange={setEndDate}
             required
           />
         </div>
+
+        {/* Solo pedimos tu peso */}
+        <NumberField
+          label="Tu peso (kg)"
+          value={userWeight}
+          onChange={setUserWeight}
+          required
+          tooltip={
+            'Tu peso se usa luego para normalizar el esfuerzo relativo en el reto.'
+          }
+        />
 
         <button type="submit" className="btn btn-primary">
           {isEdit ? 'Guardar cambios' : 'Crear reto'}

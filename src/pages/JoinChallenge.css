@@ -1,0 +1,14 @@
+.join-challenge-container {
+  max-width: 480px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.join-challenge-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.join-challenge-form .btn {
+  margin-top: 1rem;
+}

@@ -11,6 +11,7 @@ import ChallengeDetail         from './pages/ChallengeDetail';
 import ProtectedRoute          from './components/ProtectedRoute';
 import Sidebar                 from './components/Sidebar';
 import PublicRoute             from './components/PublicRoute';
+import JoinChallenge           from './pages/JoinChallenge';
 
 import './App.css';
 
@@ -65,6 +66,15 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <ChallengesList />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/challenges/:id/join"
+              element={
+                <ProtectedRoute>
+                  <JoinChallenge />
                 </ProtectedRoute>
               }
             />
