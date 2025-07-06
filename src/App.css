@@ -1,12 +1,9 @@
-/* --- Reseteo Básico y Box Sizing --- */
-/* Es una buena práctica para asegurar consistencia entre navegadores */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* --- Estilos para el cuerpo y el HTML --- */
 html, body, #root {
   height: 100%;
   overflow: hidden; /* Evita el scroll en el body, lo controlaremos adentro */
@@ -14,13 +11,9 @@ html, body, #root {
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* --- Contenedor Principal de la App --- */
 .App {
   display: flex;
   flex-direction: column;
-  /* Usamos 100dvh (dynamic viewport height) en lugar de 100vh. 
-     Esto se ajusta dinámicamente a la UI del navegador móvil (barras) 
-     y evita saltos de layout. Es el estándar moderno. */
   height: 100dvh; 
   background-color: #f5f5f5; /* Un fondo base para toda la app */
   overflow: hidden; /* Previene cualquier desbordamiento inesperado */

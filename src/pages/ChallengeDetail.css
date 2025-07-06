@@ -1,18 +1,15 @@
-/* ChallengeDetail.css */
 .challenge-detail {
   padding: 2rem;
   max-width: 600px;
   margin: 0 auto;
-  flex: 1;
 }
 
 .challenge-detail__title {
-  margin-bottom: 0.5rem;
   color: var(--primary-color);
+  margin-bottom: 0.5rem;
 }
 
-.challenge-detail__dates,
-.challenge-detail__participants {
+.challenge-detail__dates {
   font-size: 0.9rem;
   color: #555;
   margin-bottom: 1rem;
@@ -22,6 +19,46 @@
   margin-bottom: 1.5rem;
 }
 
+/* Participantes */
+.participants-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.participant-card {
+  display: flex;
+  align-items: center;
+  background: #f9f9f9;
+  padding: 0.75rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.participant-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.75rem;
+}
+
+.participant-info p {
+  margin: 2px 0;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.no-participants {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+/* Botones */
 .challenge-detail__actions {
   display: flex;
   gap: 1rem;

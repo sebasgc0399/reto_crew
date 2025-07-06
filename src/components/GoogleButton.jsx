@@ -1,6 +1,6 @@
 import React from 'react';
 import './GoogleButton.css';
-import googleIcon from '../assets/google.svg'; // ajusta ruta si hace falta
+import googleIcon from '../assets/google.svg'; 
 
 export default function GoogleButton({ onClick }) {
   return (
