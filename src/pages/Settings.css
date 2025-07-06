@@ -1,42 +1,64 @@
+/* Settings.css - Revisado */
+
 .settings-container {
-  max-width: 400px;
-  margin: 2rem auto;
-  padding: 1rem;
+  /* Eliminamos el ancho fijo y el margen para que ocupe todo el espacio */
+  width: 100%;
+  padding: 1rem; /* Padding interno para que el contenido no se pegue a los bordes */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .settings-container h2 {
   color: var(--primary-color);
-  margin-bottom: 1rem;
+  margin-bottom: 2rem; /* Más espacio inferior para separar del formulario */
   text-align: center;
+  font-size: clamp(1.5rem, 5vw, 1.8rem);
 }
 
 .settings-form {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 500px; /* Limitamos el ancho del formulario en pantallas grandes */
+  margin: 0 auto; /* Centramos el formulario dentro del contenedor */
 }
 
 .settings-form label {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem; /* Un poco más de espacio */
   font-weight: 500;
+  color: #333;
 }
 
 .settings-form input {
-  padding: 0.5rem;
+  padding: 0.75rem; /* Hacemos los inputs un poco más grandes para el tacto */
   font-size: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem; /* Espacio entre cada campo */
   border: 1px solid #ccc;
   border-radius: 4px;
+  background-color: #f8f9fa; /* Fondo sutil para diferenciar el campo */
+}
+
+/* Estilo para el foco, mejora la accesibilidad */
+.settings-form input:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 1px;
+  border-color: var(--primary-color);
+  background-color: #fff;
 }
 
 .settings-form .btn {
   align-self: stretch;
-  padding: 0.5rem;
+  padding: 0.75rem; /* Padding consistente */
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .status {
   margin-top: 1rem;
   font-size: 0.9rem;
   text-align: center;
+  height: 20px; /* Le damos una altura fija para que no cause saltos en el layout al aparecer */
 }
 .status--success {
   color: green;

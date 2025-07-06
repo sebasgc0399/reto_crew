@@ -1,9 +1,11 @@
-/* src/components/Sidebar.css */
+/* Sidebar.css - Revisado */
+
 .App-sidebar {
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
+  /* CAMBIO CRÍTICO: Usar 100dvh para consistencia con App.css y evitar problemas en móviles */
+  height: 100dvh; 
   width: 240px;
   background: #f8f9fa;
   padding: 1rem;
@@ -11,13 +13,19 @@
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 200;
-}
-.App-sidebar.open {
-  transform: translateX(0);
+  border-right: 1px solid #e0e0e0; /* Un borde sutil para separar */
 }
 
+.App-sidebar.open {
+  transform: translateX(0);
+  /* MEJORA VISUAL: Una sombra para dar profundidad y elevarlo sobre el contenido */
+  box-shadow: 4px 0px 15px rgba(0,0,0,0.1);
+}
+
+/* ... el resto de tus estilos de sidebar son buenos y no necesitan cambios ... */
+
 .sidebar-title {
-  margin: 0 0 1rem;
+  margin: 0 0 1.5rem; /* Un poco más de margen inferior */
   font-size: 1.2rem;
   color: var(--primary-color);
   text-align: center;
@@ -35,17 +43,21 @@
 
 .sidebar-link,
 .sidebar-link--button {
-  display: block;
+  display: flex; /* Usamos flex para alinear un posible ícono en el futuro */
+  align-items: center;
+  gap: 0.75rem;
   width: 100%;
   text-decoration: none;
   color: #333;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
+  padding: 0.75rem; /* Padding más consistente y amigable al tacto */
+  border-radius: 6px; /* Bordes un poco más redondeados */
   font-size: 1rem;
+  font-weight: 500;
   background: none;
   border: none;
   text-align: left;
   cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .sidebar-link:hover,
@@ -53,11 +65,13 @@
   background-color: #e2e6ea;
 }
 
-.sidebar-link--active {
+.sidebar-link.sidebar-link--active {
   background-color: var(--primary-color);
   color: #fff;
+  font-weight: 500;
 }
 
+/* Tus media queries están bien, no necesitan cambios */
 @media (min-width: 768px) {
   .App-main {
     transition: margin-left 0.3s ease;
@@ -67,7 +81,6 @@
   }
 }
 
-/* En móvil el header debe quedar por encima del sidebar */
 @media (max-width: 767px) {
   .App-header {
     position: relative;
