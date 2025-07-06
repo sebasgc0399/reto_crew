@@ -1,21 +1,17 @@
-const functions = require("firebase-functions");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
 const db = admin.firestore();
 const FieldValue = admin.firestore.FieldValue;
 
-/**
- * Trigger que se ejecuta cada vez que se crea una nueva entry
- * en challenges/{chId}/entries/{eId}, y suma puntos al participante.
- */
-exports.onNewEntry = functions
-  .region("us-central1")
-  .firestore.document("challenges/{chId}/entries/{eId}")
-  .onCreate(async (snapshot, context) => {
-    const entryData = snapshot.data();
-    const { points, userId } = entryData;
-    const chId = context.params.chId;
+exports.onNewEntry = onDocumentCreated(
+  "challenges/{chId}/entries/{eId}",
+  async (event) => {
+    // event.data es un DocumentSnapshot en v2
+    const snapshot = event.data;
+    const { points, userId } = snapshot.data();
+    const { chId } = event.params;
 
     const participantRef = db
       .collection("challenges")
@@ -28,12 +24,13 @@ exports.onNewEntry = functions
         totalPoints: FieldValue.increment(points),
       });
       console.log(
-        `Se agregaron ${points} puntos a ${userId} en el reto ${chId}.`
+        `Se agregaron ${points} pts a ${userId} en el reto ${chId}`
       );
     } catch (error) {
       console.error(
-        `Error actualizando totalPoints para ${userId} en reto ${chId}:`,
+        `Error actualizando totalPoints para ${userId} en ${chId}:`,
         error
       );
     }
-  });
+  }
+);

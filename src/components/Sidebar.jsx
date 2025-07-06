@@ -13,6 +13,10 @@ export default function Sidebar({ isOpen, onClose }) {
     navigate('/', { replace: true });
   };
 
+  // Helper para aplicar la clase activa
+  const linkClass = ({ isActive }) =>
+    isActive ? 'sidebar-link sidebar-link--active' : 'sidebar-link';
+
   return (
     <nav className={`App-sidebar ${isOpen ? 'open' : ''}`}>
       <h2 className="sidebar-title">Menú</h2>
@@ -20,9 +24,7 @@ export default function Sidebar({ isOpen, onClose }) {
         <li>
           <NavLink
             to="/dashboard"
-            className={({ isActive }) =>
-              isActive ? 'sidebar-link sidebar-link--active' : 'sidebar-link'
-            }
+            className={linkClass}
             onClick={onClose}
           >
             Dashboard
@@ -30,10 +32,17 @@ export default function Sidebar({ isOpen, onClose }) {
         </li>
         <li>
           <NavLink
+            to="/challenges"
+            className={linkClass}
+            onClick={onClose}
+          >
+            Retos
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
             to="/settings"
-            className={({ isActive }) =>
-              isActive ? 'sidebar-link sidebar-link--active' : 'sidebar-link'
-            }
+            className={linkClass}
             onClick={onClose}
           >
             Configuraciones

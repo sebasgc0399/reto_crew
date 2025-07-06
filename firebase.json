@@ -1,13 +1,34 @@
 {
   "hosting": {
     "public": "build",
-    "ignore": [ "firebase.json", "**/.*", "**/node_modules/**" ],
-    "predeploy": [
-      "npm ci",
-      "npm run build"
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
     ],
     "rewrites": [
-      { "source": "**", "destination": "/index.html" }
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
-  }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "containerRegistry": {
+        "cleanupPolicy": {
+          "numDaysToKeepImages": 7
+        }
+      },
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ]
 }
