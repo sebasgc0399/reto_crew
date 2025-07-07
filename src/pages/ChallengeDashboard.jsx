@@ -1,35 +1,33 @@
-// src/pages/ChallengeDashboard.jsx
-import React, { useEffect, useState } from 'react';
-import { useParams }                   from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   collection,
-  getDocs,
   query,
   orderBy,
+  onSnapshot,
   doc,
   getDoc
 } from 'firebase/firestore';
-import { db }                          from '../firebaseConfig';
+import { db } from '../firebaseConfig';
 import './ChallengeDashboard.css';
 
 export default function ChallengeDashboard() {
   const { id: chId } = useParams();
   const [participants, setParticipants] = useState([]);
-  const [entries, setEntries]           = useState([]);
-  const [loading, setLoading]           = useState(true);
+  const [entries, setEntries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Ref para mantener la lista más actualizada de participantes
+  const participantsRef = useRef([]);
 
+  // 1) Listener en tiempo real para participantes
   useEffect(() => {
-    async function fetchData() {
-      // 1) Leaderboard: participantes ordenados por puntos
-      const pSnap = await getDocs(
-        query(
-          collection(db, 'challenges', chId, 'participants'),
-          orderBy('totalPoints', 'desc')
-        )
-      );
+    const partsRef = collection(db, 'challenges', chId, 'participants');
+    const partsQuery = query(partsRef, orderBy('totalPoints', 'desc'));
 
+    const unsub = onSnapshot(partsQuery, async (pSnap) => {
       const parts = await Promise.all(
-        pSnap.docs.map(async d => {
+        pSnap.docs.map(async (d) => {
           const pData = d.data();
           // **1ª opción: leer name del participante directamente**
           let name = pData.name || '';
@@ -49,43 +47,48 @@ export default function ChallengeDashboard() {
           if (!name) name = d.id;
 
           return {
-            uid:         d.id,
+            uid: d.id,
             name,
             totalPoints: pData.totalPoints
           };
         })
       );
+      
+      // Actualizar tanto el estado como la ref
       setParticipants(parts);
+      participantsRef.current = parts;
+      setLoading(false);
+    });
 
-      // 2) Últimas entradas
-      const eSnap = await getDocs(
-        query(
-          collection(db, 'challenges', chId, 'entries'),
-          orderBy('createdAt', 'desc')
-        )
-      );
+    return () => unsub();
+  }, [chId]);
 
+  // 2) Listener en tiempo real para entradas
+  useEffect(() => {
+    const entriesRef = collection(db, 'challenges', chId, 'entries');
+    const entriesQuery = query(entriesRef, orderBy('createdAt', 'desc'));
+
+    const unsub = onSnapshot(entriesQuery, (eSnap) => {
       // Mapea cada entrada, reutilizando el array de participantes para el nombre
-      const ent = eSnap.docs.map(d => {
+      const ent = eSnap.docs.map((d) => {
         const eData = d.data();
-        const participant = parts.find(p => p.uid === eData.userId);
+        // Usar la ref para obtener los participantes más actualizados
+        const participant = participantsRef.current.find(p => p.uid === eData.userId);
         return {
-          id:          d.id,
-          name:        participant?.name || eData.userId,
+          id: d.id,
+          name: participant?.name || eData.userId,
           activityKey: eData.activityKey,
-          value:       eData.value,
-          unit:        eData.unit,
-          points:      eData.points,
-          createdAt:   eData.createdAt
+          value: eData.value,
+          unit: eData.unit,
+          points: eData.points,
+          createdAt: eData.createdAt
         };
       });
       setEntries(ent);
+    });
 
-      setLoading(false);
-    }
-
-    fetchData();
-  }, [chId]);
+    return () => unsub();
+  }, [chId]); // Solo depende de chId
 
   if (loading) return <p>Cargando dashboard…</p>;
 

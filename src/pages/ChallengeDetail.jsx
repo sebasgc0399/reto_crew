@@ -75,7 +75,7 @@ export default function ChallengeDetail() {
           </Link>
         ) : (
           <Link to={`/challenges/${id}/entry`}>
-            <button className="btn btn-primary">Registrar flexión</button>
+            <button className="btn btn-primary">Registrar</button>
           </Link>
         )}
         <Link to={`/challenges/${id}/dashboard`}>
