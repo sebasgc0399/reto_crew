@@ -52,8 +52,8 @@ export default function ChallengesList() {
     <div className="challenges-list-container">
       <div className="challenges-list-header">
         <h2>Retos Activos</h2>
-        <Link to="/challenges/new">
-          <button className="btn btn-primary">Crear nuevo reto</button>
+        <Link to="/challenges/new" className="btn btn-primary">
+          Crear nuevo reto
         </Link>
       </div>
 

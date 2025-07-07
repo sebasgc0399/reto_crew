@@ -2,17 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { auth, db } from '../firebaseConfig';
 import { updateProfile } from 'firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
-import Loader                        from '../components/Loader';
+import {
+  doc,
+  updateDoc,
+  collectionGroup,
+  query,
+  where,
+  getDocs,
+  writeBatch
+} from 'firebase/firestore';
+import Loader from '../components/Loader';
 import './Settings.css';
 
 export default function Settings() {
   const { user, loading } = useAuth();
-  const [name, setName]   = useState('');
+  const [name, setName] = useState('');
   const [status, setStatus] = useState({ type: '', msg: '' });
   const [saving, setSaving] = useState(false);
 
-  // Pre-llenar el campo con el nombre actual
   useEffect(() => {
     if (!loading && user) {
       setName(user.displayName || '');
@@ -25,12 +32,28 @@ export default function Settings() {
     setStatus({ type: '', msg: '' });
 
     try {
-      // 1) Actualiza el perfil de Firebase Auth
+      // 1) Actualiza el displayName en Firebase Auth
       await updateProfile(auth.currentUser, { displayName: name });
 
-      // 2) Actualiza el documento en Firestore
+      // 2) Actualiza el documento en users/{uid}
       const userRef = doc(db, 'users', user.uid);
       await updateDoc(userRef, { name });
+
+      // 3) Actualiza todos los participantes donde uid === user.uid
+      //    Usa un batch para agrupar las actualizaciones
+      const batch = writeBatch(db);
+      const participantsQ = query(
+        collectionGroup(db, 'participants'),
+        where('uid', '==', user.uid)
+      );
+      const snaps = await getDocs(participantsQ);
+
+      snaps.forEach(partSnap => {
+        batch.update(partSnap.ref, { name });
+      });
+
+      // Ejecuta el batch
+      await batch.commit();
 
       setStatus({ type: 'success', msg: 'Nombre actualizado 👍' });
     } catch (err) {
@@ -63,9 +86,11 @@ export default function Settings() {
         </button>
 
         {status.msg && (
-          <p className={
-            status.type === 'success' ? 'status status--success' : 'status status--error'
-          }>
+          <p
+            className={
+              status.type === 'success' ? 'status status--success' : 'status status--error'
+            }
+          >
             {status.msg}
           </p>
         )}

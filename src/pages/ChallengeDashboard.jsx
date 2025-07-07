@@ -9,89 +9,89 @@ import {
   getDoc
 } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import Loader                        from '../components/Loader';
+import Loader from '../components/Loader';
 import './ChallengeDashboard.css';
 
 export default function ChallengeDashboard() {
   const { id: chId } = useParams();
-  const [participants, setParticipants] = useState([]);
-  const [entries, setEntries] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  // Ref para mantener la lista más actualizada de participantes
+
+  const [participants, setParticipants]     = useState([]);
+  const [entries, setEntries]               = useState([]);
+  const [loadingParts, setLoadingParts]     = useState(true);
+  const [loadingEntries, setLoadingEntries] = useState(true);
+
   const participantsRef = useRef([]);
 
-  // 1) Listener en tiempo real para participantes
+  // 1) Carga participants
   useEffect(() => {
-    const partsRef = collection(db, 'challenges', chId, 'participants');
+    const partsRef   = collection(db, 'challenges', chId, 'participants');
     const partsQuery = query(partsRef, orderBy('totalPoints', 'desc'));
 
-    const unsub = onSnapshot(partsQuery, async (pSnap) => {
+    const unsub = onSnapshot(partsQuery, async snap => {
       const parts = await Promise.all(
-        pSnap.docs.map(async (d) => {
-          const pData = d.data();
-          // **1ª opción: leer name del participante directamente**
-          let name = pData.name || '';
-
-          // 2ª opción: si no hay name, fallback a /users/{uid}
+        snap.docs.map(async d => {
+          let { name = '' , totalPoints } = d.data();
           if (!name) {
             try {
-              const uSnap = await getDoc(doc(db, 'users', d.id));
-              if (uSnap.exists() && uSnap.data().name) {
-                name = uSnap.data().name;
-              }
-            } catch (e) {
-              console.error('Error fetching user name for', d.id, e);
-            }
+              const u = await getDoc(doc(db, 'users', d.id));
+              name = u.exists() ? u.data().name : '';
+            } catch { /* log si quieres */ }
           }
-          // sigue fallback si sigue vacío
-          if (!name) name = d.id;
-
-          return {
-            uid: d.id,
-            name,
-            totalPoints: pData.totalPoints
-          };
+          return { uid: d.id, name: name || d.id, totalPoints };
         })
       );
-      
-      // Actualizar tanto el estado como la ref
       setParticipants(parts);
       participantsRef.current = parts;
-      setLoading(false);
+      setLoadingParts(false);
     });
 
     return () => unsub();
   }, [chId]);
 
-  // 2) Listener en tiempo real para entradas
+  // 2) Carga entries — espera a que participantsRef esté listo
   useEffect(() => {
-    const entriesRef = collection(db, 'challenges', chId, 'entries');
-    const entriesQuery = query(entriesRef, orderBy('createdAt', 'desc'));
+    if (loadingParts) return;
 
-    const unsub = onSnapshot(entriesQuery, (eSnap) => {
-      // Mapea cada entrada, reutilizando el array de participantes para el nombre
-      const ent = eSnap.docs.map((d) => {
-        const eData = d.data();
-        // Usar la ref para obtener los participantes más actualizados
-        const participant = participantsRef.current.find(p => p.uid === eData.userId);
+    setLoadingEntries(true);
+    const entRef   = collection(db, 'challenges', chId, 'entries');
+    const entQuery = query(entRef, orderBy('createdAt', 'desc'));
+
+    const unsub = onSnapshot(entQuery, async snap => {
+      const list = await Promise.all(snap.docs.map(async d => {
+        const data = d.data();
+        // 2.1) Busca en el ref
+        const p = participantsRef.current.find(x => x.uid === data.userId);
+        let name = p?.name ?? '';
+
+        // 2.2) Si sorprendentemente sigue vacío, busca en /users
+        if (!name) {
+          try {
+            const u = await getDoc(doc(db, 'users', data.userId));
+            name = u.exists() ? u.data().name : data.userId;
+          } catch {
+            name = data.userId;
+          }
+        }
+
         return {
           id: d.id,
-          name: participant?.name || eData.userId,
-          activityKey: eData.activityKey,
-          value: eData.value,
-          unit: eData.unit,
-          points: eData.points,
-          createdAt: eData.createdAt
+          name,
+          activityKey: data.activityKey,
+          value: data.value,
+          unit: data.unit,
+          points: data.points,
+          createdAt: data.createdAt
         };
-      });
-      setEntries(ent);
+      }));
+      setEntries(list);
+      setLoadingEntries(false);
     });
 
     return () => unsub();
-  }, [chId]); // Solo depende de chId
+  }, [chId, loadingParts]);
 
-  if (loading) return <Loader text="Cargando dashboard…" />;
+  if (loadingParts)   return <Loader text="Cargando participantes…" />;
+  if (loadingEntries) return <Loader text="Cargando entradas…" />;
 
   return (
     <div className="dashboard-container">
