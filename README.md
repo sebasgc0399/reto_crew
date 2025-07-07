@@ -1,70 +1,112 @@
-# Getting Started with Create React App
+# 🏋️‍♂️ RetoCrew
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**RetoCrew** es una aplicación web colaborativa para crear y participar en retos deportivos (flexiones, dominadas, sentadillas, carreras, etc.), registrar entradas diarias y comparar el progreso mediante un sistema de puntos normalizado.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📌 Características
 
-### `npm start`
+- **Autenticación** con Google (Firebase Auth).
+- **CRUD** de retos:
+  - Crear / editar retos con título, descripción, fechas y tipo de actividad.
+  - Selector de actividad (flexiones, dominadas, sentadillas, carrera) con unidad y normalización por peso.
+- **Inscripción** de participantes a retos:
+  - Auto‐inscripción del creador al crear un reto.
+  - Opción para que otros usuarios se unan ingresando su peso.
+- **Registro de entradas**:
+  - Formulario dinámico que adapta etiqueta, unidad y fórmula según la actividad.
+  - Cálculo de puntos proporcional al esfuerzo (reps × multiplicador × (peso / refWeight)).
+- **Dashboard de reto** en tiempo real:
+  - Leaderboard con actualización instantánea (`onSnapshot`).
+  - Tabla de entradas recientes con nombre de usuario, actividad, valor, puntos y fecha.
+- **Dashboard personal**:
+  - Selección de reto activo entre los que ch participe.
+  - Visualización de puntos totales y posición en ese reto.
+- **UI reutilizable**:
+  - Componente `<Loader />`, `<ProtectedRoute />`, `<PublicRoute />`, campos de formulario genéricos, tooltips, etc.
+- **Seguridad**:
+  - Reglas de Firestore que limitan lectura/ escritura según `auth.uid` y validan esquemas.
+  - Cloud Functions para llevar el acumulado de `totalPoints` y recalcular `refWeight` dinámicamente.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Tecnologías
 
-### `npm test`
+- **Front‐end**: React (Vite / Create React App / Craco), React Router v6, Context API.
+- **UI**: CSS modular, componentes reutilizables, React Datepicker, Tippy.js para tooltips.
+- **Back‐end**: Firebase
+  - **Auth**: Google Sign‐In  
+  - **Firestore**: `challenges`, `participants`, `entries`, `users`  
+  - **Cloud Functions**: triggers `onCreate` y `onWrite` para lógica de puntos y refWeight
+- **Herramientas**: ESLint, Prettier, Git, VSCode.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🚀 Instalación y desarrollo
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1.  **Clonar el repositorio**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    ```bash
+    git clone [https://github.com/sebasgc0399/reto_crew](https://github.com/sebasgc0399/reto_crew)
+    cd retocrew
+    ```
 
-### `npm run eject`
+2.  **Instalar dependencias**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    ```bash
+    npm install
+    # o
+    yarn install
+    ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+3.  **Configurar Firebase**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    Crea un proyecto en [Firebase Console](https://console.firebase.google.com/).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+    Habilita Authentication (Google), Firestore, Functions.
 
-## Learn More
+    Copia tus credenciales en `src/firebaseConfig.js`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+4.  **Ejecutar localmente**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+    ```bash
+    npm start
+    # o
+    yarn start
+    ```
 
-### Code Splitting
+    Abre `http://localhost:3000`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+5.  **Deploy a Firebase Hosting + Functions**
 
-### Analyzing the Bundle Size
+    ```bash
+    firebase deploy --only hosting,functions
+    ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## ⚙️ Scripts útiles
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+-   `npm start`: Inicia la app en modo desarrollo.
+-   `npm run build`: Genera la versión de producción en `build/`.
+-   `firebase deploy --only functions`: Despliega solo las Cloud Functions.
+-   `firebase deploy --only hosting`: Despliega solo la parte web.
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 🤝 Contribuciones
 
-### Deployment
+¡Las contribuciones son bienvenidas!
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+1.  Haz un fork.
+2.  Crea una branch: `git checkout -b feature/nueva-funcionalidad`.
+3.  Haz commit de tus cambios: `git commit -m 'Agrega nueva característica'`.
+4.  Envía un pull request.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 📄 Licencia
+
+Este proyecto está bajo la licencia MIT. Consulta el archivo LICENSE para más detalles.
+
