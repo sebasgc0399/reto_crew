@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAJwVJiXM9lXiVn6HF33rwAu-ffKwzG9Zc",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "retocrew-13f3c.firebaseapp.com",
   projectId: "retocrew-13f3c",
   storageBucket: "retocrew-13f3c.firebasestorage.app",

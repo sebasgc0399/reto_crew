@@ -13,9 +13,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: npm ci && npm run build
+      - name: Set up Node.js # Opcional, pero buena práctica especificar la versión
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Asegúrate de que coincida con tu versión de Node.js
+
+      - name: Install dependencies and build project
+        run: npm ci && npm run build
+        env:
+          # ¡Añade esta sección 'env' aquí también!
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_RETOCREW_13F3C }}
           projectId: retocrew-13f3c
+          # Nota: el `channelId` no se especifica aquí, lo que hace que Firebase genere un canal de previsualización único por PR.
