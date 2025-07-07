@@ -64,8 +64,7 @@ export default function ChallengeForm() {
   const [errors, setErrors]           = useState({});
 
   // metadata dinámica
-  const { label: activityLabel, unit: activityUnit, multiplier, weightBased } =
-    ACTIVITIES[activityKey];
+  const { unit: activityUnit, weightBased } = ACTIVITIES[activityKey];
 
   // carga en edición
   useEffect(() => {
