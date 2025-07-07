@@ -1,57 +1,308 @@
+/* --- Contenedor Principal --- */
 .challenge-form-container {
-  max-width: 500px;
-  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  max-width: 480px; /* Consistente con tu sistema */
+  margin: 0 auto;
   padding: 1rem;
+  overflow: visible; /* Importante para el DatePicker */
 }
 
+/* --- Título --- */
 .challenge-form-container h2 {
   color: var(--primary-color);
+  font-size: clamp(1.5rem, 5vw, 1.8rem);
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #eee;
   text-align: center;
+}
+
+/* --- Alertas de Error Global --- */
+.challenge-form-container .alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
   margin-bottom: 1rem;
-}
-
-.challenge-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.challenge-form label {
-  display: flex;
-  flex-direction: column;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
-.challenge-form input,
-.challenge-form textarea {
-  padding: 0.5rem;
-  font-size: 1rem;
-  margin-top: 0.25rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.challenge-form-container .alert-danger {
+  background: #fff5f5;
+  border: 1px solid #feb2b2;
+  color: #c53030;
 }
 
-.challenge-form textarea {
-  resize: vertical;
-  min-height: 80px;
+/* --- Formulario Principal --- */
+.challenge-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  animation: slideUp 0.3s ease-out;
 }
 
+/* --- Grupo de Fechas --- */
 .date-group {
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.date-group label {
-  flex: 1;
+/* En pantallas más grandes, mostrar las fechas lado a lado */
+@media (min-width: 600px) {
+  .date-group {
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .date-group > * {
+    flex: 1;
+  }
 }
 
-.error {
-  color: red;
-  text-align: center;
+/* --- Grupo de Formulario General --- */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-/* (Opcional) Asegúrate que tu contenedor permita overflow visible */
-.challenge-form-container {
-  overflow: visible;
+/* --- Labels --- */
+.form-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
 }
 
+/* --- Inputs y Selects --- */
+.form-control {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+.form-control::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* --- Select específico --- */
+.form-control select {
+  cursor: pointer;
+}
+
+/* --- Textarea --- */
+.form-control[rows] {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+/* --- Estados de Error --- */
+.form-control.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* --- Texto de Ayuda --- */
+.form-text {
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
+.form-text.text-muted {
+  color: #666;
+}
+
+.form-text strong {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* --- Botón Principal --- */
+.challenge-form .btn {
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.5rem;
+}
+
+.challenge-form .btn-primary {
+  background: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+}
+
+.challenge-form .btn-primary:hover:not(:disabled) {
+  background: #1565c0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+}
+
+.challenge-form .btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+}
+
+.challenge-form .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* --- Clases de Utilidad --- */
+.mt-3 {
+  margin-top: 1rem;
+}
+
+/* --- Estilos específicos para React DatePicker --- */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+/* Personalización del DatePicker */
+.react-datepicker {
+  font-family: inherit;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.react-datepicker__header {
+  background: var(--primary-color);
+  border-bottom: 1px solid #d0d0d0;
+  border-radius: 8px 8px 0 0;
+}
+
+.react-datepicker__current-month {
+  color: #fff;
+  font-weight: 600;
+}
+
+.react-datepicker__day-name {
+  color: #fff;
+  font-weight: 500;
+}
+
+.react-datepicker__navigation {
+  top: 13px;
+}
+
+.react-datepicker__navigation--previous {
+  border-right-color: #fff;
+}
+
+.react-datepicker__navigation--next {
+  border-left-color: #fff;
+}
+
+.react-datepicker__day--selected {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background: rgba(25, 118, 210, 0.1);
+  color: var(--primary-color);
+}
+
+.react-datepicker__day:hover {
+  background: rgba(25, 118, 210, 0.1);
+  color: var(--primary-color);
+}
+
+/* --- Animaciones --- */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Responsive para móviles pequeños --- */
+@media (max-width: 480px) {
+  .challenge-form-container {
+    padding: 0.75rem;
+  }
+  
+  .challenge-form {
+    padding: 1.5rem;
+    border-radius: 8px;
+    gap: 1.25rem;
+  }
+  
+  .form-control {
+    padding: 0.625rem 0.875rem;
+    font-size: 16px; /* Evita zoom en iOS */
+  }
+  
+  .challenge-form .btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .date-group {
+    gap: 1.25rem;
+  }
+}
+
+/* --- Mejoras para dispositivos táctiles --- */
+@media (hover: none) and (pointer: coarse) {
+  .form-control {
+    min-height: 44px; /* Área de toque mínima recomendada */
+  }
+  
+  .challenge-form .btn {
+    min-height: 44px;
+  }
+}
+
+/* --- Accesibilidad --- */
+@media (prefers-reduced-motion: reduce) {
+  .challenge-form,
+  .challenge-form .btn {
+    animation: none !important;
+    transition: none !important;
+  }
+}
