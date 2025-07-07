@@ -1,64 +1,291 @@
+/* --- Contenedor Principal --- */
 .dashboard-container {
   display: flex;
   flex-direction: column;
   flex: 1;
-  /* El padding ya está en App-main, podemos reducirlo aquí para evitar espaciado excesivo */
-  padding: 1rem; 
-  width: 100%; /* Asegura que ocupe todo el espacio */
+  padding: 1rem;
+  width: 100%;
+  gap: 1.5rem; /* Espaciado consistente entre secciones */
 }
 
+/* --- Título Principal --- */
 .dashboard-title {
-  margin-bottom: 1.5rem;
   color: var(--primary-color);
-  /* Usamos clamp() para que el título también sea fluido */
   font-size: clamp(1.5rem, 5vw, 1.8rem);
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+  font-weight: 600;
 }
 
+/* --- Filtro de Retos --- */
+.dashboard-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.dashboard-filter label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.dashboard-filter select {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  cursor: pointer;
+}
+
+.dashboard-filter select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+/* --- Resumen de Métricas --- */
 .dashboard-summary {
   display: grid;
-  /* Esta línea es perfecta, no necesita cambios */
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1rem;
-  margin-bottom: 2rem;
 }
 
 .dashboard-summary .card {
   background: #fff;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 1rem;
+  border-radius: 12px;
+  padding: 1.5rem;
   text-align: center;
-  /* Añadimos una transición suave para el hover */
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-summary .card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), #42a5f5);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.dashboard-summary .card:hover::before {
+  transform: translateX(0);
 }
 
 .dashboard-summary .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  border-color: #d0d0d0;
 }
 
 .dashboard-summary .card h3 {
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem; /* Un poco más pequeño para dar jerarquía */
-  color: #555;
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: #666;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .dashboard-summary .card p {
-  /* Hacemos el número principal fluido para evitar que se desborde en tarjetas muy pequeñas */
-  font-size: clamp(1.2rem, 6vw, 1.5rem);
-  font-weight: bold;
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: 700;
   margin: 0;
   color: var(--primary-color);
+  line-height: 1.2;
 }
 
-.dashboard-next-steps {
-  margin-top: auto; /* Empuja esta sección al final si hay espacio */
-  padding-top: 1rem;
+/* --- Estilos específicos para cada tipo de tarjeta --- */
+.dashboard-summary .card:nth-child(1) p {
+  color: #1976d2; /* Azul para puntos */
+}
+
+.dashboard-summary .card:nth-child(2) p {
+  color: #388e3c; /* Verde para retos activos */
+}
+
+.dashboard-summary .card:nth-child(3) p {
+  color: #f57c00; /* Naranja para posición */
+}
+
+/* --- Estado Sin Retos --- */
+.no-challenges {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-top: 2rem;
+}
+
+.no-challenges p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+  max-width: 300px;
+  line-height: 1.5;
+}
+
+/* --- Próximos Pasos --- */
+.dashboard-next-steps {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-top: auto;
 }
 
 .dashboard-next-steps .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 2rem;
   font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 180px;
+}
+
+.dashboard-next-steps .btn-primary,
+.no-challenges .btn-primary {
+  background: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+}
+
+.dashboard-next-steps .btn-primary:hover,
+.no-challenges .btn-primary:hover {
+  background: #1565c0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+}
+
+.dashboard-next-steps .btn-primary:active,
+.no-challenges .btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+}
+
+/* --- Estado de Carga --- */
+.dashboard-container > p {
+  text-align: center;
+  margin-top: 4rem;
+  font-size: 1.1rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* --- Animaciones --- */
+.dashboard-summary {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.dashboard-filter {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.dashboard-next-steps {
+  animation: fadeInUp 0.7s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Responsive --- */
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 0.75rem;
+    gap: 1rem;
+  }
+  
+  .dashboard-summary {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .dashboard-summary .card {
+    padding: 1.25rem;
+  }
+  
+  .dashboard-filter {
+    padding: 1.25rem;
+  }
+  
+  .dashboard-next-steps {
+    padding: 1.5rem;
+  }
+  
+  .no-challenges {
+    padding: 2rem 1.5rem;
+  }
+  
+  .dashboard-next-steps .btn,
+  .no-challenges .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 320px) {
+  .dashboard-summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-summary .card p {
+    font-size: 1.5rem;
+  }
+}
+
+/* --- Mejoras para accesibilidad --- */
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-summary .card,
+  .dashboard-next-steps .btn,
+  .no-challenges .btn,
+  .dashboard-filter select,
+  .dashboard-summary,
+  .dashboard-filter,
+  .dashboard-next-steps {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .dashboard-summary .card:hover {
+    transform: none;
+  }
+  
+  .dashboard-next-steps .btn:hover,
+  .no-challenges .btn:hover {
+    transform: none;
+  }
 }
