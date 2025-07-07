@@ -245,14 +245,15 @@ pre code {
 
 /* --- Mejoras de accesibilidad --- */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .loader,
+  .loader::before,
+  .loader::after {
+    /* Restauramos su animación normal */
+    animation-duration: 0.3s !important;
+    animation-iteration-count: infinite !important;
   }
 }
+
 
 /* Focus visible para mejor accesibilidad */
 :focus-visible {
