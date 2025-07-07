@@ -3,6 +3,7 @@ import { Link }                       from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { db }                         from '../firebaseConfig';
 import ChallengeCard                  from '../components/ChallengeCard';
+import Loader                        from '../components/Loader';
 import './ChallengesList.css';
 
 export default function ChallengesList() {
@@ -45,7 +46,7 @@ export default function ChallengesList() {
     setChallenges(curr => curr.filter(c => c.id !== removedId));
   };
 
-  if (loading) return <p>Cargando retos…</p>;
+  if (loading) return <Loader text="Cargando retos…" />;
 
   return (
     <div className="challenges-list-container">

@@ -174,11 +174,13 @@ export default function ChallengeForm() {
           <ReactDatePicker
             selected={startDate}
             onChange={setStartDate}
+            dateFormat="dd/MM/yyyy"
             customInput={<DateInput label="Fecha inicio *" error={errors.startDate} />}
           />
           <ReactDatePicker
             selected={endDate}
             onChange={setEndDate}
+            dateFormat="dd/MM/yyyy"
             customInput={<DateInput label="Fecha fin *" error={errors.endDate} />}
           />
         </div>

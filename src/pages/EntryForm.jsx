@@ -10,6 +10,7 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 import { db }                          from '../firebaseConfig';
+import Loader                        from '../components/Loader';
 import './EntryForm.css';
 
 export default function EntryForm() {
@@ -89,7 +90,7 @@ export default function EntryForm() {
     }
   };
 
-  if (loading) return <p>Cargando formulario…</p>;
+  if (loading) return <Loader text="Cargando formulario…" />;
   if (error && !challenge) return <p className="error">{error}</p>;
 
   const { activity, refWeight, weightBased } = challenge;

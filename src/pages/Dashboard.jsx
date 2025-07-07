@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebaseConfig';
+import Loader                        from '../components/Loader';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -129,7 +130,7 @@ export default function Dashboard() {
   if (authLoading || loading) {
     return (
       <div className="dashboard-container">
-        <p>Cargando datos…</p>
+        <Loader text="Cargando datos…" />
       </div>
     );
   }

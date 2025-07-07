@@ -1,0 +1,120 @@
+/* Contenedor principal del loader (para centrar o añadir texto) */
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Puedes añadir un fondo o superposición si es un loader de página completa */
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  /* position: fixed; */
+  /* top: 0; */
+  /* left: 0; */
+  /* width: 100%; */
+  /* height: 100%; */
+  /* z-index: 9999; */
+}
+
+/* --- ESTILOS DEL TEXTO DEL LOADER --- */
+.loader-text {
+  /* Tamaño y peso de fuente para mejor legibilidad */
+  font-size: 1.15rem; /* Un poco más grande para ser más notorio */
+  font-weight: 500; /* Un peso medio para que resalte sin ser negrita excesiva */
+
+  /* Color para asegurar visibilidad en diferentes fondos */
+  color: #333; /* Un gris oscuro que suele tener buen contraste */
+
+  /* Espaciado con el spinner */
+  margin-top: 1rem; /* Aumenta ligeramente el espacio entre el spinner y el texto */
+
+  /* Suavizado de fuente para una mejor renderización */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Pequeña animación de entrada o énfasis (opcional) */
+  opacity: 0; /* Empieza invisible */
+  animation: fadeInText 0.5s ease-out 0.2s forwards; /* Aparece suavemente después de un pequeño retraso */
+}
+
+/* Animación de aparición del texto */
+@keyframes fadeInText {
+  to {
+    opacity: 1;
+  }
+}
+
+/* --- ESTILOS DEL LOADER (Mantenemos los que ya teníamos o los ajustamos) --- */
+.loader {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #007bff;
+  box-shadow: 32px 0 #007bff, -32px 0 #007bff;
+  position: relative;
+  animation: flash 0.3s ease-in infinite alternate;
+}
+
+.loader::before,
+.loader::after {
+  content: '';
+  position: absolute;
+  left: -64px;
+  top: 0;
+  background: #007bff;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transform-origin: 35px -35px;
+  transform: rotate(45deg);
+  animation: hitL 0.3s ease-in infinite alternate;
+}
+
+.loader::after {
+  left: 64px;
+  transform: rotate(-45deg);
+  transform-origin: -35px -35px;
+  animation: hitR 0.3s ease-out infinite alternate;
+}
+
+@keyframes flash {
+  0%,
+  100% {
+    background-color: rgba(0, 123, 255, 0.25);
+    box-shadow: 32px 0 rgba(0, 123, 255, 0.25), -32px 0 rgba(0, 123, 255, 0.25);
+  }
+  25% {
+    background-color: rgba(0, 123, 255, 0.25);
+    box-shadow: 32px 0 rgba(0, 123, 255, 0.25), -32px 0 #007bff;
+  }
+  50% {
+    background-color: #007bff;
+    box-shadow: 32px 0 rgba(0, 123, 255, 0.25), -32px 0 rgba(0, 123, 255, 0.25);
+  }
+  75% {
+    background-color: rgba(0, 123, 255, 0.25);
+    box-shadow: 32px 0 #007bff, -32px 0 rgba(0, 123, 255, 0.25);
+  }
+}
+
+@keyframes hitL {
+  0% {
+    transform: rotate(45deg);
+    background-color: #007bff;
+  }
+  25%,
+  100% {
+    transform: rotate(0deg);
+    background-color: rgba(0, 123, 255, 0.25);
+  }
+}
+
+@keyframes hitR {
+  0%,
+  75% {
+    transform: rotate(0deg);
+    background-color: rgba(0, 123, 255, 0.25);
+  }
+  100% {
+    transform: rotate(-45deg);
+    background-color: #007bff;
+  }
+}

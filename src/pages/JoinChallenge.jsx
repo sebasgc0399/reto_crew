@@ -9,6 +9,7 @@ import {
 } from 'firebase/firestore';
 import { db }                           from '../firebaseConfig';
 import NumberField                      from '../components/form/NumberField';
+import Loader                        from '../components/Loader';
 import './JoinChallenge.css';
 
 export default function JoinChallenge() {
@@ -73,7 +74,7 @@ export default function JoinChallenge() {
     }
   };
 
-  if (loading) return <p>Cargando…</p>;
+  if (loading) return <Loader text="Cargando…" />;
 
   return (
     <div className="join-challenge-container">

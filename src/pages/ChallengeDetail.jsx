@@ -9,6 +9,7 @@ import {
   getDocs
 } from 'firebase/firestore';
 import { db }                         from '../firebaseConfig';
+import Loader                        from '../components/Loader';
 import './ChallengeDetail.css';
 
 export default function ChallengeDetail() {
@@ -48,7 +49,7 @@ export default function ChallengeDetail() {
     fetchDetail();
   }, [id, user.uid]);
 
-  if (loading) return <p>Cargando detalle del reto…</p>;
+  if (loading) return <Loader text="Cargando detalle del reto…" />;
   if (!challenge) return <p>Reto no encontrado.</p>;
 
   const { title, description, startDate, endDate } = challenge;

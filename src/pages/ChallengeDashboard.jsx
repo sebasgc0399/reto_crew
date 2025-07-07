@@ -9,6 +9,7 @@ import {
   getDoc
 } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import Loader                        from '../components/Loader';
 import './ChallengeDashboard.css';
 
 export default function ChallengeDashboard() {
@@ -90,7 +91,7 @@ export default function ChallengeDashboard() {
     return () => unsub();
   }, [chId]); // Solo depende de chId
 
-  if (loading) return <p>Cargando dashboard…</p>;
+  if (loading) return <Loader text="Cargando dashboard…" />;
 
   return (
     <div className="dashboard-container">

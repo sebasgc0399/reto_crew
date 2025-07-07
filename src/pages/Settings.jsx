@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { auth, db } from '../firebaseConfig';
 import { updateProfile } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
+import Loader                        from '../components/Loader';
 import './Settings.css';
 
 export default function Settings() {
@@ -40,7 +41,7 @@ export default function Settings() {
     }
   };
 
-  if (loading) return <p>Cargando...</p>;
+  if (loading) return <Loader text="Cargando…" />;
 
   return (
     <div className="settings-container">
