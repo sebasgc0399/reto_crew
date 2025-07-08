@@ -100,9 +100,9 @@ exports.recalcPointsOnRefWeightChange = onDocumentUpdated(
     if (before.refWeight === after.refWeight) return null;
 
     // Si quieres usar el *nuevo* refWeight como denominador:
-    // const ref = after.refWeight;
+    const ref = after.refWeight;
     // Si en cambio quieres usar el *anterior*:
-    const ref = before.refWeight;
+    // const ref = before.refWeight;
 
     // 2) Leemos todos los participantes
     const partsSnap = await db
