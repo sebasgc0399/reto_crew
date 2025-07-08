@@ -123,11 +123,6 @@ export default function Dashboard() {
     loadChallengeMetrics();
   }, [selectedChId, user]);
 
-  // Función para navegar a crear nuevo reto
-  const handleCreateChallenge = () => {
-    window.location.assign('/challenges/new');
-  };
-
   if (authLoading || loading) {
     return (
       <div className="dashboard-container">

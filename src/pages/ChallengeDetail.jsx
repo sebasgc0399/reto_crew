@@ -1,28 +1,28 @@
-// src/pages/ChallengeDetail.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams, Link }            from 'react-router-dom';
-import { useAuth }                    from '../contexts/AuthContext';
+import { useParams, Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import {
   doc,
   getDoc,
   collection,
   getDocs
 } from 'firebase/firestore';
-import { db }                         from '../firebaseConfig';
-import Loader                        from '../components/Loader';
+import { db } from '../firebaseConfig';
+import Loader from '../components/Loader';
 import './ChallengeDetail.css';
 
 export default function ChallengeDetail() {
-  const { id }        = useParams();
-  const { user }      = useAuth();
+  const { id } = useParams();
+  const { user } = useAuth();
 
-  const [challenge, setChallenge]         = useState(null);
-  const [participantsCount, setCount]     = useState(0);
-  const [loading, setLoading]             = useState(true);
+  const [challenge, setChallenge] = useState(null);
+  const [participantsCount, setCount] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [isParticipant, setIsParticipant] = useState(false);
 
   useEffect(() => {
     async function fetchDetail() {
+      setLoading(true);
       // 1) Datos del reto
       const chSnap = await getDoc(doc(db, 'challenges', id));
       if (!chSnap.exists()) {
@@ -30,7 +30,8 @@ export default function ChallengeDetail() {
         setLoading(false);
         return;
       }
-      setChallenge({ id: chSnap.id, ...chSnap.data() });
+      const data = chSnap.data();
+      setChallenge({ id: chSnap.id, ...data });
 
       // 2) Conteo de participantes
       const partsSnap = await getDocs(
@@ -46,25 +47,32 @@ export default function ChallengeDetail() {
 
       setLoading(false);
     }
-    fetchDetail();
-  }, [id, user.uid]);
+    if (user) fetchDetail();
+  }, [id, user]);
 
   if (loading) return <Loader text="Cargando detalle del reto…" />;
   if (!challenge) return <p>Reto no encontrado.</p>;
 
   const { title, description, startDate, endDate } = challenge;
-  const start = new Date(startDate.seconds * 1000).toLocaleDateString();
-  const end   = new Date(endDate.seconds * 1000).toLocaleDateString();
+  const start = new Date(startDate.seconds * 1000);
+  const end = new Date(endDate.seconds * 1000);
+
+  // Extiende un día de gracia tras endDate
+  const graceEnd = new Date(end.getTime() + 48 * 60 * 60 * 1000);
+  const now = new Date();
+  const canRegister = isParticipant && now >= start && now <= graceEnd;
+
+  // Formato legible
+  const startText = start.toLocaleDateString();
+  const endText = end.toLocaleDateString();
 
   return (
     <div className="challenge-detail">
       <h2 className="challenge-detail__title">{title}</h2>
       <p className="challenge-detail__dates">
-        {start} → {end}
+        {startText} → {endText}
       </p>
-      {description && (
-        <p className="challenge-detail__desc">{description}</p>
-      )}
+      {description && <p className="challenge-detail__desc">{description}</p>}
       <p className="challenge-detail__participants">
         Participantes: {participantsCount}
       </p>
@@ -75,14 +83,15 @@ export default function ChallengeDetail() {
             <button className="btn btn-primary">Unirse al reto</button>
           </Link>
         ) : (
-          <Link to={`/challenges/${id}/entry`}>
-            <button className="btn btn-primary">Registrar</button>
-          </Link>
+          canRegister && (
+            <Link to={`/challenges/${id}/entry`}>
+              <button className="btn btn-primary">Registrar</button>
+            </Link>
+          )
         )}
+
         <Link to={`/challenges/${id}/dashboard`}>
-          <button className="btn btn-outline-secondary">
-            Ver dashboard
-          </button>
+          <button className="btn btn-outline-secondary">Ver dashboard</button>
         </Link>
       </div>
     </div>
