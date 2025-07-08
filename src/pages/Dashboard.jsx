@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebaseConfig';
+import { Link } from 'react-router-dom';
 import Loader                        from '../components/Loader';
 import './Dashboard.css';
 
@@ -144,12 +145,9 @@ export default function Dashboard() {
       {activeChallenges.length === 0 ? (
         <div className="no-challenges">
           <p>No estás inscrito en ningún reto activo.</p>
-          <button 
-            className="btn btn-primary"
-            onClick={handleCreateChallenge}
-          >
+          <Link to="/challenges/new" className="btn btn-primary">
             Crear nuevo reto
-          </button>
+          </Link>
         </div>
       ) : (
         <>
@@ -184,12 +182,9 @@ export default function Dashboard() {
           </section>
 
           <section className="dashboard-next-steps">
-            <button
-              className="btn btn-primary"
-              onClick={handleCreateChallenge}
-            >
+            <Link to="/challenges/new" className="btn btn-primary">
               Crear nuevo reto
-            </button>
+            </Link>
           </section>
         </>
       )}
