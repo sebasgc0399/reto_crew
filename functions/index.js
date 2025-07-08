@@ -88,3 +88,65 @@ exports.recalcOnDelete = onDocumentDeleted(
   "challenges/{chId}/participants/{uid}",
   recalcRefWeight
 );
+
+exports.recalcPointsOnRefWeightChange = onDocumentUpdated(
+  "challenges/{chId}",
+  async (event) => {
+    const before = event.data.before.data();
+    const after  = event.data.after.data();
+    const { chId } = event.params;
+
+    // 1) Sólo nos interesa si cambió refWeight
+    if (before.refWeight === after.refWeight) return null;
+
+    // Si quieres usar el *nuevo* refWeight como denominador:
+    // const ref = after.refWeight;
+    // Si en cambio quieres usar el *anterior*:
+    const ref = before.refWeight;
+
+    // 2) Leemos todos los participantes
+    const partsSnap = await db
+      .collection("challenges")
+      .doc(chId)
+      .collection("participants")
+      .get();
+
+    // Preparamos un batch
+    const batch = db.batch();
+
+    // 3) Por cada participante:
+    for (const partDoc of partsSnap.docs) {
+      const uid    = partDoc.id;
+      const { weight } = partDoc.data();
+
+      // 3.1) Leemos sus entradas
+      const entriesSnap = await db
+        .collection("challenges")
+        .doc(chId)
+        .collection("entries")
+        .where("userId", "==", uid)
+        .get();
+
+      let newTotal = 0;
+
+      // 3.2) Por cada entry, recalculamos y la marcamos en el batch
+      entriesSnap.forEach(eDoc => {
+        const d = eDoc.data();
+        const newPoints = d.value * d.multiplier * (weight / ref);
+
+        // Actualiza el campo points de la entry
+        batch.update(eDoc.ref, { points: newPoints });
+
+        newTotal += newPoints;
+      });
+
+      // 3.3) Finalmente actualiza el totalPoints del participante
+      batch.update(partDoc.ref, { totalPoints: newTotal });
+    }
+
+    // 4) Ejecuta todo de una
+    await batch.commit();
+    console.log(`Recalculados puntos en entradas y totales de participantes de ${chId}`);
+    return null;
+  }
+);
