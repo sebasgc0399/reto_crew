@@ -6,13 +6,16 @@ import {
   doc,
   deleteDoc,
   getDocs,
-  writeBatch
+  writeBatch,
+  getDoc,
+  query,
+  where
 } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { db } from '../firebaseConfig';
 import './ChallengeCard.css';
 
-// Componentes de MUI para el diálogo de confirmación
+// Componentes de MUI para los diálogos de confirmación
 import {
   Dialog,
   DialogTitle,
@@ -27,11 +30,27 @@ export default function ChallengeCard({ challenge, onDeleted }) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const isOwner = user?.uid === createdBy;
+  const [isParticipant, setIsParticipant] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false); // Control del diálogo
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [confirmLeaveOpen, setConfirmLeaveOpen] = useState(false);
   const menuRef = useRef();
 
-  // Cerrar menú si clic fuera…
+  // Verificar si el usuario es participante (y no el creador)
+  useEffect(() => {
+    async function checkParticipant() {
+      if (!user || isOwner) return;
+      try {
+        const partDoc = await getDoc(doc(db, 'challenges', id, 'participants', user.uid));
+        setIsParticipant(partDoc.exists());
+      } catch (err) {
+        console.error('Error comprobando participación:', err);
+      }
+    }
+    checkParticipant();
+  }, [user, id, isOwner]);
+
+  // Cerrar menú si se hace clic fuera
   useEffect(() => {
     function handleClickOutside(e) {
       if (menuOpen && menuRef.current && !menuRef.current.contains(e.target)) {
@@ -43,43 +62,47 @@ export default function ChallengeCard({ challenge, onDeleted }) {
   }, [menuOpen]);
 
   const handleView = () => navigate(`/challenges/${id}`);
-  const handleEdit = () => {
-    setMenuOpen(false);
-    navigate(`/challenges/${id}/edit`);
-  };
+  const handleEdit = () => { setMenuOpen(false); navigate(`/challenges/${id}/edit`); };
+  const handleDeleteClick = () => { setMenuOpen(false); setConfirmDeleteOpen(true); };
+  const handleLeaveClick = () => { setMenuOpen(false); setConfirmLeaveOpen(true); };
 
-  // Abre el diálogo de confirmación
-  const handleDeleteClick = () => {
-    setMenuOpen(false);
-    setConfirmOpen(true);
-  };
-
-  // Operación real de borrado tras confirmar
+  // Eliminar reto completo (propietario)
   const performDelete = async () => {
-    setConfirmOpen(false);
+    setConfirmDeleteOpen(false);
     try {
-      // Batch para borrar subcolecciones
       const batch = writeBatch(db);
-
-      // Borrar participantes
       const partsSnap = await getDocs(collection(db, 'challenges', id, 'participants'));
       partsSnap.forEach(d => batch.delete(d.ref));
-
-      // Borrar entradas
       const entriesSnap = await getDocs(collection(db, 'challenges', id, 'entries'));
       entriesSnap.forEach(d => batch.delete(d.ref));
-
-      // Ejecutar batch
       await batch.commit();
-
-      // Borrar el documento del reto
       await deleteDoc(doc(db, 'challenges', id));
-
-      // Notificar al padre
       onDeleted(id);
     } catch (err) {
       console.error('Error al eliminar reto:', err);
       alert('No se pudo eliminar el reto.');
+    }
+  };
+
+  // Salir del reto (participante)
+  const performLeave = async () => {
+    setConfirmLeaveOpen(false);
+    try {
+      const batch = writeBatch(db);
+      // Borrar sólo las entradas del usuario
+      const entriesQuery = query(
+        collection(db, 'challenges', id, 'entries'),
+        where('userId', '==', user.uid)
+      );
+      const entriesSnap = await getDocs(entriesQuery);
+      entriesSnap.forEach(d => batch.delete(d.ref));
+      // Borrar registro del participante
+      batch.delete(doc(db, 'challenges', id, 'participants', user.uid));
+      await batch.commit();
+      onDeleted(id);
+    } catch (err) {
+      console.error('Error al salir del reto:', err);
+      alert('No se pudo salir del reto.');
     }
   };
 
@@ -88,7 +111,7 @@ export default function ChallengeCard({ challenge, onDeleted }) {
 
   return (
     <div className="challenge-card" style={{ position: 'relative' }}>
-      {isOwner && (
+      {(isOwner || isParticipant) && (
         <div className="challenge-card__menu" ref={menuRef}>
           <button
             className="challenge-card__menu-btn"
@@ -99,37 +122,56 @@ export default function ChallengeCard({ challenge, onDeleted }) {
           </button>
           {menuOpen && (
             <ul className="challenge-card__dropdown">
-              <li onClick={handleEdit}>Editar</li>
-              <li onClick={handleDeleteClick}>Eliminar</li>
+              {isOwner && <li onClick={handleEdit}>Editar</li>}
+              {isOwner && <li onClick={handleDeleteClick}>Eliminar</li>}
+              {!isOwner && isParticipant && <li onClick={handleLeaveClick}>Salir</li>}
             </ul>
           )}
         </div>
       )}
 
-      {/* Diálogo de confirmación personalizado */}
+      {/* Diálogo para eliminar reto */}
       <Dialog
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        aria-labelledby="confirm-dialog-title"
+        open={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        aria-labelledby="confirm-delete-title"
       >
-        <DialogTitle id="confirm-dialog-title">Eliminar reto</DialogTitle>
+        <DialogTitle id="confirm-delete-title">Eliminar reto</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            ¿Estás seguro de que quieres eliminar <strong>{title}</strong>? Esta acción <strong>no</strong> se puede deshacer.
+            ¿Seguro quieres eliminar <strong>{title}</strong>? Esta acción <strong>no</strong> se puede deshacer.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmOpen(false)}>Cancelar</Button>
+          <Button onClick={() => setConfirmDeleteOpen(false)}>Cancelar</Button>
           <Button onClick={performDelete} color="error" variant="contained">
             Eliminar
           </Button>
         </DialogActions>
       </Dialog>
 
+      {/* Diálogo para salir del reto */}
+      <Dialog
+        open={confirmLeaveOpen}
+        onClose={() => setConfirmLeaveOpen(false)}
+        aria-labelledby="confirm-leave-title"
+      >
+        <DialogTitle id="confirm-leave-title">Salir del reto</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ¿Seguro quieres salir del reto <strong>{title}</strong>? Se eliminarán todos tus registros.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmLeaveOpen(false)}>Cancelar</Button>
+          <Button onClick={performLeave} color="secondary" variant="contained">
+            Salir
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <h3 className="challenge-card__title">{title}</h3>
-      <p className="challenge-card__dates">
-        {start} → {end}
-      </p>
+      <p className="challenge-card__dates">{start} → {end}</p>
       <p className="challenge-card__participants">
         Participantes: {participantsCount}
       </p>
