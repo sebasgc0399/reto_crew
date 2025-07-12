@@ -30,7 +30,9 @@ export default function ChallengesList() {
             startDate: d.startDate,
             endDate: d.endDate,
             participantsCount: partsSnap.size,
-            createdBy: d.createdBy   // capturamos quién lo creó
+            createdBy: d.createdBy,
+            password:        d.password || null,
+            maxParticipants: d.maxParticipants ?? 50
           };
         })
       );
@@ -44,6 +46,15 @@ export default function ChallengesList() {
   // Cuando un reto se elimina, actualizar el estado
   const handleDeleted = removedId => {
     setChallenges(curr => curr.filter(c => c.id !== removedId));
+  };
+
+  const handleUpdated = updated => {
+    setChallenges(curr =>
+      curr.map(c => c.id === updated.id
+        ? { ...c, ...updated }
+        : c
+      )
+    );
   };
 
   if (loading) return <Loader text="Cargando retos…" />;
@@ -66,6 +77,7 @@ export default function ChallengesList() {
               key={ch.id}
               challenge={ch}
               onDeleted={handleDeleted}
+              onUpdated={handleUpdated}
             />
           ))}
         </div>

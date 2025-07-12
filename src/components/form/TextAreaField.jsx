@@ -1,4 +1,6 @@
 import React from 'react';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 import './FormField.css';
 
 
@@ -8,6 +10,7 @@ export default function TextAreaField({
   onChange,
   required = false,
   rows = 4,
+  tooltip,
   ...rest
 }) {
   return (

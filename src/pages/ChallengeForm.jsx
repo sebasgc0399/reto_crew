@@ -59,6 +59,8 @@ export default function ChallengeForm() {
   const [endDate, setEndDate]         = useState(null);
   const [userWeight, setUserWeight]   = useState('');
   const [activityKey, setActivityKey] = useState('pushup');
+  const [password, setPassword]       = useState('');
+  const [maxParticipants, setMaxParticipants] = useState(50);
   const [loading, setLoading]         = useState(isEdit);
   const [errors, setErrors]           = useState({});
 
@@ -78,6 +80,8 @@ export default function ChallengeForm() {
         setStartDate(data.startDate.toDate());
         setEndDate(data.endDate.toDate());
         setActivityKey(data.activity.key);
+        setPassword(data.password || '');
+        setMaxParticipants(data.maxParticipants || 50);
         const pSnap = await getDoc(
           doc(db, 'challenges', id, 'participants', user.uid)
         );
@@ -99,6 +103,9 @@ export default function ChallengeForm() {
     if (startDate && endDate && endDate < startDate)
                               errs.endDate   = 'Debe ser ≥ fecha inicio';
     if (!userWeight.trim())   errs.userWeight = 'Ingresa tu peso';
+    if (maxParticipants < 1 || maxParticipants > 50) {
+      errs.maxParticipants = 'El límite debe estar entre 1 y 50';
+    }
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -124,7 +131,9 @@ export default function ChallengeForm() {
         startDate: Timestamp.fromDate(startDate),
         endDate:   Timestamp.fromDate(endDate),
         activity:  activityPayload,
-        weightBased
+        weightBased,
+        password: password || null,
+        maxParticipants
       };
 
       let chRef;
@@ -229,6 +238,27 @@ export default function ChallengeForm() {
           error={errors.userWeight}
           tooltip="Tu peso se usa para normalizar el esfuerzo relativo."
           required
+        />
+
+        <TextField
+          label="Clave (opcional)"
+          type="password"
+          value={password}
+          onChange={setPassword}
+          error={errors.password}
+          tooltip="Si la defines, el reto será privado y sólo accesible con esta clave."
+          inputProps={{
+            autoComplete: 'new-password'
+          }}
+        />
+
+        <NumberField
+          label="Límite de participantes"
+          value={maxParticipants}
+          onChange={val => setMaxParticipants(Number(val))}
+          inputProps={{ min: 1, max: 50 }}
+          error={errors.maxParticipants}
+          tooltip="Número máximo de participantes (1–50)."
         />
 
         <button type="submit" className="btn btn-primary mt-3">
