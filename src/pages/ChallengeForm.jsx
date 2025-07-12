@@ -1,4 +1,3 @@
-// src/pages/ChallengeForm.jsx
 import React, { useState, useEffect, forwardRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -23,14 +22,15 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './ChallengeForm.css';
 import '../components/form/FormField.css';
 
+// Configuración de actividades con valorMáximo
 const ACTIVITIES = {
-  pushup: { label: 'Flexiones',   unit: 'reps', multiplier: 1.0, weightBased: true },
-  pullup: { label: 'Dominadas',   unit: 'reps', multiplier: 1.0, weightBased: true },
-  squat:  { label: 'Sentadillas', unit: 'reps', multiplier: 1.0, weightBased: true },
-  run:    { label: 'Carrera',     unit: 'km',   multiplier: 1.0, weightBased: false },
+  pushup:    { label: 'Flexiones',   unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 60 },
+  pullup:    { label: 'Dominadas',   unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 20 },
+  squat:     { label: 'Sentadillas', unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 100 },
+  run:       { label: 'Carrera',     unit: 'km',   multiplier: 1.0, weightBased: false, valorMaximo: 10 }
 };
 
-// Custom date input to prevent native keyboard
+// Input de fecha personalizado
 const DateInput = forwardRef(({ value, onClick, label, error }, ref) => (
   <div className="form-field">
     <label className="form-label">{label}</label>
@@ -53,7 +53,6 @@ export default function ChallengeForm() {
   const navigate     = useNavigate();
   const { user }     = useAuth();
 
-  // estados de formulario
   const [title, setTitle]             = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate]     = useState(null);
@@ -63,10 +62,10 @@ export default function ChallengeForm() {
   const [loading, setLoading]         = useState(isEdit);
   const [errors, setErrors]           = useState({});
 
-  // metadata dinámica
-  const { unit: activityUnit, weightBased } = ACTIVITIES[activityKey];
+  // Metadatos de actividad seleccionada
+  const { unit: activityUnit, weightBased, multiplier, valorMaximo } = ACTIVITIES[activityKey];
 
-  // carga en edición
+  // Carga datos existentes si es edición
   useEffect(() => {
     if (!isEdit) return;
     (async () => {
@@ -92,7 +91,6 @@ export default function ChallengeForm() {
     })();
   }, [id, isEdit, user.uid]);
 
-  // validación simple
   const validate = () => {
     const errs = {};
     if (!title.trim())        errs.title = 'El título es obligatorio';
@@ -108,15 +106,27 @@ export default function ChallengeForm() {
   const handleSubmit = async e => {
     e.preventDefault();
     if (!validate()) return;
+
     try {
+      // Preparar payload del reto
+      const activityPayload = {
+        key:         activityKey,
+        label:       ACTIVITIES[activityKey].label,
+        unit:        activityUnit,
+        multiplier,            // multiplicador para puntos
+        weightBased,
+        valorMaximo           // valor máximo para normalización
+      };
+
       const payload = {
         title,
         description,
         startDate: Timestamp.fromDate(startDate),
         endDate:   Timestamp.fromDate(endDate),
-        activity: { key: activityKey, ...ACTIVITIES[activityKey] },
+        activity:  activityPayload,
         weightBased
       };
+
       let chRef;
       if (isEdit) {
         await updateDoc(doc(db, 'challenges', id), {
@@ -131,14 +141,19 @@ export default function ChallengeForm() {
           createdAt: serverTimestamp()
         });
       }
+
+      // Registrar o actualizar participante
       const wt = Number(userWeight);
       await setDoc(
         doc(db, 'challenges', chRef.id, 'participants', user.uid),
         { uid: user.uid, name: user.displayName||'', weight: wt, joinedAt: serverTimestamp() }
       );
+
+      // Inicializar refWeight al crear
       if (!isEdit) {
         await updateDoc(doc(db, 'challenges', chRef.id), { refWeight: wt });
       }
+
       navigate('/challenges', { replace: true });
     } catch (e) {
       console.error(e);
@@ -154,7 +169,6 @@ export default function ChallengeForm() {
       {errors.global && <div className="alert alert-danger">{errors.global}</div>}
 
       <form className="challenge-form" onSubmit={handleSubmit} noValidate>
-
         <TextField
           label="Título"
           value={title}

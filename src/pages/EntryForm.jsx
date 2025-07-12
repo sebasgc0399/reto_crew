@@ -9,8 +9,9 @@ import {
   collection,
   serverTimestamp
 } from 'firebase/firestore';
+import { calcularPuntos }              from '../utils/points';
 import { db }                          from '../firebaseConfig';
-import Loader                        from '../components/Loader';
+import Loader                          from '../components/Loader';
 import './EntryForm.css';
 
 export default function EntryForm() {
@@ -18,7 +19,6 @@ export default function EntryForm() {
   const { user }       = useAuth();
   const navigate       = useNavigate();
 
-  // Estado único para el valor (reps, km, etc)
   const [value, setValue]         = useState('');
   const [challenge, setChallenge] = useState(null);
   const [weight, setWeight]       = useState(null);
@@ -46,7 +46,6 @@ export default function EntryForm() {
         return;
       }
       setWeight(pSnap.data().weight);
-
       setLoading(false);
     }
     fetchData();
@@ -62,12 +61,26 @@ export default function EntryForm() {
     }
 
     try {
-      const base       = Number(value);
-      const { activity, refWeight, weightBased } = challenge;
-      // fórmula genérica
-      const pts = base
-        * (activity.multiplier || 1)
-        * (weightBased ? (weight / refWeight) : 1);
+      const base = Number(value);
+      const {
+        activity,
+        refWeight,
+        weightBased
+      } = challenge;
+
+      // Determinar los parámetros para calcular puntos
+      const pesoUsuario    = weightBased ? weight : 1;
+      const pesoReferencia = weightBased ? refWeight : 1;
+      const valorMaximo    = activity.valorMaximo;     // Debes tener este campo en Firestore
+      const multiplier  = activity.multiplier;   // Y este también
+
+      const pts = calcularPuntos(
+        base,
+        pesoUsuario,
+        pesoReferencia,
+        valorMaximo,
+        multiplier
+      );
 
       await addDoc(
         collection(db, 'challenges', chId, 'entries'),
@@ -76,13 +89,12 @@ export default function EntryForm() {
           activityKey: activity.key,
           value:       base,
           unit:        activity.unit,
-          multiplier:  activity.multiplier,
-          points:      Number(pts.toFixed(2)),
+          multiplier,
+          points:      pts,
           createdAt:   serverTimestamp()
         }
       );
 
-      // Redirige al dashboard de este reto
       navigate(`/challenges/${chId}/dashboard`);
     } catch (e) {
       console.error(e);
