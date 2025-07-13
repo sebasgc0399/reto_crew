@@ -1,80 +1,79 @@
 /* --- Tarjeta Principal --- */
 .challenge-card {
-  /* Eliminamos width fijo para que funcione con el grid */
   width: 100%;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 1rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem; /* Espaciado consistente entre elementos */
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  position: relative; /* Para el menú de tres puntos */
+  gap: var(--spacing-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  position: relative;
 }
 
 .challenge-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-md);
 }
 
 /* --- Menú de Tres Puntos --- */
 .challenge-card__menu {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
   z-index: 10;
 }
 
 .challenge-card__menu-btn {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: var(--font-size-lg);
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  color: #666;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .challenge-card__menu-btn:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
 }
 
 .challenge-card__dropdown {
   position: absolute;
-  top: 32px;
+  top: calc(var(--spacing-md) * 2);
   right: 0;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
   list-style: none;
-  padding: 0.5rem 0;
+  padding: var(--spacing-sm) 0;
   margin: 0;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-lg);
   z-index: 300;
   min-width: 120px;
 }
 
 .challenge-card__dropdown li {
-  padding: 0.5rem 1rem;
+  padding: var(--spacing-sm) var(--spacing-md);
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.2s ease;
-  font-size: 0.9rem;
+  transition: background-color var(--transition-fast);
+  font-size: var(--font-size-sm);
 }
 
 .challenge-card__dropdown li:hover {
-  background-color: #f8f9fa;
+  background-color: var(--bg-subtle);
 }
 
 .challenge-card__dropdown li:first-child {
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
 .challenge-card__dropdown li:last-child {
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
 }
 
 /* --- Contenido de la Tarjeta --- */
@@ -84,44 +83,43 @@
   font-size: clamp(1.1rem, 3vw, 1.3rem);
   font-weight: 600;
   line-height: 1.3;
-  /* Dejamos espacio para el menú cuando existe */
-  margin-right: 2rem;
+  margin-right: var(--spacing-lg); /* espacio para el menú */
 }
 
 .challenge-card__dates {
   margin: 0;
-  font-size: 0.9rem;
-  color: #666;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .challenge-card__participants {
   margin: 0;
-  font-size: 0.85rem;
-  color: #888;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-xs);
 }
 
 .challenge-card__participants::before {
   content: "👥";
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 /* --- Botón de Acción --- */
 .challenge-card .btn {
-  margin-top: auto; /* Empuja el botón hacia abajo */
+  margin-top: auto;
   align-self: flex-start;
-  padding: 0.6rem 1.2rem;
+  padding: var(--spacing-xs) var(--spacing-md);
   border: 1px solid var(--primary-color);
   background: transparent;
   color: var(--primary-color);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
   text-decoration: none;
   display: inline-block;
   text-align: center;
@@ -129,28 +127,28 @@
 
 .challenge-card .btn:hover {
   background: var(--primary-color);
-  color: #fff;
+  color: var(--on-primary, #fff);
   transform: translateY(-1px);
 }
 
 /* --- Responsive para móviles pequeños --- */
 @media (max-width: 480px) {
   .challenge-card {
-    padding: 0.75rem;
+    padding: var(--spacing-sm);
   }
-  
+
   .challenge-card__title {
-    font-size: 1.1rem;
-    margin-right: 1.5rem;
+    font-size: var(--font-size-base);
+    margin-right: var(--spacing-md);
   }
-  
+
   .challenge-card__menu {
-    top: 8px;
-    right: 8px;
+    top: var(--spacing-xs);
+    right: var(--spacing-xs);
   }
-  
+
   .challenge-card__menu-btn {
-    padding: 6px;
-    font-size: 1.1rem;
+    padding: var(--spacing-xs);
+    font-size: var(--font-size-base);
   }
 }

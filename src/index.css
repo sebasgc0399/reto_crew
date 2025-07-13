@@ -30,6 +30,8 @@
   --on-secondary: #fff;
   --color-active: #388e3c;
   --color-position: #f57c00;
+  --danger-color: #dc3545;
+  --danger-hover: #c82333;
   
   /* Espaciado */
   --spacing-xs: 0.25rem;

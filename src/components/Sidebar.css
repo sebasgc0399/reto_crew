@@ -3,44 +3,42 @@
   position: fixed;
   top: 0;
   left: 0;
-  height: 100dvh; 
-  width: 280px; /* Un poco más ancho para mejor legibilidad */
-  background: #fff; /* Fondo blanco más limpio */
-  padding: 0; /* Quitamos el padding general para mejor control */
+  height: 100dvh;
+  width: 280px;
+  background: var(--bg-primary);
+  padding: 0;
   box-sizing: border-box;
   transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
   z-index: 200;
-  border-right: 1px solid #e0e0e0;
-  /* Añadimos una sombra base sutil */
-  box-shadow: 2px 0 8px rgba(0,0,0,0.02);
-  overflow-y: auto; /* Por si el contenido crece */
+  border-right: 1px solid var(--border-color);
+  box-shadow: 2px 0 8px var(--shadow-sm);
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 .App-sidebar.open {
   transform: translateX(0);
-  /* Sombra más pronunciada cuando está abierto */
-  box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  box-shadow: 4px 0 20px var(--shadow-lg);
 }
 
 /* --- Título del Sidebar --- */
 .sidebar-title {
   margin: 0;
-  padding: 1.5rem 1rem 1rem;
+  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
   font-size: clamp(1.1rem, 4vw, 1.3rem);
   color: var(--primary-color);
   text-align: center;
   font-weight: 600;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid #f0f0f0;
-  background: #fafafa; /* Fondo ligeramente diferente para el header */
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-subtle);
 }
 
 /* --- Lista de Enlaces --- */
 .sidebar-list {
   list-style: none;
-  padding: 1rem 0;
+  padding: var(--spacing-md) 0;
   margin: 0;
 }
 
@@ -53,40 +51,40 @@
 .sidebar-link--button {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--spacing-md);
   width: 100%;
   text-decoration: none;
-  color: #333;
-  padding: 0.875rem 1.5rem;
-  font-size: 1rem;
+  color: var(--text-primary);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
   font-weight: 500;
   background: none;
   border: none;
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent; /* Indicador visual para el estado activo */
+  transition: transform var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+  border-left: 3px solid transparent;
   position: relative;
 }
 
 .sidebar-link:hover,
 .sidebar-link--button:hover {
-  background-color: #f8f9fa;
+  background-color: var(--bg-subtle);
   color: var(--primary-color);
-  transform: translateX(2px); /* Micro-animación al hover */
+  transform: translateX(2px);
 }
 
 .sidebar-link.sidebar-link--active {
-  background-color: rgba(25, 118, 210, 0.08); /* Color primario con transparencia */
+  background-color: var(--primary-light);
   color: var(--primary-color);
   font-weight: 600;
-  border-left-color: var(--primary-color); /* Indicador visual izquierdo */
+  border-left-color: var(--primary-color);
 }
 
 .sidebar-link.sidebar-link--active::before {
   content: '';
   position: absolute;
-  right: 1rem;
+  right: var(--spacing-md);
   top: 50%;
   transform: translateY(-50%);
   width: 4px;
@@ -103,9 +101,9 @@
 
 .sidebar-link--button .chevron {
   font-size: 0.9em;
-  color: #666;
-  transition: transform 0.2s ease, color 0.2s ease;
-  margin-left: auto; /* Empuja el chevron hacia la derecha */
+  color: var(--text-secondary);
+  transition: transform var(--transition-fast), color var(--transition-fast);
+  margin-left: auto;
 }
 
 .sidebar-link--button:hover .chevron {
@@ -114,7 +112,7 @@
 
 /* Estado expandido del acordeón */
 .sidebar-link--button.expanded {
-  background-color: rgba(25, 118, 210, 0.06); /* Fondo sutil cuando está expandido */
+  background-color: var(--primary-light);
   color: var(--primary-color);
   border-left-color: var(--primary-color);
   border-left-width: 3px;
@@ -130,11 +128,11 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  background: #f8f9fa; /* Fondo ligeramente diferente para diferenciar */
+  background: var(--bg-subtle);
   border-left: 3px solid var(--primary-color);
-  margin-left: 1.5rem;
-  margin-right: 0.5rem;
-  border-radius: 0 4px 4px 0; /* Esquinas redondeadas solo a la derecha */
+  margin-left: var(--spacing-lg);
+  margin-right: var(--spacing-sm);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 .sidebar-sublist li {
@@ -142,79 +140,72 @@
 }
 
 .sidebar-sublist .sidebar-link {
-  padding: 0.75rem 1.25rem; /* Padding ligeramente menor */
-  font-size: 0.9rem; /* Texto un poco más pequeño */
-  color: #555; /* Color más sutil */
-  border-left: none; /* Sin indicador izquierdo */
-  gap: 0.5rem; /* Gap menor */
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  border-left: none;
+  gap: var(--spacing-sm);
 }
 
 .sidebar-sublist .sidebar-link:hover {
-  background-color: #fff;
+  background-color: var(--bg-primary);
   color: var(--primary-color);
-  transform: translateX(4px); /* Movimiento un poco mayor para diferenciarse */
+  transform: translateX(4px);
 }
 
 .sidebar-sublist .sidebar-link.sidebar-link--active {
-  background-color: rgba(25, 118, 210, 0.1);
+  background-color: var(--primary-light);
   color: var(--primary-color);
   font-weight: 600;
   border-left: 2px solid var(--primary-color);
-  margin-left: 0.5rem;
+  margin-left: var(--spacing-sm);
 }
 
-/* Punto indicador para sublistas activas */
 .sidebar-sublist .sidebar-link.sidebar-link--active::before {
   width: 3px;
   height: 3px;
-  right: 0.75rem;
+  right: var(--spacing-md);
 }
 
 /* --- Botón de Logout Especial --- */
 .sidebar-link--logout {
-  margin-top: auto; /* Empuja el botón hacia abajo */
-  color: #dc3545; /* Color rojo para logout */
-  border-top: 1px solid #f0f0f0;
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin-top: auto;
+  color: var(--danger-color);
+  border-top: 1px solid var(--border-light);
+  padding-top: var(--spacing-md);
 }
 
 .sidebar-link--logout:hover {
-  background-color: #fff5f5;
-  color: #c82333;
+  background-color: var(--bg-error);
+  color: var(--danger-hover);
 }
 
-/* --- Indicadores de Usuario (Opcional) --- */
+/* --- Indicadores de Usuario --- */
 .sidebar-user-info {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #f0f0f0;
-  background: #fafafa;
-  margin-top: auto; /* Se posiciona al final */
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-subtle);
+  margin-top: auto;
 }
 
 .sidebar-user-info p {
   margin: 0;
-  font-size: 0.875rem;
-  color: #666;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
   text-align: center;
 }
 
 /* --- Responsive Desktop --- */
 @media (min-width: 768px) {
-  .App-sidebar {
-    width: 280px;
-  }
-  
-  /* Mejoramos la interacción en desktop */
+  .App-sidebar { width: 280px; }
+
   .sidebar-link:hover,
   .sidebar-link--button:hover {
     transform: translateX(4px);
   }
-  
   .sidebar-sublist .sidebar-link:hover {
     transform: translateX(6px);
   }
-  
   .sidebar-link.sidebar-link--active {
     border-left-width: 4px;
   }
@@ -222,27 +213,23 @@
 
 /* --- Responsive Mobile --- */
 @media (max-width: 767px) {
-  .App-sidebar {
-    width: 280px; /* Mantener el ancho en móviles */
-  }
-  
+  .App-sidebar { width: 280px; }
+
   .sidebar-title {
-    padding: 1rem;
-    font-size: 1.1rem;
+    padding: var(--spacing-md);
+    font-size: var(--font-size-sm);
   }
-  
   .sidebar-link,
   .sidebar-link--button {
-    padding: 1rem 1.25rem;
+    padding: var(--spacing-md) var(--spacing-lg);
     font-size: 0.95rem;
   }
-  
   .sidebar-sublist .sidebar-link {
-    padding: 0.75rem 1rem;
+    padding: var(--spacing-sm) var(--spacing-md);
     font-size: 0.85rem;
   }
-  
-  /* Desactivar animaciones de hover en táctiles */
+
+  /* Desactivar hover en táctiles */
   .sidebar-link:hover,
   .sidebar-link--button:hover,
   .sidebar-sublist .sidebar-link:hover {
@@ -250,9 +237,9 @@
   }
 }
 
-/* --- Animación de entrada --- */
+/* --- Animaciones de Entrada --- */
 .App-sidebar {
-  animation: slideInLeft 0.3s ease-out;
+  animation: slideInLeft var(--transition-normal) ease-out;
 }
 
 @keyframes slideInLeft {
@@ -267,7 +254,7 @@
 }
 
 .App-sidebar.open {
-  animation: slideInLeftOpen 0.3s ease-out;
+  animation: slideInLeftOpen var(--transition-normal) ease-out;
 }
 
 @keyframes slideInLeftOpen {
@@ -279,34 +266,23 @@
   }
 }
 
-/* --- Optimización para dispositivos táctiles --- */
+/* --- Dispositivos táctiles y accesibilidad --- */
 @media (hover: none) and (pointer: coarse) {
-  .sidebar-link:hover,
-  .sidebar-link--button:hover,
-  .sidebar-sublist .sidebar-link:hover {
-    transform: none;
-    background-color: transparent;
-    color: #333;
-  }
-  
   .sidebar-link:active,
   .sidebar-link--button:active {
-    background-color: #f8f9fa;
+    background-color: var(--bg-subtle);
     color: var(--primary-color);
   }
-  
   .sidebar-sublist .sidebar-link:active {
-    background-color: #fff;
+    background-color: var(--bg-primary);
     color: var(--primary-color);
   }
-  
   .sidebar-link--logout:active {
-    background-color: #fff5f5;
-    color: #c82333;
+    background-color: var(--bg-error);
+    color: var(--danger-hover);
   }
 }
 
-/* --- Accesibilidad --- */
 @media (prefers-reduced-motion: reduce) {
   .App-sidebar,
   .sidebar-link,
@@ -315,24 +291,18 @@
     transition: none !important;
     animation: none !important;
   }
-  
-  .sidebar-link:hover,
-  .sidebar-link--button:hover,
-  .sidebar-sublist .sidebar-link:hover {
-    transform: none !important;
-  }
 }
 
-/* --- Focus states para navegación por teclado --- */
+/* --- Focus states para teclado --- */
 .sidebar-link:focus,
 .sidebar-link--button:focus {
   outline: 2px solid var(--primary-color);
   outline-offset: -2px;
-  background-color: #f8f9fa;
+  background-color: var(--bg-subtle);
 }
 
 .sidebar-sublist .sidebar-link:focus {
   outline: 2px solid var(--primary-color);
   outline-offset: -2px;
-  background-color: #fff;
+  background-color: var(--bg-primary);
 }
