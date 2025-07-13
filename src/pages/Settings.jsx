@@ -123,7 +123,13 @@ export default function Settings() {
         <NumberField
           label="Tu peso (kg)"
           value={weight}
-          onChange={setWeight}
+          onChange={val => {
+            if (val === '') {
+              setWeight('');
+            } else {
+              setWeight(Number(val));
+            }
+          }}
           required
           tooltip="Tu peso se usa para normalizar el esfuerzo"
           disabled={saving}

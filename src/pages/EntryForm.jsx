@@ -117,11 +117,18 @@ export default function EntryForm() {
         <NumberField
           label={`${activity.label} (${activity.unit})`}
           value={value}
-          onChange={setValue}
+          onChange={val => {
+            if (val === '') {
+              setValue('');
+            } else {
+              setValue(Number(val));
+            }
+          }}
           required
-          tooltip={activity.unit === 'km'
-            ? 'Puedes usar decimales: p.ej. 2.50 km'
-            : undefined
+          tooltip={
+            activity.unit === 'km'
+              ? 'Puedes usar decimales: p.ej. 2.50 km'
+              : undefined
           }
           inputProps={{
             step: activity.unit === 'km' ? '0.01' : '1',
@@ -129,6 +136,7 @@ export default function EntryForm() {
             inputMode: activity.unit === 'km' ? 'decimal' : 'numeric'
           }}
         />
+
 
         {weightBased && (
           <p className="form-text">

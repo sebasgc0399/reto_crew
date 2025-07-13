@@ -10,25 +10,35 @@ export default function NumberField({
   onChange,
   required = false,
   tooltip,
-  // seguimos aceptando min, max, step arriba
   min,
   max,
   step = 'any',
-  // Y además inputProps para cualquier otra cosa
   inputProps = {},
   ...rest
 }) {
   const handleChange = e => {
     const val = e.target.value;
+
+    // 1) Permitimos borrar todo
+    if (val === '') {
+      onChange('');
+      return;
+    }
+    // 2) Sólo números
     const num = Number(val);
-    if (val !== '' && isNaN(num)) return;
+    if (isNaN(num)) return;
+    // 3) Validamos rango en JS
     if (min != null && num < min) return;
     if (max != null && num > max) return;
+
     onChange(val);
   };
 
-  // fusionamos: primero min/max/step, luego lo que venga en inputProps
-  const finalInputProps = { min, max, step, ...inputProps };
+  // Sólo metemos step + todo lo demás que realmente quieras:
+  const finalInputProps = {
+    step,
+    ...inputProps
+  };
 
   return (
     <div className="form-group">
@@ -53,7 +63,7 @@ export default function NumberField({
         onChange={handleChange}
         required={required}
         {...finalInputProps}
-        {...rest} 
+        {...rest}
       />
     </div>
   );

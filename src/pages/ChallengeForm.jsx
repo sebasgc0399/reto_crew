@@ -17,6 +17,7 @@ import { db }      from '../firebaseConfig';
 import TextField     from '../components/form/TextField';
 import TextAreaField from '../components/form/TextAreaField';
 import NumberField   from '../components/form/NumberField';
+import Loader        from '../components/Loader';
 
 import { ACTIVITIES } from '../constants/activities';
 
@@ -216,8 +217,7 @@ export default function ChallengeForm() {
     }
   };
 
-  // Mientras cargan reto o peso del usuario, mostramos loader
-  if (loading || checkingWeight) return <p>Cargando datos…</p>;
+  if (loading || checkingWeight) return <Loader text="Cargando datos…"/>;
 
   const titleText = isEdit ? 'Editar Reto' : 'Crear Nuevo Reto';
 
@@ -292,13 +292,17 @@ export default function ChallengeForm() {
           <NumberField
             label="Tu peso (kg) *"
             value={userWeight}
-            onChange={setUserWeight}
-            inputProps={{ inputMode: 'decimal', pattern: '[0-9]+([.,][0-9]{1,2})?' }}
-            error={errors.userWeight}
-            tooltip="Tu peso se usa para normalizar el esfuerzo relativo."
+            onChange={val => {
+              if (val === '') {
+                setUserWeight('');
+              } else {
+                setUserWeight(Number(val));
+              }
+            }}
+            inputProps={{inputMode: 'decimal',pattern: '[0-9]+([.,][0-9]{1,2})?',min: 1,max: 999,step: '0.1',placeholder: 'Ej: 70.5'}}
             required
-            min={1}
-            max={999}
+            tooltip="Tu peso se usa para normalizar el esfuerzo relativo."
+            error={errors.userWeight}
           />
         )}
 
@@ -318,9 +322,13 @@ export default function ChallengeForm() {
         <NumberField
           label="Límite de participantes"
           value={maxParticipants}
-          onChange={val => setMaxParticipants(Number(val))}
-          inputProps={{ min: 1, max: 50 }}
-          error={errors.maxParticipants}
+          onChange={val => {
+            if (val === '') {
+              setMaxParticipants('');
+            } else {
+              setMaxParticipants(Number(val));
+            }
+          }}
           tooltip="Máx. 1–50 participantes."
           min={1}
           max={50}
