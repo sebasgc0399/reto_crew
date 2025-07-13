@@ -4,7 +4,7 @@
   background: var(--bg-primary);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  overflow: hidden;
+  animation: participantsSlideIn 0.3s ease-out;
 }
 
 /* --- Lista de Participantes --- */
@@ -16,7 +16,7 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.participants-list li {
+.participants-list > ul > li {
   padding: var(--spacing-md) var(--spacing-lg);
   margin: 0;
   color: var(--text-primary);
@@ -25,19 +25,19 @@
   border-bottom: 1px solid var(--border-light);
   background: var(--bg-primary);
   transition: background-color var(--transition-fast);
-  
+
   /* Mejorar la interacción táctil */
   min-height: 44px;
   display: flex;
   align-items: center;
-  
+
   /* Añadir un icono de usuario */
   position: relative;
   padding-left: calc(var(--spacing-lg) + 1.5rem);
 }
 
 /* Icono de usuario usando pseudo-elemento */
-.participants-list li::before {
+.participants-list > ul > li::before {
   content: '👤';
   position: absolute;
   left: var(--spacing-lg);
@@ -51,18 +51,18 @@
 }
 
 /* Remover el borde del último elemento */
-.participants-list li:last-child {
+.participants-list > ul > li:last-child {
   border-bottom: none;
 }
 
 /* Estados interactivos para dispositivos táctiles */
-.participants-list li:active {
+.participants-list > ul > li:active {
   background: var(--bg-subtle);
 }
 
 /* Hover solo para dispositivos con mouse */
 @media (hover: hover) and (pointer: fine) {
-  .participants-list li:hover {
+  .participants-list > ul > li:hover {
     background: var(--bg-subtle);
   }
 }
@@ -76,20 +76,66 @@
   font-style: italic;
 }
 
+/* --- Ajuste para mantener bordes redondeados sin overflow --- */
+.participants-list > ul > li:first-child {
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+}
+
+/* Si no hay contador, el último item tiene borde inferior.
+  Si hay contador, el último item no necesita borde redondeado inferior.
+*/
+.participants-list:not(.with-counter) > ul > li:last-child {
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+}
+
+/* --- Corrección de apilamiento para el menú --- */
+.participants-list li.menu-open {
+  /* Eleva el contexto de apilamiento del item activo */
+  z-index: 30;
+}
+
+/* --- Hacer que el menú del último item se abra hacia arriba --- */
+.participants-list li:last-child.menu-open .participants-list__dropdown {
+  top: auto; /* Anula la posición superior */
+  bottom: calc(100% + 0.25rem); /* Lo posiciona arriba del botón */
+  transform-origin: bottom right; /* Cambia el origen para la animación */
+}
+
+/* Gira la flecha del dropdown para que apunte hacia abajo */
+.participants-list li:last-child.menu-open .participants-list__dropdown::before {
+  top: auto;
+  bottom: -6px; /* Posiciona la flecha en la parte inferior */
+  transform: rotate(225deg);
+}
+
+/* Ajuste para pantallas pequeñas */
+@media (max-width: 480px) {
+  .participants-list > ul > li:first-child {
+    border-top-left-radius: var(--radius-md);
+    border-top-right-radius: var(--radius-md);
+  }
+  .participants-list:not(.with-counter) > ul > li:last-child {
+    border-bottom-left-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+  }
+}
+
 /* --- Mejoras para pantallas pequeñas --- */
 @media (max-width: 480px) {
   .participants-list {
     margin: var(--spacing-lg) 0;
     border-radius: var(--radius-md);
   }
-  
-  .participants-list li {
+
+  .participants-list > ul > li {
     padding: var(--spacing-sm) var(--spacing-md);
     padding-left: calc(var(--spacing-md) + 1.5rem);
     font-size: var(--font-size-sm);
   }
-  
-  .participants-list li::before {
+
+  .participants-list > ul > li::before {
     left: var(--spacing-md);
   }
 }
@@ -99,22 +145,18 @@
   .participants-list {
     margin: var(--spacing-xl) 0 var(--spacing-2xl);
   }
-  
-  .participants-list li {
+
+  .participants-list > ul > li {
     padding: var(--spacing-lg) var(--spacing-xl);
     padding-left: calc(var(--spacing-xl) + 1.5rem);
   }
-  
-  .participants-list li::before {
+
+  .participants-list > ul > li::before {
     left: var(--spacing-xl);
   }
 }
 
-/* --- Animación de entrada --- */
-.participants-list {
-  animation: participantsSlideIn 0.3s ease-out;
-}
-
+/* --- Animaciones de entrada --- */
 @keyframes participantsSlideIn {
   from {
     opacity: 0;
@@ -126,12 +168,9 @@
   }
 }
 
-.participants-list li {
-  animation: participantFadeIn 0.2s ease-out;
-  animation-fill-mode: both;
+.participants-list > ul > li {
+  animation: participantFadeIn 0.2s ease-out both;
 }
-
-/* Animación escalonada para cada participante */
 .participants-list li:nth-child(1) { animation-delay: 0.1s; }
 .participants-list li:nth-child(2) { animation-delay: 0.15s; }
 .participants-list li:nth-child(3) { animation-delay: 0.2s; }
@@ -153,11 +192,8 @@
 /* --- Reducir animaciones si el usuario lo prefiere --- */
 @media (prefers-reduced-motion: reduce) {
   .participants-list,
-  .participants-list li {
+  .participants-list > ul > li {
     animation: none !important;
-  }
-  
-  .participants-list li {
     transition: none !important;
   }
 }
@@ -179,4 +215,63 @@
   border-top: 1px solid var(--border-light);
   background: var(--bg-subtle);
   font-weight: 500;
+}
+
+
+/* --- Menú de tres puntos junto a cada participante --- */
+.participants-list__menu {
+  position: absolute;
+  top: 50%;
+  right: var(--spacing-lg);
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.participants-list__menu-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 4px;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.participants-list__menu-btn:hover {
+  color: var(--primary-color);
+}
+
+.participants-list__dropdown {
+  position: absolute;
+  top: 1.5rem;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  min-width: 120px;
+  z-index: 20;
+}
+
+.participants-list__dropdown li {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.participants-list__dropdown li:hover {
+  background-color: #f8f9fa;
+}
+
+.participants-list__dropdown li:first-child {
+  border-radius: 6px 6px 0 0;
+}
+
+.participants-list__dropdown li:last-child {
+  border-radius: 0 0 6px 6px;
 }

@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { db } from '../firebaseConfig';
 import './ChallengeCard.css';
 
+
 // MUI
 import {
   Dialog,
