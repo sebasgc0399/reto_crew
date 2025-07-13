@@ -1,5 +1,6 @@
+// src/pages/ChallengeForm.jsx
 import React, { useState, useEffect, forwardRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate }                from 'react-router-dom';
 import {
   collection,
   doc,
@@ -24,14 +25,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './ChallengeForm.css';
 import '../components/form/FormField.css';
 
-// Configuración de actividades con valorMáximo
-// const ACTIVITIES = {
-//   pushup:    { label: 'Flexiones',   unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 60 },
-//   pullup:    { label: 'Dominadas',   unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 20 },
-//   squat:     { label: 'Sentadillas', unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 100 },
-//   run:       { label: 'Carrera',     unit: 'km',   multiplier: 1.0, weightBased: false, valorMaximo: 10 }
-// };
-
 // Input de fecha personalizado
 const DateInput = forwardRef(({ value, onClick, label, error }, ref) => (
   <div className="form-field">
@@ -55,6 +48,7 @@ export default function ChallengeForm() {
   const navigate     = useNavigate();
   const { user }     = useAuth();
 
+  // campos del formulario
   const [title, setTitle]             = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate]     = useState(null);
@@ -63,13 +57,18 @@ export default function ChallengeForm() {
   const [activityKey, setActivityKey] = useState('pushup');
   const [password, setPassword]       = useState('');
   const [maxParticipants, setMaxParticipants] = useState(50);
+
+  // flags de carga y errores
   const [loading, setLoading]         = useState(isEdit);
+  const [checkingWeight, setCheckingWeight] = useState(!isEdit);
+  const [showWeightInput, setShowWeightInput] = useState(false);
   const [errors, setErrors]           = useState({});
 
-  // Metadatos de actividad seleccionada
-  const { unit: activityUnit, weightBased, multiplier, valorMaximo } = ACTIVITIES[activityKey];
+  // metadata de la actividad seleccionada
+  const { unit: activityUnit, weightBased, multiplier, valorMaximo } =
+    ACTIVITIES[activityKey];
 
-  // Carga datos existentes si es edición
+  // 1) Si estamos editando, carga reto + participante como antes
   useEffect(() => {
     if (!isEdit) return;
     (async () => {
@@ -83,11 +82,15 @@ export default function ChallengeForm() {
         setEndDate(data.endDate.toDate());
         setActivityKey(data.activity.key);
         setPassword(data.password || '');
-        setMaxParticipants(data.maxParticipants || 50);
+        setMaxParticipants(data.maxParticipants ?? 50);
+
+        // Carga el peso del creador desde participants/
         const pSnap = await getDoc(
           doc(db, 'challenges', id, 'participants', user.uid)
         );
-        if (pSnap.exists()) setUserWeight(pSnap.data().weight.toString());
+        if (pSnap.exists()) {
+          setUserWeight(pSnap.data().weight.toString());
+        }
       } catch (e) {
         console.error(e);
         setErrors(err => ({ ...err, global: e.message }));
@@ -97,14 +100,45 @@ export default function ChallengeForm() {
     })();
   }, [id, isEdit, user.uid]);
 
+  // 2) Si estamos creando, comprueba peso en users/{uid}
+  useEffect(() => {
+    if (isEdit) return;
+    (async () => {
+      try {
+        const uSnap = await getDoc(doc(db, 'users', user.uid));
+        const uData = uSnap.exists() ? uSnap.data() : {};
+        if (uData.weight != null) {
+          // Ya tenía peso: lo usamos y no mostramos el input
+          setUserWeight(String(uData.weight));
+          setShowWeightInput(false);
+        } else {
+          // No tenía peso: mostramos el input
+          setShowWeightInput(true);
+        }
+      } catch (e) {
+        console.error('Error al leer peso de usuario:', e);
+        // Por si acaso mostramos igualmente el input
+        setShowWeightInput(true);
+      } finally {
+        setCheckingWeight(false);
+      }
+    })();
+  }, [isEdit, user.uid]);
+
+  // Validación de formulario
   const validate = () => {
     const errs = {};
-    if (!title.trim())        errs.title = 'El título es obligatorio';
-    if (!startDate)           errs.startDate = 'Fecha inicio obligatoria';
-    if (!endDate)             errs.endDate   = 'Fecha fin obligatoria';
+    if (!title.trim()) errs.title = 'El título es obligatorio';
+    if (!startDate)    errs.startDate = 'Fecha inicio obligatoria';
+    if (!endDate)      errs.endDate   = 'Fecha fin obligatoria';
     if (startDate && endDate && endDate < startDate)
-                              errs.endDate   = 'Debe ser ≥ fecha inicio';
-    if (!userWeight.trim())   errs.userWeight = 'Ingresa tu peso';
+      errs.endDate = 'La fecha fin debe ser ≥ fecha inicio';
+
+    // sólo validamos peso si mostramos el campo
+    if (showWeightInput && (!userWeight.trim() || isNaN(Number(userWeight)))) {
+      errs.userWeight = 'Ingresa un peso válido';
+    }
+
     if (maxParticipants < 1 || maxParticipants > 50) {
       errs.maxParticipants = 'El límite debe estar entre 1 y 50';
     }
@@ -112,55 +146,65 @@ export default function ChallengeForm() {
     return Object.keys(errs).length === 0;
   };
 
+  // Envío de formulario
   const handleSubmit = async e => {
     e.preventDefault();
     if (!validate()) return;
 
     try {
-      // Preparar payload del reto
+      // 3) Prepara el payload del reto
       const activityPayload = {
-        key:         activityKey,
-        label:       ACTIVITIES[activityKey].label,
-        unit:        activityUnit,
-        multiplier,            // multiplicador para puntos
+        key:        activityKey,
+        label:      ACTIVITIES[activityKey].label,
+        unit:       activityUnit,
+        multiplier,
         weightBased,
-        valorMaximo           // valor máximo para normalización
+        valorMaximo
       };
-
       const payload = {
         title,
         description,
-        startDate: Timestamp.fromDate(startDate),
-        endDate:   Timestamp.fromDate(endDate),
-        activity:  activityPayload,
+        startDate:       Timestamp.fromDate(startDate),
+        endDate:         Timestamp.fromDate(endDate),
+        activity:        activityPayload,
         weightBased,
-        password: password || null,
+        password:        password || null,
         maxParticipants
       };
 
+      // 4) Crea o actualiza el reto
       let chRef;
       if (isEdit) {
-        await updateDoc(doc(db, 'challenges', id), {
-          ...payload,
-          updatedAt: serverTimestamp()
-        });
+        await updateDoc(doc(db, 'challenges', id), { ...payload, updatedAt: serverTimestamp() });
         chRef = { id };
       } else {
         chRef = await addDoc(collection(db, 'challenges'), {
           ...payload,
-          createdBy: user.uid,
-          createdAt: serverTimestamp()
+          createdBy:  user.uid,
+          createdAt:  serverTimestamp()
         });
       }
 
-      // Registrar o actualizar participante
+      // 5) Determina el peso a usar (nunca nulo aquí)
       const wt = Number(userWeight);
+
+      // 6) Inscribe al creador en participants/
       await setDoc(
         doc(db, 'challenges', chRef.id, 'participants', user.uid),
-        { uid: user.uid, name: user.displayName||'', weight: wt, joinedAt: serverTimestamp() }
+        {
+          uid:      user.uid,
+          name:     user.displayName || '',
+          weight:   wt,
+          joinedAt: serverTimestamp()
+        }
       );
 
-      // Inicializar refWeight al crear
+      if (showWeightInput) {
+        const userRef = doc(db, 'users', user.uid);
+        await updateDoc(userRef, { weight: wt });
+      }
+
+      
       if (!isEdit) {
         await updateDoc(doc(db, 'challenges', chRef.id), { refWeight: wt });
       }
@@ -172,22 +216,27 @@ export default function ChallengeForm() {
     }
   };
 
-  if (loading) return <p>Cargando datos…</p>;
+  // Mientras cargan reto o peso del usuario, mostramos loader
+  if (loading || checkingWeight) return <p>Cargando datos…</p>;
+
+  const titleText = isEdit ? 'Editar Reto' : 'Crear Nuevo Reto';
 
   return (
     <div className="challenge-form-container">
-      <h2>{isEdit ? 'Editar Reto' : 'Crear Nuevo Reto'}</h2>
+      <h2>{titleText}</h2>
       {errors.global && <div className="alert alert-danger">{errors.global}</div>}
 
       <form className="challenge-form" onSubmit={handleSubmit} noValidate>
+        {/* Título */}
         <TextField
-          label="Título"
+          label="Título *"
           value={title}
           onChange={setTitle}
           error={errors.title}
           required
         />
 
+        {/* Descripción */}
         <TextAreaField
           label="Descripción"
           value={description}
@@ -195,6 +244,7 @@ export default function ChallengeForm() {
           rows={4}
         />
 
+        {/* Fechas */}
         <div className="date-group">
           <ReactDatePicker
             selected={startDate}
@@ -210,6 +260,7 @@ export default function ChallengeForm() {
           />
         </div>
 
+        {/* Selector de actividad */}
         <div className="form-group">
           <label className="form-label">Actividad *</label>
           <select
@@ -232,35 +283,37 @@ export default function ChallengeForm() {
           </small>
         </div>
 
-        <NumberField
-          label="Tu peso (kg) *"
-          value={userWeight}
-          onChange={setUserWeight}
-          inputProps={{ inputMode: 'decimal', pattern: '[0-9]+([.,][0-9]{1,2})?' }}
-          error={errors.userWeight}
-          tooltip="Tu peso se usa para normalizar el esfuerzo relativo."
-          required
-        />
+        {/* Peso del creador: sólo si no viene en users/{uid} */}
+        {showWeightInput && (
+          <NumberField
+            label="Tu peso (kg) *"
+            value={userWeight}
+            onChange={setUserWeight}
+            inputProps={{ inputMode: 'decimal', pattern: '[0-9]+([.,][0-9]{1,2})?' }}
+            error={errors.userWeight}
+            tooltip="Tu peso se usa para normalizar el esfuerzo relativo."
+            required
+          />
+        )}
 
+        {/* Clave / privacidad */}
         <TextField
           label="Clave (opcional)"
           type="password"
           value={password}
           onChange={setPassword}
-          error={errors.password}
-          tooltip="Si la defines, el reto será privado y sólo accesible con esta clave."
-          inputProps={{
-            autoComplete: 'new-password'
-          }}
+          tooltip="Si la defines, el reto será privado."
+          inputProps={{ autoComplete: 'new-password' }}
         />
 
+        {/* Límite de participantes */}
         <NumberField
           label="Límite de participantes"
           value={maxParticipants}
           onChange={val => setMaxParticipants(Number(val))}
           inputProps={{ min: 1, max: 50 }}
           error={errors.maxParticipants}
-          tooltip="Número máximo de participantes (1–50)."
+          tooltip="Máx. 1–50 participantes."
         />
 
         <button type="submit" className="btn btn-primary mt-3">

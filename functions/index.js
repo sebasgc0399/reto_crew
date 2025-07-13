@@ -189,3 +189,39 @@ exports.recalcPointsOnRefWeightChange = onDocumentUpdated(
     return null;
   }
 );
+
+exports.onUserWeightChange = onDocumentUpdated(
+  "users/{uid}",
+  async (event) => {
+    const before = event.data.before.data();
+    const after  = event.data.after.data();
+    const { uid } = event.params;
+
+    // Si no cambió weight, nada que hacer
+    if (before.weight === after.weight) return null;
+
+    const newWeight = after.weight;
+    console.log(`Peso de usuario ${uid} cambió: ${before.weight} → ${newWeight}`);
+
+    // Busca en **todas** las subcolecciones 'participants' donde uid === usuario
+    const partsSnap = await db
+      .collectionGroup("participants")
+      .where("uid", "==", uid)
+      .get();
+
+    if (partsSnap.empty) {
+      console.log(`Usuario ${uid} no participaba en ningún reto.`);
+      return null;
+    }
+
+    // Prepara batch para actualizar cada participante
+    const batch = db.batch();
+    partsSnap.forEach(partDoc => {
+      batch.update(partDoc.ref, { weight: newWeight });
+    });
+
+    await batch.commit();
+    console.log(`Actualizado peso en ${partsSnap.size} participantes para usuario ${uid}.`);
+    return null;
+  }
+);
