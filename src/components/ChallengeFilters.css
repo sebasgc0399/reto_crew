@@ -1,0 +1,231 @@
+/* --- Contenedor Principal de Filtros --- */
+.challenge-filters {
+  background-color: var(--bg-primary);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+/* --- Contenedor de búsqueda y botón de filtros --- */
+.challenge-filters__search-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.challenge-filters__search-group {
+  flex: 1;
+}
+
+.challenge-filters__filter-toggle {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  min-height: 48px; /* Coincide con la altura del input */
+  white-space: nowrap;
+}
+
+.challenge-filters__filter-toggle:hover {
+  background-color: var(--bg-subtle);
+  border-color: var(--primary-color);
+}
+
+.challenge-filters__filter-toggle.active {
+  background-color: var(--primary-light);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* --- Contenedor de filtros expandidos --- */
+.challenge-filters__expanded {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  overflow: hidden;
+  transition: max-height var(--transition-slow), opacity var(--transition-normal), padding var(--transition-normal);
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  border-top: 1px solid transparent;
+}
+
+.challenge-filters__expanded.show {
+  max-height: 300px; /* Aumentamos la altura máxima */
+  opacity: 1;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-light);
+}
+
+/* --- Grupo de Formulario --- */
+.challenge-filters .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Etiquetas de los filtros --- */
+.challenge-filters .form-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+/* --- Input de búsqueda --- */
+.challenge-filters .form-control {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  min-height: 48px;
+}
+
+/* --- Estilos para el <select> --- */
+.challenge-filters .form-select {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  min-height: 48px;
+
+  /* Quitamos la apariencia por defecto del navegador */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* Flecha personalizada */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 16px 12px;
+}
+
+/* --- Estilos de Foco --- */
+.challenge-filters .form-control:focus,
+.challenge-filters .form-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* --- Contador de filtros activos --- */
+.challenge-filters__filter-count {
+  background-color: var(--primary-color);
+  color: white;
+  font-size: var(--font-size-xs);
+  padding: 0.25rem 0.5rem;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+/* --- Ícono de filtro --- */
+.challenge-filters__filter-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--transition-fast);
+}
+
+.challenge-filters__filter-toggle.active .challenge-filters__filter-icon {
+  transform: rotate(180deg);
+}
+
+/* --- Media Query para móviles --- */
+@media (max-width: 767px) {
+  .challenge-filters {
+    padding: var(--spacing-md);
+  }
+
+  .challenge-filters__search-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .challenge-filters__filter-toggle {
+    justify-content: center;
+    margin-top: var(--spacing-sm);
+  }
+
+  .challenge-filters__expanded {
+    grid-template-columns: 1fr;
+  }
+
+  /* Más espacio en móvil para los filtros expandidos */
+  .challenge-filters__expanded.show {
+    max-height: 400px;
+  }
+}
+
+/* --- Mejoras para dispositivos táctiles --- */
+@media (hover: none) and (pointer: coarse) {
+  .challenge-filters__filter-toggle {
+    min-height: 44px; /* Área mínima de toque */
+  }
+  
+  .challenge-filters .form-control,
+  .challenge-filters .form-select {
+    min-height: 44px;
+  }
+}
+
+/* --- Animación suave para la expansión --- */
+@keyframes filterExpand {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.challenge-filters__expanded.show {
+  animation: filterExpand 0.4s ease-out;
+}
+
+/* --- Mejora adicional para asegurar que los elementos internos sean visibles --- */
+.challenge-filters__expanded .form-group {
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity var(--transition-slow), transform var(--transition-slow);
+}
+
+.challenge-filters__expanded.show .form-group {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Delay escalonado para una animación más suave */
+.challenge-filters__expanded.show .form-group:nth-child(1) {
+  transition-delay: 0.1s;
+}
+
+.challenge-filters__expanded.show .form-group:nth-child(2) {
+  transition-delay: 0.2s;
+}

@@ -17,18 +17,20 @@ import TextField     from '../components/form/TextField';
 import TextAreaField from '../components/form/TextAreaField';
 import NumberField   from '../components/form/NumberField';
 
+import { ACTIVITIES } from '../constants/activities';
+
 import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './ChallengeForm.css';
 import '../components/form/FormField.css';
 
 // Configuración de actividades con valorMáximo
-const ACTIVITIES = {
-  pushup:    { label: 'Flexiones',   unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 60 },
-  pullup:    { label: 'Dominadas',   unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 20 },
-  squat:     { label: 'Sentadillas', unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 100 },
-  run:       { label: 'Carrera',     unit: 'km',   multiplier: 1.0, weightBased: false, valorMaximo: 10 }
-};
+// const ACTIVITIES = {
+//   pushup:    { label: 'Flexiones',   unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 60 },
+//   pullup:    { label: 'Dominadas',   unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 20 },
+//   squat:     { label: 'Sentadillas', unit: 'reps', multiplier: 1.0, weightBased: true,  valorMaximo: 100 },
+//   run:       { label: 'Carrera',     unit: 'km',   multiplier: 1.0, weightBased: false, valorMaximo: 10 }
+// };
 
 // Input de fecha personalizado
 const DateInput = forwardRef(({ value, onClick, label, error }, ref) => (

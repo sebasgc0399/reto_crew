@@ -1,0 +1,252 @@
+/* --- Contenedor Principal de Paginación --- */
+.pagination-container {
+  margin: var(--spacing-lg) 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* --- Lista de Paginación --- */
+.pagination {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+/* --- Elementos de Paginación --- */
+.pagination__item {
+  display: flex;
+  align-items: center;
+}
+
+.pagination__item:not(:last-child) {
+  border-right: 1px solid var(--border-light);
+}
+
+/* --- Enlaces/Botones de Paginación --- */
+.pagination__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  min-height: 48px; /* Área mínima de toque */
+  gap: var(--spacing-sm);
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pagination__link:hover:not(:disabled) {
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.pagination__link:active:not(:disabled) {
+  background-color: var(--border-color);
+}
+
+.pagination__link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Botones de Navegación (Anterior/Siguiente) --- */
+.pagination__link--prev,
+.pagination__link--next {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.pagination__link--prev:hover:not(:disabled),
+.pagination__link--next:hover:not(:disabled) {
+  background-color: var(--primary-light);
+  color: var(--primary-hover);
+}
+
+/* --- Números de Página --- */
+.pagination__link--number {
+  min-width: 48px;
+  font-weight: 600;
+}
+
+.pagination__item.active .pagination__link--number {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.pagination__item.active .pagination__link--number:hover {
+  background-color: var(--primary-hover);
+}
+
+/* --- Información de Página Actual --- */
+.pagination__current {
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: default;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.pagination__info {
+  background-color: var(--bg-subtle);
+}
+
+/* --- Puntos Suspensivos --- */
+.pagination__ellipsis {
+  color: var(--text-muted);
+  cursor: default;
+  font-weight: 600;
+}
+
+/* --- Iconos --- */
+.pagination__icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+  flex-shrink: 0;
+}
+
+/* --- Estados Deshabilitados --- */
+.pagination__item.disabled .pagination__link {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination__item.disabled .pagination__link:hover {
+  background-color: transparent;
+  color: var(--text-secondary);
+}
+
+/* --- Responsive: Pantallas Pequeñas --- */
+@media (max-width: 480px) {
+  .pagination {
+    border-radius: var(--radius-md);
+  }
+  
+  .pagination__link {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+    min-height: 44px;
+  }
+  
+  .pagination__current {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+  }
+  
+  /* Ocultar texto en móviles muy pequeños, solo mostrar iconos */
+  .pagination__text {
+    display: none;
+  }
+  
+  .pagination__link--number {
+    min-width: 44px;
+  }
+  
+  /* Mostrar solo iconos en botones de navegación */
+  .pagination__link--prev,
+  .pagination__link--next {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* --- Responsive: Pantallas Medianas --- */
+@media (min-width: 481px) and (max-width: 768px) {
+  .pagination__link {
+    padding: var(--spacing-md);
+  }
+  
+  .pagination__current {
+    padding: var(--spacing-md);
+  }
+}
+
+/* --- Mejoras para Dispositivos Táctiles --- */
+@media (hover: none) and (pointer: coarse) {
+  .pagination__link:hover {
+    background-color: transparent;
+  }
+  
+  .pagination__link:active:not(:disabled) {
+    background-color: var(--bg-subtle);
+    transform: scale(0.98);
+  }
+  
+  .pagination__link--prev:active:not(:disabled),
+  .pagination__link--next:active:not(:disabled) {
+    background-color: var(--primary-light);
+  }
+}
+
+/* --- Modo Compacto (Clase Adicional) --- */
+.pagination-container.compact .pagination {
+  box-shadow: none;
+  border: none;
+  background-color: transparent;
+}
+
+.pagination-container.compact .pagination__item:not(:last-child) {
+  border-right: none;
+}
+
+.pagination-container.compact .pagination__link {
+  border-radius: var(--radius-md);
+  margin: 0 var(--spacing-xs);
+}
+
+.pagination-container.compact .pagination__current {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- Animación de Carga --- */
+.pagination-container {
+  animation: paginationFadeIn 0.3s ease-out;
+}
+
+@keyframes paginationFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Mejoras de Accesibilidad --- */
+.pagination__link:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+  background-color: var(--primary-light);
+}
+
+/* --- Soporte para Tema Oscuro (Preparado) --- */
+@media (prefers-color-scheme: dark) {
+  /* Descomenta si implementas tema oscuro */
+  /*
+  .pagination {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+  }
+  
+  .pagination__item:not(:last-child) {
+    border-right-color: var(--border-color);
+  }
+  */
+}
