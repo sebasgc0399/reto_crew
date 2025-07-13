@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { useParams } from 'react-router-dom';
 import {
   collection,
@@ -14,6 +15,7 @@ import './ChallengeDashboard.css';
 
 export default function ChallengeDashboard() {
   const { id: chId } = useParams();
+  const { user }     = useAuth();
 
   const [participants, setParticipants]     = useState([]);
   const [entries, setEntries]               = useState([]);
@@ -21,6 +23,7 @@ export default function ChallengeDashboard() {
   const [loadingEntries, setLoadingEntries] = useState(true);
 
   const participantsRef = useRef([]);
+  const meRef           = useRef(null);
 
   // 1) Carga participants
   useEffect(() => {
@@ -30,12 +33,12 @@ export default function ChallengeDashboard() {
     const unsub = onSnapshot(partsQuery, async snap => {
       const parts = await Promise.all(
         snap.docs.map(async d => {
-          let { name = '' , totalPoints } = d.data();
+          let { name = '', totalPoints } = d.data();
           if (!name) {
             try {
               const u = await getDoc(doc(db, 'users', d.id));
               name = u.exists() ? u.data().name : '';
-            } catch { /* log si quieres */ }
+            } catch {}
           }
           return { uid: d.id, name: name || d.id, totalPoints };
         })
@@ -47,6 +50,18 @@ export default function ChallengeDashboard() {
 
     return () => unsub();
   }, [chId]);
+
+  // 1.b) Cuando ya carguen los participantes, haz scroll a tu fila
+  useEffect(() => {
+    if (!loadingParts && meRef.current) {
+      setTimeout(() => {
+        meRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }, 200);
+    }
+  }, [loadingParts]);
 
   // 2) Carga entries — espera a que participantsRef esté listo
   useEffect(() => {
@@ -62,8 +77,7 @@ export default function ChallengeDashboard() {
         // 2.1) Busca en el ref
         const p = participantsRef.current.find(x => x.uid === data.userId);
         let name = p?.name ?? '';
-
-        // 2.2) Si sorprendentemente sigue vacío, busca en /users
+        // 2.2) Si falta, busca en /users
         if (!name) {
           try {
             const u = await getDoc(doc(db, 'users', data.userId));
@@ -72,7 +86,6 @@ export default function ChallengeDashboard() {
             name = data.userId;
           }
         }
-
         return {
           id: d.id,
           name,
@@ -97,11 +110,18 @@ export default function ChallengeDashboard() {
     <div className="dashboard-container">
       <h2>Leaderboard</h2>
       <ol className="leaderboard">
-        {participants.map(p => (
-          <li key={p.uid}>
-            <strong>{p.name}</strong> — {p.totalPoints.toFixed(2)} pts
-          </li>
-        ))}
+        {participants.map(p => {
+          const isMe = user?.uid === p.uid;
+          return (
+            <li
+              key={p.uid}
+              className={isMe ? 'highlight' : ''}
+              ref={isMe ? meRef : null}
+            >
+              <strong>{p.name}</strong> — {p.totalPoints.toFixed(2)} pts
+            </li>
+          );
+        })}
       </ol>
 
       <h3>Entradas Recientes</h3>

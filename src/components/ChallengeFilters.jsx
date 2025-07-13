@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TextField from './form/TextField';
 import './ChallengeFilters.css';
 
 export default function ChallengeFilters({ activities, onFilterChange }) {
@@ -33,15 +34,14 @@ export default function ChallengeFilters({ activities, onFilterChange }) {
     <div className="challenge-filters mb-4">
       {/* Fila principal: Búsqueda + Botón de filtros */}
       <div className="challenge-filters__search-row">
-        <div className="challenge-filters__search-group form-group">
-          <label htmlFor="filter-search" className="form-label">Buscar</label>
-          <input
-            id="filter-search"
-            type="text"
-            className="form-control"
-            placeholder="Título del reto..."
+        <div className="challenge-filters__search-group">
+          <TextField
+            label="Buscar"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={setSearch}
+            placeholder="Título del reto..."
+            maxLength={30}
+            validateRegex={/^[\p{L}\p{N} ]*$/u}
           />
         </div>
 

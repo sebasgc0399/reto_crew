@@ -11,6 +11,7 @@ import {
 } from 'firebase/firestore';
 import { calcularPuntos }              from '../utils/points';
 import { db }                          from '../firebaseConfig';
+import NumberField                      from '../components/form/NumberField';
 import Loader                          from '../components/Loader';
 import './EntryForm.css';
 
@@ -113,17 +114,21 @@ export default function EntryForm() {
       {error && <p className="error">{error}</p>}
 
       <form onSubmit={handleSubmit} className="entry-form">
-        <label>
-          {activity.label} ({activity.unit})
-          <input
-            type="number"
-            step={activity.unit === 'km' ? '0.01' : '1'}
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            required
-            placeholder={`Ej: 10 ${activity.unit}`}
-          />
-        </label>
+        <NumberField
+          label={`${activity.label} (${activity.unit})`}
+          value={value}
+          onChange={setValue}
+          required
+          tooltip={activity.unit === 'km'
+            ? 'Puedes usar decimales: p.ej. 2.50 km'
+            : undefined
+          }
+          inputProps={{
+            step: activity.unit === 'km' ? '0.01' : '1',
+            placeholder: `Ej: 10 ${activity.unit}`,
+            inputMode: activity.unit === 'km' ? 'decimal' : 'numeric'
+          }}
+        />
 
         {weightBased && (
           <p className="form-text">

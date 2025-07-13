@@ -32,6 +32,11 @@
   box-sizing: border-box;
 }
 
+.form-input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
 .date-group {
   display: flex;
   gap: 1rem;

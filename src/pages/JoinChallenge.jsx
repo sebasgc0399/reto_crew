@@ -117,6 +117,8 @@ export default function JoinChallenge() {
           onChange={setWeight}
           required
           tooltip="Tu peso corporal se usa para normalizar el esfuerzo relativo"
+          min={1}
+          max={999}
         />
 
         <button type="submit" className="btn btn-primary">

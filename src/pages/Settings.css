@@ -4,7 +4,7 @@
   flex-direction: column;
   flex: 1;
   width: 100%;
-  max-width: 480px; /* Consistente con EntryForm */
+  max-width: 480px; /* Igual que ChallengeForm */
   margin: 0 auto;
   padding: 1rem;
 }
@@ -13,7 +13,7 @@
 .settings-container h2 {
   color: var(--primary-color);
   font-size: clamp(1.5rem, 5vw, 1.8rem);
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1.5rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #eee;
   text-align: center;
@@ -29,39 +29,7 @@
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  /* Animación sutil para el formulario */
   animation: slideUp 0.3s ease-out;
-}
-
-/* --- Labels --- */
-.settings-form label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-weight: 600;
-  color: #333;
-  font-size: 0.95rem;
-}
-
-/* --- Inputs --- */
-.settings-form input {
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  border: 1px solid #d0d0d0;
-  border-radius: 8px;
-  background: #fff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  outline: none;
-}
-
-.settings-form input:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
-}
-
-.settings-form input::placeholder {
-  color: #999;
-  font-style: italic;
 }
 
 /* --- Botón --- */
@@ -75,7 +43,6 @@
   transition: all 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-top: 0.5rem;
 }
 
 .settings-form .btn-primary {
@@ -95,17 +62,10 @@
   box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
 }
 
-/* --- Estados de Loading --- */
 .settings-form .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
-}
-
-.settings-form .btn:disabled:hover {
-  background: var(--primary-color);
-  transform: none;
-  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
 }
 
 /* --- Mensajes de Estado --- */
@@ -116,7 +76,6 @@
   font-weight: 500;
   text-align: center;
   margin-top: 1rem;
-  /* Transición suave para la aparición */
   opacity: 0;
   transform: translateY(10px);
   animation: statusAppear 0.3s ease-out forwards;
@@ -157,21 +116,16 @@
   }
 }
 
-/* --- Responsive para móviles pequeños --- */
+/* --- Responsive móviles pequeños --- */
 @media (max-width: 480px) {
   .settings-container {
     padding: 0.75rem;
   }
-  
   .settings-form {
     padding: 1.5rem;
     border-radius: 8px;
+    gap: 1.25rem;
   }
-  
-  .settings-form input {
-    padding: 0.625rem 0.875rem;
-  }
-  
   .settings-form .btn {
     padding: 0.75rem 1.25rem;
     font-size: 0.9rem;

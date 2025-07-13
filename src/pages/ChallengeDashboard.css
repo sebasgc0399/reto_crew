@@ -70,6 +70,8 @@
   flex-shrink: 0;
 }
 
+
+
 /* Destacamos el Top 3 */
 .leaderboard li:nth-child(1)::before { background-color: #ffd700; color: #4d3e00; } /* Oro */
 .leaderboard li:nth-child(2)::before { background-color: #c0c0c0; color: #3d3d3d; } /* Plata */
@@ -107,6 +109,31 @@
   background-color: #f8f9fa;
 }
 
+/* --------------------------------------------------------
+   Destacar tu propia posición en el leaderboard
+   -------------------------------------------------------- */
+.leaderboard li.highlight {
+  background-color: #fff8e1;      /* un amarillo suave */
+  border-color: #ffd54f;          /* dorado claro */
+  box-shadow: 0 0 0 2px #ffd54f;  /* subraya con un anillo dorado */
+  transform: scale(1.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.leaderboard li.highlight strong {
+  color: #bf360c;                /* texto un poco más vivo */
+}
+
+/* Opcional: añade un pequeño pulso al cargar */
+@keyframes pulseHighlight {
+  0%   { box-shadow: 0 0 0 0 rgba(255,213,79, 0.6); }
+  70%  { box-shadow: 0 0 0 10px rgba(255,213,79, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,213,79, 0); }
+}
+
+.leaderboard li.highlight {
+  animation: pulseHighlight 1.2s ease-out;
+}
 
 /* --- Tabla Responsiva (Estilos para Móvil < 768px) --- */
 @media (max-width: 767px) {

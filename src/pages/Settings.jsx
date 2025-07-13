@@ -7,6 +7,7 @@ import {
   doc,
   getDoc,
   updateDoc,
+  collection,
   collectionGroup,
   query,
   where,
@@ -14,6 +15,8 @@ import {
   writeBatch
 } from 'firebase/firestore';
 import Loader from '../components/Loader';
+import TextField from '../components/form/TextField';
+import NumberField from '../components/form/NumberField';
 import './Settings.css';
 
 export default function Settings() {
@@ -57,6 +60,17 @@ export default function Settings() {
       return;
     }
 
+    // 2) Verificar unicidad del nombre
+   const nameTrim = name.trim();
+   const nameQ = query(collection(db, 'users'), where('name', '==', nameTrim));
+   const nameSnap = await getDocs(nameQ);
+   // Si existe algún otro usuario con ese nombre, bloqueamos
+   if (nameSnap.docs.some(docSnap => docSnap.id !== user.uid)) {
+     setStatus({ type: 'error', msg: 'Ese nombre ya está en uso, elige otro.' });
+     setSaving(false);
+     return;
+   }
+
     try {
       // 2) Actualiza displayName en Firebase Auth
       await updateProfile(auth.currentUser, { displayName: name.trim() });
@@ -94,28 +108,27 @@ export default function Settings() {
   return (
     <div className="settings-container">
       <h2>Configuraciones</h2>
-
       <form className="settings-form" onSubmit={handleSubmit}>
-        <label htmlFor="name">Tu nombre</label>
-        <input
-          id="name"
-          type="text"
+        <TextField
+          label="Tu nombre"
           value={name}
-          onChange={e => setName(e.target.value)}
-          disabled={saving}
+          onChange={setName}
           required
+          tooltip="Debe ser único entre todos los usuarios"
+          disabled={saving}
+          maxLength={25}
+          validateRegex={/^[\p{L}\p{N} ]*$/u}
         />
 
-        <label htmlFor="weight">Tu peso (kg)</label>
-        <input
-          id="weight"
-          type="number"
-          min="1"
-          step="0.1"
+        <NumberField
+          label="Tu peso (kg)"
           value={weight}
-          onChange={e => setWeight(e.target.value)}
-          disabled={saving}
+          onChange={setWeight}
           required
+          tooltip="Tu peso se usa para normalizar el esfuerzo"
+          disabled={saving}
+          min={1}
+          max={999}
         />
 
         <button type="submit" className="btn btn-primary" disabled={saving}>
@@ -123,13 +136,7 @@ export default function Settings() {
         </button>
 
         {status.msg && (
-          <p
-            className={
-              status.type === 'success'
-                ? 'status status--success'
-                : 'status status--error'
-            }
-          >
+          <p className={`status status--${status.type}`}>
             {status.msg}
           </p>
         )}

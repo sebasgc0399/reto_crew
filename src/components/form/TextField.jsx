@@ -3,7 +3,6 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import './FormField.css';
 
-
 export default function TextField({
   label,
   value,
@@ -11,8 +10,27 @@ export default function TextField({
   required = false,
   type = "text",
   tooltip,
+  maxLength,
+  validateRegex,
   ...rest
 }) {
+
+  const handleChange = e => {
+    let val = e.target.value;
+
+    if (maxLength != null && val.length > maxLength) {
+      val = val.slice(0, maxLength);
+    }
+
+    val = val.replace(/<[^>]*>/g, '');
+
+    if (validateRegex && !validateRegex.test(val)) {
+      return;
+    }
+
+    onChange(val);
+  };
+
   return (
     <div className="form-group">
       <label className="form-label">
@@ -33,8 +51,9 @@ export default function TextField({
         type={type}
         className="form-input"
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={handleChange}
         required={required}
+        maxLength={maxLength}
         {...rest}
       />
     </div>

@@ -229,11 +229,13 @@ export default function ChallengeForm() {
       <form className="challenge-form" onSubmit={handleSubmit} noValidate>
         {/* Título */}
         <TextField
-          label="Título *"
+          label="Título "
           value={title}
           onChange={setTitle}
           error={errors.title}
           required
+          maxLength={30}
+          validateRegex={/^[\p{L}\p{N} ]*$/u}
         />
 
         {/* Descripción */}
@@ -242,6 +244,8 @@ export default function ChallengeForm() {
           value={description}
           onChange={setDescription}
           rows={4}
+          maxLength={200}
+          validateRegex={/^[\p{L}\p{N} ]*$/u}
         />
 
         {/* Fechas */}
@@ -293,6 +297,8 @@ export default function ChallengeForm() {
             error={errors.userWeight}
             tooltip="Tu peso se usa para normalizar el esfuerzo relativo."
             required
+            min={1}
+            max={999}
           />
         )}
 
@@ -304,6 +310,8 @@ export default function ChallengeForm() {
           onChange={setPassword}
           tooltip="Si la defines, el reto será privado."
           inputProps={{ autoComplete: 'new-password' }}
+          maxLength={15}
+          validateRegex={/^[\p{L}\p{N} ]*$/u}
         />
 
         {/* Límite de participantes */}
@@ -314,6 +322,8 @@ export default function ChallengeForm() {
           inputProps={{ min: 1, max: 50 }}
           error={errors.maxParticipants}
           tooltip="Máx. 1–50 participantes."
+          min={1}
+          max={50}
         />
 
         <button type="submit" className="btn btn-primary mt-3">
