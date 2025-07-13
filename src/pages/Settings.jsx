@@ -1,6 +1,7 @@
 // src/pages/Settings.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { auth, db } from '../firebaseConfig';
 import { updateProfile } from 'firebase/auth';
 import {
@@ -22,6 +23,7 @@ import './Settings.css';
 
 export default function Settings() {
   const { user, loading } = useAuth();
+  const { theme, setTheme, toggleTheme } = useTheme();
   const [name, setName]   = useState('');
   const [weight, setWeight] = useState(''); 
   const [status, setStatus] = useState({ type: '', msg: '' });
@@ -137,6 +139,37 @@ export default function Settings() {
           min={1}
           max={999}
         />
+
+        <fieldset className="settings-theme">
+          <legend>Tema de la aplicación</legend>
+          <label>
+            <input
+              type="radio"
+              name="theme"
+              value="light"
+              checked={theme === 'light'}
+              onChange={() => setTheme('light')}
+            />
+            Claro
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="theme"
+              value="dark"
+              checked={theme === 'dark'}
+              onChange={() => setTheme('dark')}
+            />
+            Oscuro
+          </label>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={toggleTheme}
+          >
+            Alternar
+          </button>
+        </fieldset>
 
         <button type="submit" className="btn btn-primary" disabled={saving}>
           {saving ? 'Guardando…' : 'Guardar cambios'}

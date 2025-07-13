@@ -67,7 +67,7 @@
 /* --- Labels --- */
 .form-label {
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   font-size: 0.95rem;
   margin-bottom: 0.5rem;
 }

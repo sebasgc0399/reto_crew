@@ -12,9 +12,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  /* Si quieres bajarlo un poco, desplázalo con translateY */
-  /* transform: translateY(10%);  */
 }
 
 /* --- ESTILOS DEL TEXTO DEL LOADER --- */
@@ -24,7 +21,7 @@
   font-weight: 500; /* Un peso medio para que resalte sin ser negrita excesiva */
 
   /* Color para asegurar visibilidad en diferentes fondos */
-  color: #333; /* Un gris oscuro que suele tener buen contraste */
+  color: var(--text-primary); /* Un gris oscuro que suele tener buen contraste */
 
   /* Espaciado con el spinner */
   margin-top: 1rem; /* Aumenta ligeramente el espacio entre el spinner y el texto */
@@ -47,11 +44,12 @@
 
 /* --- ESTILOS DEL LOADER (Mantenemos los que ya teníamos o los ajustamos) --- */
 .loader {
-  width: 16px;
-  height: 16px;
+  width: 16px; height: 16px;
   border-radius: 50%;
-  background-color: #007bff;
-  box-shadow: 32px 0 #007bff, -32px 0 #007bff;
+  background-color: var(--primary-color);
+  box-shadow:
+    32px 0 var(--primary-alpha-25),
+   -32px 0 var(--primary-alpha-25);
   position: relative;
   animation: flash 0.3s ease-in infinite alternate;
 }
@@ -62,7 +60,7 @@
   position: absolute;
   left: -64px;
   top: 0;
-  background: #007bff;
+  background: var(--primary-color);
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -79,45 +77,50 @@
 }
 
 @keyframes flash {
-  0%,
-  100% {
-    background-color: rgba(0, 123, 255, 0.25);
-    box-shadow: 32px 0 rgba(0, 123, 255, 0.25), -32px 0 rgba(0, 123, 255, 0.25);
+  0%, 100% {
+    background-color: var(--loader-light);
+    box-shadow:
+      32px 0 var(--loader-light),
+     -32px 0 var(--loader-light);
   }
   25% {
-    background-color: rgba(0, 123, 255, 0.25);
-    box-shadow: 32px 0 rgba(0, 123, 255, 0.25), -32px 0 #007bff;
+    background-color: var(--loader-light);
+    box-shadow:
+      32px 0 var(--loader-light),
+     -32px 0 var(--loader-color);
   }
   50% {
-    background-color: #007bff;
-    box-shadow: 32px 0 rgba(0, 123, 255, 0.25), -32px 0 rgba(0, 123, 255, 0.25);
+    background-color: var(--loader-color);
+    box-shadow:
+      32px 0 var(--loader-light),
+     -32px 0 var(--loader-light);
   }
   75% {
-    background-color: rgba(0, 123, 255, 0.25);
-    box-shadow: 32px 0 #007bff, -32px 0 rgba(0, 123, 255, 0.25);
+    background-color: var(--loader-light);
+    box-shadow:
+      32px 0 var(--loader-color),
+     -32px 0 var(--loader-light);
   }
 }
 
 @keyframes hitL {
   0% {
     transform: rotate(45deg);
-    background-color: #007bff;
+    background-color: var(--loader-color);
   }
-  25%,
-  100% {
+  25%, 100% {
     transform: rotate(0deg);
-    background-color: rgba(0, 123, 255, 0.25);
+    background-color: var(--loader-light);
   }
 }
 
 @keyframes hitR {
-  0%,
-  75% {
+  0%, 75% {
     transform: rotate(0deg);
-    background-color: rgba(0, 123, 255, 0.25);
+    background-color: var(--loader-light);
   }
   100% {
     transform: rotate(-45deg);
-    background-color: #007bff;
+    background-color: var(--loader-color);
   }
 }

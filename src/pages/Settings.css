@@ -6,50 +6,50 @@
   width: 100%;
   max-width: 480px; /* Igual que ChallengeForm */
   margin: 0 auto;
-  padding: 1rem;
+  padding: var(--spacing-md);
 }
 
 /* --- Formulario --- */
 .settings-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  animation: slideUp 0.3s ease-out;
+  gap: var(--spacing-lg);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  animation: slideUp var(--transition-normal) ease-out;
 }
 
 /* --- Botón --- */
 .settings-form .btn {
-  padding: 0.875rem 1.5rem;
-  font-size: 1rem;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .settings-form .btn-primary {
   background: var(--primary-color);
-  color: #fff;
-  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+  color: var(--on-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-form .btn-primary:hover:not(:disabled) {
-  background: #1565c0;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .settings-form .btn-primary:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .settings-form .btn:disabled {
@@ -58,29 +58,72 @@
   transform: none;
 }
 
+/* ─── Estilos para selección de tema ─────────── */
+.settings-theme {
+  border: 1px solid var(--border-color);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  background: var(--bg-subtle);
+}
+
+.settings-theme legend {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.settings-theme label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+}
+
+.settings-theme input[type="radio"] {
+  accent-color: var(--primary-color);
+}
+
+.settings-theme .btn-secondary {
+  align-self: flex-start;
+  margin-top: var(--spacing-sm);
+  background: var(--secondary-color);
+  color: var(--on-secondary);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.settings-theme .btn-secondary:hover {
+  background: var(--secondary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
 /* --- Mensajes de Estado --- */
 .status {
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
   font-weight: 500;
   text-align: center;
-  margin-top: 1rem;
+  margin-top: var(--spacing-md);
   opacity: 0;
   transform: translateY(10px);
-  animation: statusAppear 0.3s ease-out forwards;
+  animation: statusAppear var(--transition-normal) ease-out forwards;
 }
 
 .status--success {
-  background: #f0f9ff;
-  border: 1px solid #bfdbfe;
-  color: #1e40af;
+  background: var(--bg-success);
+  border: 1px solid var(--border-success);
+  color: var(--primary-color);
 }
 
 .status--error {
-  background: #fff5f5;
-  border: 1px solid #feb2b2;
-  color: #c53030;
+  background: var(--bg-error);
+  border: 1px solid var(--border-error);
+  color: var(--border-error);
 }
 
 /* --- Animaciones --- */
@@ -109,15 +152,15 @@
 /* --- Responsive móviles pequeños --- */
 @media (max-width: 480px) {
   .settings-container {
-    padding: 0.75rem;
+    padding: var(--spacing-sm);
   }
   .settings-form {
-    padding: 1.5rem;
-    border-radius: 8px;
-    gap: 1.25rem;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    gap: var(--spacing-md);
   }
   .settings-form .btn {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
   }
 }
