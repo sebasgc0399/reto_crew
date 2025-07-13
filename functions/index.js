@@ -1,5 +1,6 @@
 // functions/index.js
 const admin = require("firebase-admin");
+
 const {
   onDocumentCreated,
   onDocumentUpdated,
@@ -198,3 +199,18 @@ exports.onUserWeightChange = onDocumentUpdated(
     }
   }
 );
+
+exports.onUserNameDelete = onDocumentUpdated(
+  'users/{uid}',
+  async (event) => {
+    const before = event.data.before.data()
+    const after  = event.data.after.data()
+    const { uid } = event.params
+
+    // solo si antes había name y ahora no…
+    if (before.name && !after.name) {
+      // borra el displayName de Auth
+      await admin.auth().updateUser(uid, { displayName: null })
+    }
+  }
+)

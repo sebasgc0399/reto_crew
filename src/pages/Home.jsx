@@ -1,42 +1,70 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebaseConfig';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { GoogleAuthProvider, signInWithPopup, updateProfile, getAdditionalUserInfo } from 'firebase/auth';
+import { doc, setDoc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import GoogleButton from '../components/GoogleButton';
+import NamePopup     from '../components/NamePopup';
 import Lottie from 'lottie-react';
 import pushupAnimation from '../animations/pushup.json';
 import './Home.css';
 
 export default function Home() {
-  const [error, setError] = useState('');
-  const navigate       = useNavigate();
+  const [error, setError]         = useState('');
+  const [showNamePopup, setShowNamePopup] = useState(false);
+  const [pendingUser, setPendingUser]     = useState(null);
+  const navigate = useNavigate();
 
   async function handleGoogleAuth() {
     const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-      const fu      = result.user;
-      const userRef = doc(db, 'users', fu.uid);
+      const result = await signInWithPopup(auth, provider)
+      const fu      = result.user
+      const info    = getAdditionalUserInfo(result)
+      const isNew   = !!info?.isNewUser
+      const userRef = doc(db, 'users', fu.uid)
 
-      // Solo crea createdAt si es nuevo
-      const isNew = result._tokenResponse?.isNewUser;
       await setDoc(userRef, {
         uid:       fu.uid,
-        name:      fu.displayName,
         email:     fu.email,
         photoURL:  fu.photoURL,
         lastLogin: serverTimestamp(),
         ...(isNew && { createdAt: serverTimestamp() })
-      }, { merge: true });
+      }, { merge: true })
+      
+      const snap = await getDoc(userRef)
+      const fsHasName = !!snap.data()?.name
 
-      // redirige al dashboard
-      navigate('/dashboard', { replace: true });
+      if (!isNew && fsHasName) {
+        navigate('/dashboard', { replace: true })
+      } else {
+        setPendingUser(fu)
+        setShowNamePopup(true)
+      }
     } catch (e) {
       console.error(e);
       setError('No fue posible autenticarse. Intenta de nuevo.');
     }
   }
+
+  const handleNameSubmit = async trimmedName => {
+    if (!pendingUser) return;
+    try {
+      // 1) Actualizar displayName en Auth
+      await updateProfile(auth.currentUser, { displayName: trimmedName });
+
+      // 2) Actualizar name en Firestore
+      const userRef = doc(db, 'users', pendingUser.uid);
+      await updateDoc(userRef, { name: trimmedName });
+
+      // 3) Cerrar popup y redirigir
+      setShowNamePopup(false);
+      navigate('/dashboard', { replace: true });
+    } catch (e) {
+      console.error('Error guardando nombre:', e);
+      setError('No fue posible guardar el nombre. Intenta de nuevo.');
+    }
+  };
 
   return (
     <div className="home-container">
@@ -51,6 +79,14 @@ export default function Home() {
       <div className="home-animation">
         <Lottie animationData={pushupAnimation} loop={false} />
       </div>
+
+      <NamePopup
+        open={showNamePopup}
+        onClose={() => setShowNamePopup(false)}
+        onSubmit={handleNameSubmit}
+        currentUid={pendingUser?.uid}
+      />
+
     </div>
   );
 }
