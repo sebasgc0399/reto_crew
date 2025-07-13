@@ -151,9 +151,46 @@ exports.onNewEntry = onDocumentCreated(
  *  • participants/{uid}  → recalcRefWeight
  *  • challenges/{chId}   → recalcAllPoints si cambió refWeight
  */
-exports.recalcOnCreate = onDocumentCreated("challenges/{chId}/participants/{uid}", recalcRefWeight);
-exports.recalcOnUpdate = onDocumentUpdated("challenges/{chId}/participants/{uid}", recalcRefWeight);
-exports.recalcOnDelete = onDocumentDeleted("challenges/{chId}/participants/{uid}", recalcRefWeight);
+exports.recalcOnCreate = onDocumentCreated(
+  "challenges/{chId}/participants/{uid}",
+  async event => {
+    const { chId, uid } = event.params;
+    console.log("🔥 recalcOnCreate:", chId, uid);
+    await recalcRefWeight(chId);
+  }
+);
+
+exports.recalcOnUpdate = onDocumentUpdated(
+  "challenges/{chId}/participants/{uid}",
+  async event => {
+    const { chId, uid } = event.params;
+    console.log("🔥 recalcOnUpdate:", chId, uid);
+    await recalcRefWeight(chId);
+  }
+);exports.onParticipantDeleted = onDocumentDeleted(
+  "challenges/{chId}/participants/{uid}",
+  async event => {
+    const { chId, uid } = event.params;
+
+    // 1) Borra todas las entries de este usuario
+    const entriesSnap = await db
+      .collection("challenges").doc(chId)
+      .collection("entries")
+      .where("userId", "==", uid)
+      .get();
+
+    const batch = db.batch();
+    entriesSnap.forEach(eDoc => batch.delete(eDoc.ref));
+
+    // 2) Recalcula refWeight
+    await recalcRefWeight(chId);
+
+    // 3) Ejecuta el batch (solo deletes de entries)
+    await batch.commit();
+
+    console.log(`→ Eliminadas entradas de ${uid} en reto ${chId} y recalculado refWeight`);
+  }
+);
 
 exports.recalcPointsOnRefWeightChange = onDocumentUpdated(
   "challenges/{chId}",
