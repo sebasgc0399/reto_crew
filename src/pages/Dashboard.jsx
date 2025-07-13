@@ -15,6 +15,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebaseConfig';
 import { Link } from 'react-router-dom';
 import Loader                        from '../components/Loader';
+import PageTitle from '../components/PageTitle';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -133,9 +134,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      <h2 className="dashboard-title">
-        ¡Hola, {user?.displayName || 'Entrenador'}!
-      </h2>
+      <PageTitle>¡Hola, {user?.displayName || 'Entrenador'}!</PageTitle>
 
       {activeChallenges.length === 0 ? (
         <div className="no-challenges">

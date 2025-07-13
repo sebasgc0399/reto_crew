@@ -5,6 +5,8 @@ import { GoogleAuthProvider, signInWithPopup, updateProfile, getAdditionalUserIn
 import { doc, setDoc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import GoogleButton from '../components/GoogleButton';
 import NamePopup     from '../components/NamePopup';
+import PageTitle from '../components/PageTitle';
+import Subtitle from '../components/Subtitle';
 import Lottie from 'lottie-react';
 import pushupAnimation from '../animations/pushup.json';
 import './Home.css';
@@ -68,10 +70,10 @@ export default function Home() {
 
   return (
     <div className="home-container">
-      <h1 className="home-title">¡Bienvenido a RetoCrew!</h1>
-      <p className="home-subtitle">
+      <PageTitle level={1}>¡Bienvenido a RetoCrew!</PageTitle>
+      <Subtitle>
         Registra tus flexiones y compite con amigos de manera justa.
-      </p>
+      </Subtitle>
 
       <GoogleButton onClick={handleGoogleAuth} />
       {error && <p className="text-danger mt-2">{error}</p>}

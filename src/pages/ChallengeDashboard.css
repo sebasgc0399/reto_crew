@@ -8,25 +8,6 @@
   flex: 1;
 }
 
-/* --- Estilos para Títulos --- */
-.dashboard-container h2,
-.dashboard-container h3 {
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #eee;
-}
-
-.dashboard-container h2 {
-  font-size: clamp(1.5rem, 5vw, 1.8rem);
-}
-
-.dashboard-container h3 {
-  font-size: clamp(1.2rem, 4vw, 1.4rem);
-  margin-top: 2rem; /* Espacio extra antes de la tabla */
-}
-
-
 /* --- Leaderboard Moderno --- */
 /* Usamos la lista ordenada para numerar automáticamente las posiciones */
 .leaderboard {

@@ -9,16 +9,6 @@
   flex: 1;
 }
 
-/* --- Título --- */
-.entry-form-container h2 {
-  color: var(--primary-color);
-  font-size: clamp(1.5rem, 5vw, 1.8rem);
-  margin: 0 0 1.5rem 0;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #eee;
-  text-align: center;
-}
-
 /* --- Mensajes de Error --- */
 .entry-form-container .error {
   background: #fff5f5;

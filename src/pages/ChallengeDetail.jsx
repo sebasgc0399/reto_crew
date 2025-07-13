@@ -9,6 +9,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import Loader from '../components/Loader';
+import PageTitle from '../components/PageTitle';
 import './ChallengeDetail.css';
 
 export default function ChallengeDetail() {
@@ -68,7 +69,7 @@ export default function ChallengeDetail() {
 
   return (
     <div className="challenge-detail">
-      <h2 className="challenge-detail__title">{title}</h2>
+      <PageTitle>{title}</PageTitle>
       <p className="challenge-detail__dates">
         {startText} → {endText}
       </p>

@@ -17,6 +17,7 @@ import {
 import Loader from '../components/Loader';
 import TextField from '../components/form/TextField';
 import NumberField from '../components/form/NumberField';
+import PageTitle from '../components/PageTitle';
 import './Settings.css';
 
 export default function Settings() {
@@ -107,7 +108,7 @@ export default function Settings() {
 
   return (
     <div className="settings-container">
-      <h2>Configuraciones</h2>
+      <PageTitle>Configuraciones</PageTitle>
       <form className="settings-form" onSubmit={handleSubmit}>
         <TextField
           label="Tu nombre"

@@ -8,32 +8,12 @@
   width: 100%; /* Asegura que ocupe todo el ancho disponible */
 }
 
-.home-title {
-  /* Usamos clamp() para una tipografía fluida.
-     Tamaño mínimo: 1.8rem, tamaño preferido: 5vw, tamaño máximo: 2.5rem.
-     Se ajustará automáticamente al ancho de la pantalla. */
-  font-size: clamp(1.8rem, 5vw, 2.5rem);
-  margin-bottom: 1rem;
-  color: var(--primary-color);
-}
-
-.home-subtitle {
-  font-size: clamp(1rem, 3.5vw, 1.2rem);
-  margin-bottom: 2rem;
-  color: #666; /* Un poco más suave que el negro puro */
-  max-width: 600px; /* Evita que las líneas sean muy largas en pantallas grandes */
-  margin-left: auto;
-  margin-right: auto;
-}
-
 .home-buttons {
   margin-bottom: 1rem;
 }
 
 .home-animation {
   margin-top: auto;
-  
-  /* --- CAMBIO CRÍTICO --- */
   /* Hacemos la animación fluida */
   max-width: 300px;  /* Tendrá un máximo de 300px */
   width: 80%;        /* Pero ocupará el 80% del contenedor si es más pequeño */

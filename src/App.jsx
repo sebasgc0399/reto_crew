@@ -11,6 +11,7 @@ import ChallengeDetail        from './pages/ChallengeDetail';
 import JoinChallenge          from './pages/JoinChallenge';
 import EntryForm              from './pages/EntryForm';
 import ChallengeDashboard     from './pages/ChallengeDashboard';
+import MyChallenges           from './pages/MyChallenges';
 
 import ProtectedRoute         from './components/ProtectedRoute';
 import PublicRoute            from './components/PublicRoute';
@@ -60,6 +61,16 @@ export default function App() {
                 <PublicRoute>
                   <Home />
                 </PublicRoute>
+              }
+            />
+
+            {/* Listado de retos */}
+            <Route
+              path="/my-challenges"
+              element={
+                <ProtectedRoute>
+                  <MyChallenges />
+                </ProtectedRoute>
               }
             />
 

@@ -11,6 +11,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import Loader from '../components/Loader';
+import PageTitle from '../components/PageTitle';
 import './ChallengeDashboard.css';
 
 export default function ChallengeDashboard() {
@@ -108,7 +109,7 @@ export default function ChallengeDashboard() {
 
   return (
     <div className="dashboard-container">
-      <h2>Leaderboard</h2>
+      <PageTitle>Leaderboard</PageTitle>
       <ol className="leaderboard">
         {participants.map(p => {
           const isMe = user?.uid === p.uid;
@@ -124,7 +125,7 @@ export default function ChallengeDashboard() {
         })}
       </ol>
 
-      <h3>Entradas Recientes</h3>
+      <PageTitle level={3}>Entradas Recientes</PageTitle>
       <table className="entries-table">
         <thead>
           <tr>

@@ -9,25 +9,6 @@
   padding: 1rem;
 }
 
-/* --- Encabezado de la Lista --- */
-.challenges-list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap; /* Permite que los elementos se apilen si no caben */
-  gap: 1rem; /* Espacio entre el título y el botón si se apilan */
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #eee;
-}
-
-.challenges-list-header h2 {
-  /* Tipografía fluida y consistente */
-  font-size: clamp(1.5rem, 5vw, 1.8rem);
-  color: var(--primary-color);
-  margin: 0; /* Quitamos el margen por defecto del h2 */
-}
-
 /* --- Rejilla de Retos (Grid Layout) --- */
 /* Cambiamos a CSS Grid para un layout más robusto.
    Esta es la forma moderna y recomendada para rejillas de tarjetas. */
@@ -51,3 +32,4 @@
   color: #666;
   font-style: italic;
 }
+

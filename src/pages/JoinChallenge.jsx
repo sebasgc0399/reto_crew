@@ -12,6 +12,7 @@ import {
 import { db } from '../firebaseConfig';
 import NumberField from '../components/form/NumberField';
 import Loader      from '../components/Loader';
+import PageTitle from '../components/PageTitle';
 import './JoinChallenge.css';
 
 export default function JoinChallenge() {
@@ -108,7 +109,7 @@ export default function JoinChallenge() {
 
   return (
     <div className="join-challenge-container">
-      <h2>Únete a: {challenge.title}</h2>
+      <PageTitle>Únete a: {challenge.title}</PageTitle>
 
       <form onSubmit={handleSubmit} className="join-challenge-form">
         <NumberField

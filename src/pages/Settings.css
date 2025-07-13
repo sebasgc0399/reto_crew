@@ -9,16 +9,6 @@
   padding: 1rem;
 }
 
-/* --- Título --- */
-.settings-container h2 {
-  color: var(--primary-color);
-  font-size: clamp(1.5rem, 5vw, 1.8rem);
-  margin: 0 0 1.5rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #eee;
-  text-align: center;
-}
-
 /* --- Formulario --- */
 .settings-form {
   display: flex;

@@ -18,6 +18,7 @@ import TextField     from '../components/form/TextField';
 import TextAreaField from '../components/form/TextAreaField';
 import NumberField   from '../components/form/NumberField';
 import Loader        from '../components/Loader';
+import PageTitle     from '../components/PageTitle';
 
 import { ACTIVITIES } from '../constants/activities';
 
@@ -223,7 +224,7 @@ export default function ChallengeForm() {
 
   return (
     <div className="challenge-form-container">
-      <h2>{titleText}</h2>
+      <PageTitle>{titleText}</PageTitle>
       {errors.global && <div className="alert alert-danger">{errors.global}</div>}
 
       <form className="challenge-form" onSubmit={handleSubmit} noValidate>
@@ -293,11 +294,7 @@ export default function ChallengeForm() {
             label="Tu peso (kg) *"
             value={userWeight}
             onChange={val => {
-              if (val === '') {
-                setUserWeight('');
-              } else {
-                setUserWeight(Number(val));
-              }
+              setUserWeight(val);
             }}
             inputProps={{inputMode: 'decimal',pattern: '[0-9]+([.,][0-9]{1,2})?',min: 1,max: 999,step: '0.1',placeholder: 'Ej: 70.5'}}
             required

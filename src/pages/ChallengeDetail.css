@@ -10,20 +10,13 @@
 }
 
 /* --- Bloque de Información Superior --- */
-/* Agrupamos la información principal en un bloque visual. */
-.challenge-detail__title {
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
-  /* Hacemos la tipografía fluida y adaptable */
-  font-size: clamp(1.6rem, 5vw, 2rem);
-}
 
 .challenge-detail__dates {
   font-size: 0.9rem;
   color: #555;
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid #eee; /* Separador visual */
+  border-bottom: 1px solid #eee;
 }
 
 .challenge-detail__desc {

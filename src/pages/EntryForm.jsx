@@ -13,6 +13,7 @@ import { calcularPuntos }              from '../utils/points';
 import { db }                          from '../firebaseConfig';
 import NumberField                      from '../components/form/NumberField';
 import Loader                          from '../components/Loader';
+import PageTitle from '../components/PageTitle';
 import './EntryForm.css';
 
 export default function EntryForm() {
@@ -110,7 +111,7 @@ export default function EntryForm() {
 
   return (
     <div className="entry-form-container">
-      <h2>Registrar {activity.label}</h2>
+      <PageTitle>Registrar {activity.label}</PageTitle>
       {error && <p className="error">{error}</p>}
 
       <form onSubmit={handleSubmit} className="entry-form">
