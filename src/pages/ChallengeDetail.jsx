@@ -4,12 +4,14 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   doc,
   getDoc,
-  collection,
-  getDocs
 } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import Loader from '../components/Loader';
 import PageTitle from '../components/PageTitle';
+import ParticipantsList from '../components/ParticipantsList';
+import Subtitle from '../components/Subtitle';
+import ChallengeDates from '../components/ChallengeDates';
+
 import './ChallengeDetail.css';
 
 export default function ChallengeDetail() {
@@ -17,7 +19,6 @@ export default function ChallengeDetail() {
   const { user } = useAuth();
 
   const [challenge, setChallenge] = useState(null);
-  const [participantsCount, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isParticipant, setIsParticipant] = useState(false);
 
@@ -34,13 +35,6 @@ export default function ChallengeDetail() {
       const data = chSnap.data();
       setChallenge({ id: chSnap.id, ...data });
 
-      // 2) Conteo de participantes
-      const partsSnap = await getDocs(
-        collection(db, 'challenges', id, 'participants')
-      );
-      setCount(partsSnap.size);
-
-      // 3) ¿Está el usuario inscrito?
       const myPartSnap = await getDoc(
         doc(db, 'challenges', id, 'participants', user.uid)
       );
@@ -70,13 +64,13 @@ export default function ChallengeDetail() {
   return (
     <div className="challenge-detail">
       <PageTitle>{title}</PageTitle>
-      <p className="challenge-detail__dates">
-        {startText} → {endText}
-      </p>
-      {description && <p className="challenge-detail__desc">{description}</p>}
-      <p className="challenge-detail__participants">
-        Participantes: {participantsCount}
-      </p>
+      <ChallengeDates startText={startText} endText={endText}/>
+
+      {description && <Subtitle>{description}</Subtitle>}
+    
+      {isParticipant && (
+        <ParticipantsList challengeId={id} />
+      )}
 
       <div className="challenge-detail__actions">
         {!isParticipant ? (

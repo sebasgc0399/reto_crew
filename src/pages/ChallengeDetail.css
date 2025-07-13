@@ -9,34 +9,6 @@
   /* El padding ya viene de App-main, no es necesario aquí */
 }
 
-/* --- Bloque de Información Superior --- */
-
-.challenge-detail__dates {
-  font-size: 0.9rem;
-  color: #555;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
-}
-
-.challenge-detail__desc {
-  margin-bottom: 1.5rem;
-  line-height: 1.6; /* Mejora la legibilidad */
-  color: #333;
-}
-
-/* --- Contador de Participantes --- */
-/* Le damos un estilo más prominente, como una estadística. */
-.challenge-detail__participants {
-  background-color: #f0f4ff; /* Un color de fondo suave asociado al primario */
-  color: var(--primary-color);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-weight: 500;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
 /* --- Bloque de Acciones (Botones) --- */
 /* Empujamos este bloque al final de la pantalla para una mejor UX móvil. */
 .challenge-detail__actions {

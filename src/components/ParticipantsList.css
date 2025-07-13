@@ -1,0 +1,182 @@
+/* --- Contenedor Principal --- */
+.participants-list {
+  margin: var(--spacing-xl) 0;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* --- Lista de Participantes --- */
+.participants-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  /* Mejora el scroll en listas largas */
+  -webkit-overflow-scrolling: touch;
+}
+
+.participants-list li {
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-primary);
+  transition: background-color var(--transition-fast);
+  
+  /* Mejorar la interacción táctil */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  
+  /* Añadir un icono de usuario */
+  position: relative;
+  padding-left: calc(var(--spacing-lg) + 1.5rem);
+}
+
+/* Icono de usuario usando pseudo-elemento */
+.participants-list li::before {
+  content: '👤';
+  position: absolute;
+  left: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Remover el borde del último elemento */
+.participants-list li:last-child {
+  border-bottom: none;
+}
+
+/* Estados interactivos para dispositivos táctiles */
+.participants-list li:active {
+  background: var(--bg-subtle);
+}
+
+/* Hover solo para dispositivos con mouse */
+@media (hover: hover) and (pointer: fine) {
+  .participants-list li:hover {
+    background: var(--bg-subtle);
+  }
+}
+
+/* --- Estado vacío --- */
+.participants-list .empty-state {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  font-style: italic;
+}
+
+/* --- Mejoras para pantallas pequeñas --- */
+@media (max-width: 480px) {
+  .participants-list {
+    margin: var(--spacing-lg) 0;
+    border-radius: var(--radius-md);
+  }
+  
+  .participants-list li {
+    padding: var(--spacing-sm) var(--spacing-md);
+    padding-left: calc(var(--spacing-md) + 1.5rem);
+    font-size: var(--font-size-sm);
+  }
+  
+  .participants-list li::before {
+    left: var(--spacing-md);
+  }
+}
+
+/* --- Mejoras para pantallas grandes --- */
+@media (min-width: 768px) {
+  .participants-list {
+    margin: var(--spacing-xl) 0 var(--spacing-2xl);
+  }
+  
+  .participants-list li {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    padding-left: calc(var(--spacing-xl) + 1.5rem);
+  }
+  
+  .participants-list li::before {
+    left: var(--spacing-xl);
+  }
+}
+
+/* --- Animación de entrada --- */
+.participants-list {
+  animation: participantsSlideIn 0.3s ease-out;
+}
+
+@keyframes participantsSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.participants-list li {
+  animation: participantFadeIn 0.2s ease-out;
+  animation-fill-mode: both;
+}
+
+/* Animación escalonada para cada participante */
+.participants-list li:nth-child(1) { animation-delay: 0.1s; }
+.participants-list li:nth-child(2) { animation-delay: 0.15s; }
+.participants-list li:nth-child(3) { animation-delay: 0.2s; }
+.participants-list li:nth-child(4) { animation-delay: 0.25s; }
+.participants-list li:nth-child(5) { animation-delay: 0.3s; }
+.participants-list li:nth-child(n+6) { animation-delay: 0.35s; }
+
+@keyframes participantFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* --- Reducir animaciones si el usuario lo prefiere --- */
+@media (prefers-reduced-motion: reduce) {
+  .participants-list,
+  .participants-list li {
+    animation: none !important;
+  }
+  
+  .participants-list li {
+    transition: none !important;
+  }
+}
+
+/* --- Mejoras de accesibilidad --- */
+.participants-list:focus-within {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* --- Variant para mostrar contador --- */
+.participants-list.with-counter::after {
+  content: attr(data-count) ' participantes';
+  display: block;
+  text-align: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-subtle);
+  font-weight: 500;
+}

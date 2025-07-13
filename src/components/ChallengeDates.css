@@ -1,0 +1,86 @@
+/* --- Contenedor Principal --- */
+.challenge-dates {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: var(--spacing-md) 0;
+  text-align: center;
+}
+
+/* --- Icono --- */
+.challenge-dates__icon {
+  font-size: var(--font-size-sm);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* --- Texto de fechas --- */
+.challenge-dates__text {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  line-height: 1.3;
+}
+
+.challenge-dates__start,
+.challenge-dates__end {
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.challenge-dates__separator {
+  color: var(--text-muted);
+  font-weight: 300;
+  margin: 0 var(--spacing-xs);
+  font-size: 0.9em;
+}
+
+/* --- Variantes --- */
+.challenge-dates.compact {
+  margin: var(--spacing-sm) 0;
+  font-size: var(--font-size-xs);
+}
+
+.challenge-dates.no-margin {
+  margin: 0;
+}
+
+/* --- Mejoras para pantallas pequeñas --- */
+@media (max-width: 480px) {
+  .challenge-dates {
+    font-size: var(--font-size-xs);
+    margin: var(--spacing-sm) 0;
+    gap: var(--spacing-xs);
+  }
+  
+  .challenge-dates__text {
+    gap: var(--spacing-xs);
+  }
+  
+  .challenge-dates__separator {
+    margin: 0 2px;
+  }
+  
+  .challenge-dates__icon {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* --- Mejoras para pantallas grandes --- */
+@media (min-width: 768px) {
+  .challenge-dates {
+    font-size: var(--font-size-base);
+    margin: var(--spacing-lg) 0;
+  }
+}
+
+/* --- Reducir animaciones si el usuario lo prefiere --- */
+@media (prefers-reduced-motion: reduce) {
+  .challenge-dates * {
+    transition: none !important;
+  }
+}
