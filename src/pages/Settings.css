@@ -60,39 +60,94 @@
 
 /* ─── Estilos para selección de tema ─────────── */
 .settings-theme {
-  border: 1px solid var(--border-color);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
+  border: none;
+  background: var(--bg-subtle);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
-  background: var(--bg-subtle);
-}
-
-.settings-theme legend {
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.settings-theme label {
-  display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  font-size: var(--font-size-base);
-  color: var(--text-secondary);
+  gap: var(--spacing-md);
+  max-width: 320px;
+  margin: var(--spacing-md) auto;
 }
 
-.settings-theme input[type="radio"] {
-  accent-color: var(--primary-color);
+/* ─── Título ───────── */
+.settings-theme legend {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: var(--spacing-sm);
 }
 
+/* ─── Toggle Switch ───────── */
+.theme-switch {
+  position: relative;
+}
+.theme-switch input {
+  /* ocultamos el checkbox real */
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.switch-track {
+  width: 60px;
+  height: 30px;
+  background: var(--border-light);
+  border-radius: 999px;
+  position: relative;
+  transition: background 0.3s ease;
+  cursor: pointer;
+}
+.switch-thumb {
+  width: 26px;
+  height: 26px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  transition: transform 0.3s ease, background 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Cuando está checked → dark mode */
+.theme-switch input:checked + label .switch-track {
+  background: var(--primary-color);
+}
+.theme-switch input:checked + label .switch-thumb {
+  transform: translateX(30px);
+  background: var(--bg-primary);
+  border-color: var(--primary-hover);
+}
+
+/* Hover states */
+.theme-switch:hover .switch-track {
+  background: var(--border-color);
+}
+.theme-switch input:checked + label:hover .switch-track {
+  background: var(--primary-hover);
+}
+
+/* ─── Botón alternar extra ───────── */
 .settings-theme .btn-secondary {
-  align-self: flex-start;
-  margin-top: var(--spacing-sm);
   background: var(--secondary-color);
   color: var(--on-secondary);
   box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.settings-theme .btn-secondary:hover:not(:disabled) {
+  background: var(--secondary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .settings-theme .btn-secondary:hover {

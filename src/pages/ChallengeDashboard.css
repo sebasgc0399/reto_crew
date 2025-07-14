@@ -1,160 +1,143 @@
 /* --- Contenedor Principal --- */
-/* Lo integramos al layout de la app, eliminando el ancho fijo y el margen. */
 .dashboard-container {
   width: 100%;
-  padding: 1rem;
+  padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
 /* --- Leaderboard Moderno --- */
-/* Usamos la lista ordenada para numerar automáticamente las posiciones */
 .leaderboard {
-  list-style: none; /* Quitamos los puntos de la lista */
-  counter-reset: leaderboard-counter; /* Iniciamos un contador para los puestos */
+  list-style: none;
+  counter-reset: leaderboard-counter;
   padding: 0;
-  margin-bottom: 2rem;
+  margin-bottom: var(--spacing-xl);
 }
 
 .leaderboard li {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  background-color: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 0.5rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: var(--spacing-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .leaderboard li:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-md);
 }
 
-/* Añadimos el número de la posición con un pseudo-elemento */
+/* Número de posición */
 .leaderboard li::before {
   counter-increment: leaderboard-counter;
   content: counter(leaderboard-counter);
-  font-weight: bold;
-  font-size: 1.1rem;
+  font-weight: 600;
+  font-size: var(--font-size-lg);
   color: var(--primary-color);
-  background-color: #f0f4ff;
+  background: var(--primary-light);
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-
-
-/* Destacamos el Top 3 */
-.leaderboard li:nth-child(1)::before { background-color: #ffd700; color: #4d3e00; } /* Oro */
-.leaderboard li:nth-child(2)::before { background-color: #c0c0c0; color: #3d3d3d; } /* Plata */
-.leaderboard li:nth-child(3)::before { background-color: #cd7f32; color: #fff; } /* Bronce */
+/* Top 3 medallas */
+.leaderboard li:nth-child(1)::before { background: #ffd700; color: #4d3e00; } /* Oro */
+.leaderboard li:nth-child(2)::before { background: #c0c0c0; color: #3d3d3d; } /* Plata */
+.leaderboard li:nth-child(3)::before { background: #cd7f32; color: #fff; }      /* Bronce */
 
 .leaderboard li strong {
-  flex-grow: 1; /* El nombre ocupa el espacio restante */
+  flex-grow: 1;
 }
 
-
-/* --- Tabla de Entradas (Estilos para Desktop > 768px) --- */
+/* --- Tabla de Entradas --- */
 .entries-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .entries-table th,
 .entries-table td {
-  padding: 0.75rem;
+  padding: var(--spacing-sm) var(--spacing-md);
   text-align: left;
-  /* Usamos solo bordes horizontales para un look más limpio */
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .entries-table th {
   background: none;
   font-weight: 600;
-  color: #555;
+  color: var(--text-secondary);
   text-transform: uppercase;
-  font-size: 0.75rem;
+  font-size: var(--font-size-xs);
 }
 
 .entries-table tbody tr:hover {
-  background-color: #f8f9fa;
+  background: var(--bg-subtle);
 }
 
-/* --------------------------------------------------------
-   Destacar tu propia posición en el leaderboard
-   -------------------------------------------------------- */
+/* --- Resaltar tu posición --- */
 .leaderboard li.highlight {
-  background-color: #fff8e1;      /* un amarillo suave */
-  border-color: #ffd54f;          /* dorado claro */
-  box-shadow: 0 0 0 2px #ffd54f;  /* subraya con un anillo dorado */
+  background: var(--highlight-bg);
+  border-color: var(--highlight-border);
+  box-shadow: 0 0 0 2px var(--highlight-border);
   transform: scale(1.02);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform var(--transition-fast),
+              box-shadow var(--transition-fast);
+  animation: pulseHighlight 1.2s ease-out;
 }
 
 .leaderboard li.highlight strong {
-  color: #bf360c;                /* texto un poco más vivo */
+  color: var(--highlight-text);
 }
 
-/* Opcional: añade un pequeño pulso al cargar */
+/* Pulso al cargar */
 @keyframes pulseHighlight {
-  0%   { box-shadow: 0 0 0 0 rgba(255,213,79, 0.6); }
-  70%  { box-shadow: 0 0 0 10px rgba(255,213,79, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255,213,79, 0); }
+  0%   { box-shadow: 0 0 0 0 var(--highlight-pulse); }
+  70%  { box-shadow: 0 0 0 10px rgba(var(--highlight-pulse), 0); }
+  100% { box-shadow: 0 0 0 0 var(--highlight-pulse); }
 }
 
 .leaderboard li.highlight {
   animation: pulseHighlight 1.2s ease-out;
 }
 
-/* --- Tabla Responsiva (Estilos para Móvil < 768px) --- */
+/* --- Tabla Responsiva (Móvil) --- */
 @media (max-width: 767px) {
-  /* Ocultamos los encabezados de la tabla */
   .entries-table thead {
     display: none;
   }
-
-  /* Cada fila (tr) se convierte en una tarjeta */
   .entries-table tr {
     display: block;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--bg-primary);
   }
-
-  /* Cada celda (td) se apila verticalmente */
   .entries-table td {
     display: block;
-    text-align: right; /* Alineamos el valor a la derecha */
-    padding: 0.5rem 0;
-    border-bottom: 1px dashed #eee; /* Separador sutil entre campos */
+    text-align: right;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px dashed var(--border-light);
   }
-  
   .entries-table td:last-child {
-    border-bottom: none; /* Sin borde en el último elemento */
+    border-bottom: none;
   }
-
-  /* Usamos ::before para añadir los encabezados como etiquetas */
   .entries-table td::before {
-    content: attr(data-label); /* Necesitarás añadir data-label en el JSX */
+    content: attr(data-label);
     float: left;
-    font-weight: bold;
-    text-align: left;
-    color: #333;
+    font-weight: 600;
+    color: var(--text-primary);
   }
-
-  /* Aquí definimos el texto de la etiqueta para cada columna, ya que no podemos modificar el JSX */
   .entries-table td:nth-of-type(1)::before { content: "Usuario"; }
   .entries-table td:nth-of-type(2)::before { content: "Actividad"; }
   .entries-table td:nth-of-type(3)::before { content: "Valor"; }

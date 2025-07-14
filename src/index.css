@@ -25,6 +25,12 @@
   --border-error: #feb2b2;
   --border-success: #bfdbfe;
 
+  /* Highlight Light Theme */
+  --highlight-bg: #fff8e1;
+  --highlight-border: #ffd54f;
+  --highlight-text: #bf360c;
+  --highlight-pulse: rgba(255,213,79,0.6);
+
   /* Otros - TEMA CLARO */
   --on-primary: #fff;
   --on-secondary: #fff;
@@ -103,6 +109,12 @@
   --border-light: #505050;
   --border-error: #8b4444;
   --border-success: #4a6b6b;
+
+  /* Highlight Dark Theme */
+  --highlight-bg: rgba(255,213,79,0.15);
+  --highlight-border: rgba(255,213,79,0.5);
+  --highlight-text: #ffd54f;
+  --highlight-pulse: rgba(255,213,79,0.4);
 
   /* Otros - TEMA OSCURO */
   --on-primary: #1a1a1a;

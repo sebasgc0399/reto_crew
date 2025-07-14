@@ -23,7 +23,7 @@ import './Settings.css';
 
 export default function Settings() {
   const { user, loading } = useAuth();
-  const { theme, setTheme, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const [name, setName]   = useState('');
   const [weight, setWeight] = useState(''); 
   const [status, setStatus] = useState({ type: '', msg: '' });
@@ -142,34 +142,31 @@ export default function Settings() {
 
         <fieldset className="settings-theme">
           <legend>Tema de la aplicación</legend>
-          <label>
+
+          <div className="theme-switch">
             <input
-              type="radio"
-              name="theme"
-              value="light"
-              checked={theme === 'light'}
-              onChange={() => setTheme('light')}
+              type="checkbox"
+              id="theme-toggle"
+              checked={theme==='dark'}
+              onChange={toggleTheme}
             />
-            Claro
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="theme"
-              value="dark"
-              checked={theme === 'dark'}
-              onChange={() => setTheme('dark')}
-            />
-            Oscuro
-          </label>
+            <label htmlFor="theme-toggle">
+              <span className="sr-only">Alternar tema</span>
+              <div className="switch-track">
+                <div className="switch-thumb" />
+              </div>
+            </label>
+          </div>
+
           <button
             type="button"
             className="btn btn-secondary"
             onClick={toggleTheme}
           >
-            Alternar
+            {theme==='light' ? 'Modo Oscuro' : 'Modo Claro'}
           </button>
         </fieldset>
+
 
         <button type="submit" className="btn btn-primary" disabled={saving}>
           {saving ? 'Guardando…' : 'Guardar cambios'}
