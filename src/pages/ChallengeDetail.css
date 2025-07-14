@@ -1,39 +1,60 @@
 /* --- Contenedor Principal --- */
-/* Lo integramos al layout de la app, eliminando el ancho fijo.
-   Usamos flexbox para distribuir el contenido verticalmente. */
 .challenge-detail {
   width: 100%;
   display: flex;
   flex-direction: column;
-  flex: 1; /* Ocupa todo el espacio vertical disponible en App-main */
-  /* El padding ya viene de App-main, no es necesario aquí */
+  flex: 1;
 }
 
 /* --- Bloque de Acciones (Botones) --- */
-/* Empujamos este bloque al final de la pantalla para una mejor UX móvil. */
 .challenge-detail__actions {
   display: flex;
-  gap: 1rem;
-  margin-top: auto; /* ¡Magia! Empuja los botones hacia abajo */
-  padding-top: 1rem; /* Espacio por si el contenido llega justo hasta aquí */
+  gap: var(--spacing-md);
+  margin-top: auto;
+  padding-top: var(--spacing-md);
 }
 
-/* Estilo base para los botones dentro de las acciones */
 .challenge-detail__actions .btn {
-  flex-grow: 1; /* Los botones comparten el espacio equitativamente */
+  flex-grow: 1;
   text-align: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
 }
 
-/* --- Estilos para Móvil (< 768px) --- */
+/* Primario y secundario asumiendo uso de .btn-primary / .btn-secondary */
+.challenge-detail__actions .btn-primary {
+  background: var(--primary-color);
+  color: var(--on-primary, #fff);
+  box-shadow: var(--shadow-sm);
+}
+
+.challenge-detail__actions .btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.challenge-detail__actions .btn-secondary {
+  background: var(--secondary-color);
+  color: var(--on-primary, #fff);
+  box-shadow: var(--shadow-sm);
+}
+
+.challenge-detail__actions .btn-secondary:hover:not(:disabled) {
+  background: var(--secondary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* --- Responsive Móvil (<768px) --- */
 @media (max-width: 767px) {
-  /* En móvil, los botones se apilan para ser más fáciles de presionar */
   .challenge-detail__actions {
     flex-direction: column;
   }
+  .challenge-detail__actions .btn {
+    width: 100%;
+  }
 }
-
-/*
-  NOTA: Los estilos para `.participants-list` y `.participant-card`
-  no se han incluido ya que el JSX proporcionado no los renderiza.
-  Los estilos actuales se enfocan en los elementos que sí se muestran.
-*/

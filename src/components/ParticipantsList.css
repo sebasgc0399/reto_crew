@@ -23,7 +23,7 @@
   font-size: var(--font-size-base);
   line-height: 1.5;
   border-bottom: 1px solid var(--border-light);
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
   transition: background-color var(--transition-fast);
 
   /* Mejorar la interacción táctil */
@@ -218,7 +218,7 @@
 }
 
 
-/* --- Menú de tres puntos junto a cada participante --- */
+/* ――― Menú de Opciones (tres puntos) ――― */
 .participants-list__menu {
   position: absolute;
   top: 50%;
@@ -230,11 +230,10 @@
 .participants-list__menu-btn {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
   cursor: pointer;
-  padding: 0 4px;
-  color: #666;
-  transition: color 0.2s ease;
+  transition: color var(--transition-fast);
 }
 
 .participants-list__menu-btn:hover {
@@ -243,35 +242,37 @@
 
 .participants-list__dropdown {
   position: absolute;
-  top: 1.5rem;
+  top: calc(100% + var(--spacing-xs));
   right: 0;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   list-style: none;
   margin: 0;
-  padding: 0.25rem 0;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  padding: var(--spacing-xs) 0;
   min-width: 120px;
   z-index: 20;
 }
 
 .participants-list__dropdown li {
-  padding: 0.5rem 1rem;
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-size: var(--font-size-sm);
   cursor: pointer;
-  font-size: 0.9rem;
   white-space: nowrap;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--transition-fast);
 }
 
 .participants-list__dropdown li:hover {
-  background-color: #f8f9fa;
+  background: var(--bg-subtle);
 }
 
 .participants-list__dropdown li:first-child {
-  border-radius: 6px 6px 0 0;
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
 }
 
 .participants-list__dropdown li:last-child {
-  border-radius: 0 0 6px 6px;
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
 }

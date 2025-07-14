@@ -3,7 +3,7 @@
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -11,13 +11,13 @@
 
 /* --- Mensajes de Error --- */
 .join-challenge-container .error {
-  background: #fff5f5;
-  border: 1px solid #feb2b2;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
-  color: #c53030;
-  font-size: 0.9rem;
+  background: var(--bg-error);
+  border: 1px solid var(--border-error);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  color: var(--border-error);
+  font-size: var(--font-size-sm);
   font-weight: 500;
 }
 
@@ -25,22 +25,23 @@
 .join-challenge-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  gap: var(--spacing-lg);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  animation: slideUp var(--transition-normal) ease-out;
 }
 
 /* --- Botones --- */
 .join-challenge-form .btn {
-  padding: 0.875rem 1.5rem;
-  font-size: 1rem;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
   text-decoration: none;
   text-align: center;
   display: inline-block;
@@ -51,21 +52,21 @@
 /* Botón Primario */
 .join-challenge-form .btn-primary {
   background: var(--primary-color);
-  color: #fff;
-  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+  color: var(--on-primary, #fff);
+  box-shadow: var(--shadow-sm);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.join-challenge-form .btn-primary:hover {
-  background: #1565c0;
+.join-challenge-form .btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
-.join-challenge-form .btn-primary:active {
+.join-challenge-form .btn-primary:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Botón de Link/Volver */
@@ -76,50 +77,61 @@
   font-weight: 500;
 }
 
-.join-challenge-form .btn-link:hover {
+.join-challenge-form .btn-link:hover:not(:disabled) {
   background: var(--primary-color);
-  color: #fff;
+  color: var(--on-primary, #fff);
   transform: translateY(-1px);
   text-decoration: none;
 }
 
-/* --- Información del Reto (opcional para futuras mejoras) --- */
+/* --- Información del Reto --- */
 .challenge-info {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
 .challenge-info h3 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 var(--spacing-sm) 0;
   color: var(--primary-color);
-  font-size: 1.1rem;
+  font-size: var(--font-size-base);
 }
 
 .challenge-info p {
   margin: 0;
-  color: #666;
-  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
   line-height: 1.4;
 }
 
-/* --- Responsive para móviles pequeños --- */
+/* --- Texto de ayuda al final --- */
+.join-challenge-container > p {
+  text-align: center;
+  margin-top: var(--spacing-xl);
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* --- Espaciado entre botones --- */
+.join-challenge-form .btn + .btn {
+  margin-top: var(--spacing-md);
+}
+
+/* --- Responsive móviles pequeños --- */
 @media (max-width: 480px) {
   .join-challenge-container {
-    padding: 0.75rem;
+    padding: var(--spacing-sm);
   }
-  
   .join-challenge-form {
-    padding: 1.5rem;
-    border-radius: 8px;
-    gap: 1.25rem;
+    padding: var(--spacing-lg);
+    gap: var(--spacing-md);
   }
-  
   .join-challenge-form .btn {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
   }
 }
 
@@ -134,16 +146,7 @@
   transform: none;
 }
 
-.join-challenge-form .btn-primary:disabled:hover {
-  background: var(--primary-color);
-  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
-}
-
-/* --- Animación sutil para el formulario --- */
-.join-challenge-form {
-  animation: slideUp 0.3s ease-out;
-}
-
+/* --- Animación de aparición --- */
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -155,16 +158,10 @@
   }
 }
 
-/* --- Estilos adicionales para mejor jerarquía visual --- */
-.join-challenge-container > p {
-  text-align: center;
-  margin-top: 4rem;
-  font-size: 1.1rem;
-  color: #666;
-  font-style: italic;
-}
-
-/* --- Espaciado entre botones --- */
-.join-challenge-form .btn + .btn {
-  margin-top: 0.75rem;
+/* --- Reducir animaciones si lo requiere el usuario --- */
+@media (prefers-reduced-motion: reduce) {
+  .join-challenge-form {
+    animation: none !important;
+    transition: none !important;
+  }
 }
