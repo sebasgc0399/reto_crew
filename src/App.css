@@ -45,7 +45,7 @@ html, body, #root {
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: #fff;
+  color: var(--bg-primary);
   font-size: 1.5rem;
   cursor: pointer;
   padding: 8px; /* Área de toque más grande para móviles */
