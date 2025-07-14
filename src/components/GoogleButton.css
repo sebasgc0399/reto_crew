@@ -8,13 +8,13 @@
 
   /* 2. Estilo visual y de caja */
   padding: 10px 24px;
-  border: 1px solid #dadce0; /* Borde sutil gris, estándar de Google */
+  border: 1px solid var(--border-google); /* Borde sutil gris, estándar de Google */
   border-radius: 24px; /* Bordes completamente redondeados para un look moderno */
-  background-color: #ffffff; /* Fondo blanco */
+  background-color: var(--background-google); /* Fondo blanco */
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Sombra muy sutil */
 
   /* 3. Tipografía */
-  color: #3c4043; /* Color de texto gris oscuro de Google */
+  color: var(--color-google); /* Color de texto gris oscuro de Google */
   font-family: 'Roboto', sans-serif; /* Fuente recomendada por Google */
   font-size: 14px;
   font-weight: 500; /* Peso de fuente medio */
@@ -46,19 +46,19 @@
 
 /* Al pasar el cursor por encima (hover) */
 .btn-google:hover {
-  background-color: #f8f9fa; /* Un gris muy claro para feedback visual */
+  background-color: var(--background-google-hover); /* Un gris muy claro para feedback visual */
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 /* Al hacer clic (activo) */
 .btn-google:active {
-  background-color: #f1f3f4;
+  background-color: var(--background-google-active);
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15) inset; /* Sombra interior para efecto "presionado" */
   transform: scale(0.98);
 }
 
 /* Foco para accesibilidad (navegación con teclado) */
 .btn-google:focus-visible {
-  outline: 2px solid #4285F4; /* Outline azul de Google */
+  outline: 2px solid var(--background-google-focus); /* Outline azul de Google */
   outline-offset: 2px;
 }

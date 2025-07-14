@@ -62,6 +62,14 @@
   --loader-color: rgba(var(--loader-rgb), 1);
   /* 25% de opacidad */
   --loader-light: rgba(var(--loader-rgb), 0.25);
+
+  /* Colores GoogleButton para Tema Claro */
+  --border-google: #dadce0;
+  --background-google: #ffffff;
+  --background-google-hover: #f8f9fa;
+  --background-google-active: #f1f3f4;
+  --background-google-focus: #4285F4;
+  --color-google: #3c4043;
   
   /* Transiciones */
   --transition-fast: 0.15s ease;
@@ -133,6 +141,14 @@
   --loader-color: rgba(var(--loader-rgb), 1);
   /* 25% de opacidad */
   --loader-light: rgba(var(--loader-rgb), 0.25);
+
+  /* Colores GoogleButton para Tema Oscuro */
+  --border-google: #5f6368; /* Un gris más claro que el fondo para mantener el borde visible */
+  --background-google: #202124; /* Fondo oscuro principal, estándar en apps de Google */
+  --background-google-hover: #28292c; /* Un tono ligeramente más claro para el hover */
+  --background-google-active: #303134; /* Un poco más claro para el estado activo */
+  --background-google-focus: #8ab4f8; /* Un azul más claro y accesible para el foco en fondos oscuros */
+  --color-google: #e8eaed; /* Color de texto claro (casi blanco) para un contraste adecuado */
 
   /* Transiciones */
   --transition-fast: 0.15s ease;
