@@ -269,7 +269,7 @@ export default function ChallengeForm() {
         <div className="form-group">
           <label className="form-label">Actividad *</label>
           <select
-            className="form-control"
+            className="form-select"
             value={activityKey}
             onChange={e => setActivityKey(e.target.value)}
             required

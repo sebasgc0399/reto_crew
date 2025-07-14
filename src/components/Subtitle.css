@@ -1,7 +1,7 @@
 .subtitle {
   font-size: clamp(1rem, 3.5vw, 1.2rem);
   margin-bottom: 2rem;
-  color: #666;             /* Un poco más suave que el negro puro */
+  color: var(--text-secondary);             /* Un poco más suave que el negro puro */
   max-width: 600px;        /* Líneas más legibles en pantallas grandes */
   margin-left: auto;
   margin-right: auto;

@@ -36,6 +36,23 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* Apunta al input dentro del contenedor que datepicker inyecta */
+.react-datepicker__input-container input {
+  background: var(--bg-subtle) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: none !important;
+}
+
+/* Mantén el fondo oscuro también al hacer foco */
+.react-datepicker__input-container input:focus {
+  background: var(--bg-subtle) !important;
+  border-color: var(--primary-color) !important;
+  outline: none !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
 /* ─── Textarea ───────────── */
 .form-textarea {
   padding: var(--spacing-sm);
@@ -76,4 +93,46 @@
   font-size: var(--font-size-base);
   line-height: 1;
   color: var(--text-secondary);
+}
+
+/* Calendario entero */
+.react-datepicker {
+  background: var(--bg-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Header (mes y nombres de día) */
+.react-datepicker__header {
+  background: var(--bg-primary) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+}
+
+/* El triángulo que apunta */
+.react-datepicker__triangle,
+.react-datepicker__triangle::after {
+  border-bottom-color: var(--bg-subtle) !important;
+}
+
+/* Mes actual y nombres de columna */
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: var(--text-primary) !important;
+  font-weight: 500 !important;
+}
+
+/* Flechas de navegación */
+.react-datepicker__navigation {
+  top: var(--spacing-md) !important;
+}
+
+.react-datepicker__navigation--previous:before {
+  border-right-color: var(--text-primary) !important;
+}
+.react-datepicker__navigation--next:before {
+  border-left-color: var(--text-primary) !important;
+}
+
+/* Aseguramos contraste del input desplegable */
+.react-datepicker-popper {
+  z-index: 9999 !important;
 }

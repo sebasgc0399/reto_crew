@@ -6,52 +6,50 @@
   width: 100%;
   max-width: 480px; /* Consistente con tu sistema */
   margin: 0 auto;
-  padding: 1rem;
+  padding: var(--spacing-md);
   overflow: visible; /* Importante para el DatePicker */
 }
 
 /* --- Alertas de Error Global --- */
 .challenge-form-container .alert {
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-sm);
   font-weight: 500;
 }
 
 .challenge-form-container .alert-danger {
-  background: #fff5f5;
-  border: 1px solid #feb2b2;
-  color: #c53030;
+  background: var(--bg-error);
+  border: 1px solid var(--border-error);
+  color: var(--border-error);
 }
 
 /* --- Formulario Principal --- */
 .challenge-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  animation: slideUp 0.3s ease-out;
+  gap: var(--spacing-lg);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  animation: slideUp var(--transition-normal) ease-out;
 }
 
 /* --- Grupo de Fechas --- */
 .date-group {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--spacing-lg);
 }
 
-/* En pantallas más grandes, mostrar las fechas lado a lado */
 @media (min-width: 600px) {
   .date-group {
     flex-direction: row;
-    gap: 1rem;
+    gap: var(--spacing-md);
   }
-  
   .date-group > * {
     flex: 1;
   }
@@ -61,35 +59,35 @@
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
 }
 
 /* --- Labels --- */
 .form-label {
   font-weight: 600;
   color: var(--text-primary);
-  font-size: 0.95rem;
-  margin-bottom: 0.5rem;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-xs);
 }
 
 /* --- Inputs y Selects --- */
 .form-control {
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  border: 1px solid #d0d0d0;
-  border-radius: 8px;
-  background: #fff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-subtle);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
   outline: none;
 }
 
 .form-control:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .form-control::placeholder {
-  color: #999;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -108,27 +106,57 @@
 
 /* --- Estados de Error --- */
 .form-control.is-invalid {
-  border-color: #dc3545;
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+  border-color: var(--danger-color);
+  box-shadow: 0 0 0 3px var(--bg-error);
 }
 
 .invalid-feedback {
-  color: #dc3545;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  color: var(--border-error);
+  font-size: var(--font-size-xs);
+  margin-top: var(--spacing-xs);
   font-weight: 500;
 }
 
+/* Select */
+.challenge-form .form-select {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  color: var(--text-primary);
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  min-height: calc(var(--spacing-lg) * 2);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-lg) center;
+  background-size: 16px 12px;
+}
+
+.challenge-form .form-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+
+
 /* --- Texto de Ayuda --- */
 .form-text {
-  font-size: 0.875rem;
-  color: #666;
-  margin-top: 0.25rem;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
   line-height: 1.4;
 }
 
-.form-text.text-muted {
-  color: #666;
+/* Asegurar que el small.form-text.text-muted sea legible */
+.challenge-form small.form-text.text-muted {
+    color: var(--text-secondary) !important;
+
 }
 
 .form-text strong {
@@ -138,33 +166,33 @@
 
 /* --- Botón Principal --- */
 .challenge-form .btn {
-  padding: 0.875rem 1.5rem;
-  font-size: 1rem;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-top: 0.5rem;
+  margin-top: var(--spacing-sm);
 }
 
 .challenge-form .btn-primary {
   background: var(--primary-color);
-  color: #fff;
-  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+  color: var(--on-primary, #fff);
+  box-shadow: var(--shadow-sm);
 }
 
 .challenge-form .btn-primary:hover:not(:disabled) {
-  background: #1565c0;
+  background: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 .challenge-form .btn-primary:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .challenge-form .btn:disabled {
@@ -175,67 +203,7 @@
 
 /* --- Clases de Utilidad --- */
 .mt-3 {
-  margin-top: 1rem;
-}
-
-/* --- Estilos específicos para React DatePicker --- */
-.react-datepicker-wrapper {
-  width: 100%;
-}
-
-.react-datepicker__input-container {
-  width: 100%;
-}
-
-/* Personalización del DatePicker */
-.react-datepicker {
-  font-family: inherit;
-  border: 1px solid #d0d0d0;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.react-datepicker__header {
-  background: var(--primary-color);
-  border-bottom: 1px solid #d0d0d0;
-  border-radius: 8px 8px 0 0;
-}
-
-.react-datepicker__current-month {
-  color: #fff;
-  font-weight: 600;
-}
-
-.react-datepicker__day-name {
-  color: #fff;
-  font-weight: 500;
-}
-
-.react-datepicker__navigation {
-  top: 13px;
-}
-
-.react-datepicker__navigation--previous {
-  border-right-color: #fff;
-}
-
-.react-datepicker__navigation--next {
-  border-left-color: #fff;
-}
-
-.react-datepicker__day--selected {
-  background: var(--primary-color);
-  color: #fff;
-}
-
-.react-datepicker__day--keyboard-selected {
-  background: rgba(25, 118, 210, 0.1);
-  color: var(--primary-color);
-}
-
-.react-datepicker__day:hover {
-  background: rgba(25, 118, 210, 0.1);
-  color: var(--primary-color);
+  margin-top: var(--spacing-md);
 }
 
 /* --- Animaciones --- */
@@ -253,36 +221,31 @@
 /* --- Responsive para móviles pequeños --- */
 @media (max-width: 480px) {
   .challenge-form-container {
-    padding: 0.75rem;
+    padding: var(--spacing-sm);
   }
-  
   .challenge-form {
-    padding: 1.5rem;
-    border-radius: 8px;
-    gap: 1.25rem;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    gap: var(--spacing-md);
   }
-  
   .form-control {
-    padding: 0.625rem 0.875rem;
-    font-size: 16px; /* Evita zoom en iOS */
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-base);
   }
-  
   .challenge-form .btn {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9rem;
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-sm);
   }
-  
   .date-group {
-    gap: 1.25rem;
+    gap: var(--spacing-md);
   }
 }
 
 /* --- Mejoras para dispositivos táctiles --- */
 @media (hover: none) and (pointer: coarse) {
   .form-control {
-    min-height: 44px; /* Área de toque mínima recomendada */
+    min-height: 44px;
   }
-  
   .challenge-form .btn {
     min-height: 44px;
   }
