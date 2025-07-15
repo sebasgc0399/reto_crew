@@ -1,0 +1,25 @@
+/* src/components/profile/FollowButton.css */
+.btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--primary-color);
+  background: none;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.btn.follow {
+  color: var(--primary-color);
+}
+.btn.follow:hover {
+  background: var(--primary-light);
+}
+
+.btn.unfollow {
+  color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+.btn.unfollow:hover {
+  background: var(--bg-error);
+  color: var(--on-error);
+}

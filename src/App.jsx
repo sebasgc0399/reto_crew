@@ -1,5 +1,5 @@
 import React, { useState }     from 'react';
-import { Routes, Route }       from 'react-router-dom';
+import { Routes, Route, Navigate }   from 'react-router-dom';
 import { useAuth }             from './contexts/AuthContext';
 
 import Home                   from './pages/Home';
@@ -23,6 +23,7 @@ import './App.css';
 
 export default function App() {
   const { user } = useAuth();
+  const currentUsername = user?.name;
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -143,23 +144,34 @@ export default function App() {
               }
             />
 
-            {/* Profile */}
+            {/* Primero conexiones (ya que es `/profile/:name/conexiones`) */}
             <Route
-              path="/Profile"
+              path="/profile/:name/conexiones"
               element={
                 <ProtectedRoute>
-                  <Profile />
+                  <Connections />
                 </ProtectedRoute>
               }
             />
 
-            <Route 
-              path="/profile/conexiones" 
+            {/* Perfil público /profile/:name */}
+            <Route
+              path="/profile/:name"
+              element={<Profile />}
+            />
+
+            {/* Si entras a /profile sin slug, te redirijo a tu propio perfil */}
+            <Route
+              path="/profile"
               element={
-              <ProtectedRoute>
-                <Connections />
-              </ProtectedRoute>
-            }/>
+                currentUsername
+                  ? <Navigate to={`/profile/${currentUsername}`} replace />
+                  : <Navigate to="/" replace />
+              }
+            />
+
+            {/* Fallback 404 opcional */}
+            <Route path="*" element={<Navigate to="/" replace />} />
 
             {/* Dashboard principal */}
             <Route

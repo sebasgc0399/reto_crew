@@ -1,121 +1,191 @@
 // src/pages/Profile.jsx
-import React, { useEffect, useState } from 'react';
-import { useAuth }        from '../contexts/AuthContext';
-import { doc, getDoc }     from 'firebase/firestore';
-import { db }              from '../firebaseConfig';
-import { useNavigate, useParams }     from 'react-router-dom';
-import { useFollow }       from '../hooks/useFollow';
+import React, { useEffect, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs
+} from 'firebase/firestore'
+import { db } from '../firebaseConfig'
+import {
+  useNavigate,
+  useParams,
+  Navigate
+} from 'react-router-dom'
+import { useFollow } from '../hooks/useFollow'
 
+import Loader from '../components/Loader'
+import PageTitle from '../components/PageTitle'
+import Avatar from '../components/profile/Avatar'
+import ShareButton from '../components/profile/ShareButton'
+import FollowStats from '../components/profile/FollowStats'
+import FollowButton from '../components/profile/FollowButton'
+import LevelProgress from '../components/profile/LevelProgress'
+import StatsGrid from '../components/profile/StatsGrid'
+import './Profile.css'
 
-import PageTitle           from '../components/PageTitle';
-import Avatar              from '../components/profile/Avatar';
-import ShareButton         from '../components/profile/ShareButton';
-import FollowStats         from '../components/profile/FollowStats';
-import LevelProgress       from '../components/profile/LevelProgress';
-import StatsGrid           from '../components/profile/StatsGrid';
-import './Profile.css';
-
-const xpForLevel = lvl => lvl * lvl * 100;
+const xpForLevel = lvl => lvl * lvl * 100
 
 export default function Profile() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth()
+  const { name: slug } = useParams()        // /profile/:name
+  const navigate = useNavigate()
 
-  // Ahora leemos un posible param `:uid` para ver perfiles ajenos
-  const { uid: viewedUid } = useParams();
-  const profileUid = viewedUid || user.uid;
+  // Estado de perfil
+  const [profileUser, setProfileUser] = useState(null)
+  const [notFound, setNotFound]       = useState(false)
 
+  // Estadísticas
+  const [stats, setStats] = useState({
+    createdAt: null,
+    xp: 0,
+    level: 1,
+    followersCount: 0,
+    followingCount: 0,
+    globalRank: null,
+    completedChallenges: 0,
+    bests: {}
+  })
 
+  // Hook de seguimiento en tiempo real
+  const targetUid = profileUser?.uid || user?.uid
   const {
     followers,
     following,
     isFollowing,
     follow,
     unfollow
-  } = useFollow(user?.uid);
+  } = useFollow(targetUid)
 
-  const [createdAt, setCreatedAt]               = useState(null);
-  const [xp, setXp]                             = useState(0);
-  const [level, setLevel]                       = useState(1);
-//   const [globalRank, setGlobalRank]             = useState(null);
-//   const [completedChallenges, setCompletedChallenges] = useState(0);
-//   const [bests, setBests]                       = useState({});
-  const [globalRank]             = useState(null);
-  const [completedChallenges] = useState(0);
-  const [bests]                       = useState({});
-  
-  // saber si es mi propio perfil
-  const isOwnProfile = profileUid === user.uid;
-
+  // Carga datos al montar o cuando cambie el slug
   useEffect(() => {
-    if (!user) return;
-    (async () => {
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      if (snap.exists()) {
-        const data = snap.data();
-        setCreatedAt(data.createdAt?.toDate());
-        setXp(data.xp || 0);
-        setLevel(data.level || 1);
+    if (authLoading || !user) return
+
+    ;(async () => {
+      let uid, name, photoURL, docData
+
+      const isOwn = !slug || slug === user.name
+      if (isOwn) {
+        uid = user.uid
+        name = user.name
+        photoURL = user.photoURL
+      } else {
+        const q = query(
+          collection(db, 'users'),
+          where('name', '==', slug)
+        )
+        const snaps = await getDocs(q)
+        if (snaps.empty) {
+          setNotFound(true)
+          return
+        }
+        const dSnap = snaps.docs[0]
+        const d = dSnap.data()
+        uid = dSnap.id
+        name = d.name
+        photoURL = d.photoURL
+        docData = d
       }
-      // TODO: fetch globalRank, completedChallenges, bests...
-    })();
-  }, [user]);
+
+      setProfileUser({ uid, name, photoURL })
+
+      if (!docData) {
+        const snap = await getDoc(doc(db, 'users', uid))
+        if (snap.exists()) docData = snap.data()
+      }
+
+      if (docData) {
+        setStats({
+          createdAt: docData.createdAt?.toDate() || null,
+          xp: docData.xp || 0,
+          level: docData.level || 1,
+          followersCount: docData.followersCount || 0,
+          followingCount: docData.followingCount || 0,
+          globalRank: docData.globalRank || null,
+          completedChallenges: docData.completedChallenges || 0,
+          bests: docData.bests || {}
+        })
+      }
+    })()
+  }, [authLoading, user, slug])
+
+  // Early‑returns (después de los hooks)
+  if (authLoading)                           return <Loader text="Cargando perfil…" />
+  if (!user)                                 return <Navigate to="/" replace />
+  if (notFound)                              return <Navigate to="/404" replace />
+  if (!profileUser)                          return <Loader text="Cargando perfil…" />
+
+  const { uid, name, photoURL } = profileUser
+  const isOwnProfile = uid === user.uid
 
   return (
     <div className="profile-page">
-      <PageTitle>Mi perfil</PageTitle>
+      <PageTitle>
+        {isOwnProfile ? 'Mi perfil' : `Perfil de ${name}`}
+      </PageTitle>
 
       <header className="profile-header">
         <Avatar
-          photoURL={user.photoURL}
-          onClick={() => navigate('/profile/edit-photo')}
+          photoURL={photoURL}
+          onClick={() =>
+            isOwnProfile && navigate('/profile/edit-photo')
+          }
         />
+
         <div className="profile-info">
-          <h2>{user.displayName}</h2>
-          {createdAt && (
+          <h2>{name}</h2>
+          {stats.createdAt && (
             <p className="member-since">
-              Miembro desde {createdAt.toLocaleString('es-ES', {
+              Miembro desde{' '}
+              {stats.createdAt.toLocaleString('es-ES', {
                 month: 'long',
                 year: 'numeric'
               })}
             </p>
           )}
         </div>
-        <ShareButton />
+
+        <div className="profile-actions">
+          <ShareButton url={`${window.location.origin}/profile/${name}`} />
+          {!isOwnProfile && (
+            <FollowButton
+              targetUid={uid}
+              isFollowing={isFollowing}
+              onFollow={follow}
+              onUnfollow={unfollow}
+            />
+          )}
+        </div>
       </header>
 
       <FollowStats
         followers={followers}
         following={following}
         onViewFollowers={() =>
-          navigate('/profile/conexiones?view=followers')
+          navigate(`/profile/${name}/conexiones?view=followers`)
         }
         onViewFollowing={() =>
-          navigate('/profile/conexiones?view=following')
+          navigate(`/profile/${name}/conexiones?view=following`)
         }
       />
 
-       {!isOwnProfile && (
-        <div className="follow-action">
-          <button
-            className={`btn btn-outline ${
-              isFollowing ? 'unfollow' : 'follow'
-            }`}
-            onClick={isFollowing ? unfollow : follow}
-          >
-            {isFollowing ? 'Dejar de seguir' : 'Seguir'}
-          </button>
-        </div>
-      )}
-
-      <LevelProgress level={level} xp={xp} xpForLevel={xpForLevel} />
+      <LevelProgress
+        level={stats.level}
+        xp={stats.xp}
+        xpForLevel={xpForLevel}
+      />
 
       <StatsGrid
-        globalRank={globalRank}
-        completedChallenges={completedChallenges}
-        bests={bests}
-        onOpenAchievements={() => navigate('/achievements')}
+        globalRank={stats.globalRank}
+        completedChallenges={stats.completedChallenges}
+        bests={stats.bests}
+        onOpenAchievements={() =>
+          navigate(`/profile/${name}/achievements`)
+        }
       />
     </div>
-  );
+  )
 }
