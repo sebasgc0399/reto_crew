@@ -1,5 +1,5 @@
 // src/pages/Profile.jsx
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth }        from '../contexts/AuthContext';
 import { doc, getDoc }     from 'firebase/firestore';
 import { db }              from '../firebaseConfig';
@@ -37,9 +37,12 @@ export default function Profile() {
   const [createdAt, setCreatedAt]               = useState(null);
   const [xp, setXp]                             = useState(0);
   const [level, setLevel]                       = useState(1);
-  const [globalRank, setGlobalRank]             = useState(null);
-  const [completedChallenges, setCompletedChallenges] = useState(0);
-  const [bests, setBests]                       = useState({});
+//   const [globalRank, setGlobalRank]             = useState(null);
+//   const [completedChallenges, setCompletedChallenges] = useState(0);
+//   const [bests, setBests]                       = useState({});
+  const [globalRank]             = useState(null);
+  const [completedChallenges] = useState(0);
+  const [bests]                       = useState({});
   
   // saber si es mi propio perfil
   const isOwnProfile = profileUid === user.uid;
