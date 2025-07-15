@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebaseConfig';
-import { GoogleAuthProvider, signInWithPopup, updateProfile, getAdditionalUserInfo } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, updateProfile } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import GoogleButton from '../components/GoogleButton';
 import NamePopup     from '../components/NamePopup';
@@ -22,26 +22,32 @@ export default function Home() {
     try {
       const result = await signInWithPopup(auth, provider)
       const fu      = result.user
-      const info    = getAdditionalUserInfo(result)
-      const isNew   = !!info?.isNewUser
       const userRef = doc(db, 'users', fu.uid)
 
       await setDoc(userRef, {
         uid:       fu.uid,
         email:     fu.email,
         photoURL:  fu.photoURL,
-        lastLogin: serverTimestamp(),
-        ...(isNew && { createdAt: serverTimestamp() })
+        lastLogin: serverTimestamp()
       }, { merge: true })
       
-      const snap = await getDoc(userRef)
-      const fsHasName = !!snap.data()?.name
+      // 2) Ahora leemos para ver si createdAt y nombre ya existe
+      const snap = await getDoc(userRef);
+      const data = snap.data() || {};
 
-      if (!isNew && fsHasName) {
-        navigate('/dashboard', { replace: true })
+      if (!data.createdAt) {
+        // sólo si no existe, lo creamos
+        await updateDoc(userRef, {
+          createdAt: serverTimestamp()
+        });
+      }
+
+      // 3) Comprobamos si ya tiene nombre
+      if (data.name) {
+        navigate('/dashboard', { replace: true });
       } else {
-        setPendingUser(fu)
-        setShowNamePopup(true)
+        setPendingUser(fu);
+        setShowNamePopup(true);
       }
     } catch (e) {
       console.error(e);

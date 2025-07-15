@@ -27,6 +27,12 @@ export default function Sidebar({ isOpen, onClose }) {
       <h2 className="sidebar-title">Menú</h2>
       <ul className="sidebar-list">
         <li>
+          <NavLink to="/Profile" className={linkClass} onClick={onClose}>
+            Mi Perfil
+          </NavLink>
+        </li>
+
+        <li>
           <NavLink to="/dashboard" className={linkClass} onClick={onClose}>
             Dashboard
           </NavLink>

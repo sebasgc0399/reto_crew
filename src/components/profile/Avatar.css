@@ -1,0 +1,8 @@
+.avatar {
+  width: 5rem;
+  height: 5rem;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  cursor: pointer;
+}

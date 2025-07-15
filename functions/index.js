@@ -11,14 +11,10 @@ admin.initializeApp();
 const db = admin.firestore();
 const FieldValue = admin.firestore.FieldValue;
 
-/** ————————————————
- * 1) Fórmula de puntos
- * ———————————————— */
 function calcularPuntos(valor, pesoUsuario, pesoReferencia, valorMaximo, multiplicador = 1) {
   const valorNormalizado = valor <= valorMaximo
     ? valor / valorMaximo
     : 1 + 0.1 * Math.log(valor / valorMaximo);
-
   const ratio = pesoUsuario / pesoReferencia;
   let factorPeso;
   if (ratio <= 0.8) {
@@ -28,20 +24,32 @@ function calcularPuntos(valor, pesoUsuario, pesoReferencia, valorMaximo, multipl
   } else {
     factorPeso = 1 + 0.15 * Math.log(ratio);
   }
-
   return Math.round(valorNormalizado * 100 * factorPeso * multiplicador);
 }
 
-/** ————————————————————————————————
- * 2) Helpers comunes para cada reto
- * ———————————————————————————————— */
-/**
- * Lee la configuración del reto y sus participantes.
- * @returns { activity, refWeight, participantsSnap }
- */
+// XP necesaria para llegar al nivel N
+function xpForLevel(n) {
+  return 100 * n * n;
+}
+// Nivel a partir de XP total
+function levelFromXp(xp) {
+  return Math.floor(Math.sqrt(xp / 100));
+}
+
+// Helper para recalcular nivel de usuario
+async function recalcUserLevel(userRef) {
+  const snap = await userRef.get();
+  const xp = snap.data().xp || 0;
+  const newLevel = levelFromXp(xp);
+  if (snap.data().level !== newLevel) {
+    await userRef.update({ level: newLevel });
+    console.log(`Usuario ${userRef.id} → nivel ${newLevel}`);
+  }
+}
+
 async function loadChallenge(chId) {
   const challengeSnap = await db.collection("challenges").doc(chId).get();
-  if (!challengeSnap.exists) throw new Error("Reto no existe");
+  if (!challengeSnap.exists) throw new Error(`Reto ${chId} no existe`);
   const { activity, refWeight = 0 } = challengeSnap.data();
   const participantsSnap = await db
     .collection("challenges")
@@ -59,7 +67,7 @@ async function recalcRefWeight(chId) {
   const totalW = participantsSnap.docs
     .map(d => d.data().weight || 0)
     .reduce((sum, w) => sum + w, 0);
-  const avg   = participantsSnap.size ? totalW / participantsSnap.size : 0;
+  const avg = participantsSnap.size ? totalW / participantsSnap.size : 0;
   await db.doc(`challenges/${chId}`).update({ refWeight: avg });
   console.log(`refWeight ${chId} → ${avg.toFixed(2)}`);
 }
@@ -75,8 +83,6 @@ async function recalcAllPoints(chId) {
   for (const partDoc of participantsSnap.docs) {
     const uid = partDoc.id;
     let totalPts = 0;
-
-    // Relee entradas de este usuario
     const entriesSnap = await db
       .collection("challenges").doc(chId)
       .collection("entries")
@@ -84,7 +90,7 @@ async function recalcAllPoints(chId) {
       .get();
 
     entriesSnap.forEach(eDoc => {
-      const { value, unit, multiplier: m } = eDoc.data();
+      const { value, multiplier: m } = eDoc.data();
       const pts = calcularPuntos(
         value,
         partDoc.data().weight,
@@ -96,10 +102,11 @@ async function recalcAllPoints(chId) {
       totalPts += pts;
     });
 
-    // Actualiza totalPoints del participante
-    batch.update(partDoc.ref, { totalPoints: totalPts });
+    batch.update(
+      db.doc(`challenges/${chId}/participants/${uid}`),
+      { totalPoints: totalPts }
+    );
   }
-
   await batch.commit();
   console.log(`Recalculados puntos completos en reto ${chId}`);
 }
@@ -108,129 +115,183 @@ async function recalcAllPoints(chId) {
  * 3) Triggers
  * ———————————————————————————————— */
 
-/**
- * Al crear una entry: recálculo puntual + sumo totalPoints
- */
+// 3.a) Inicializar usuario al crearlo
+exports.onUserCreate = onDocumentCreated(
+  "users/{uid}",
+  async event => {
+    const userRef = db.doc(`users/${event.params.uid}`);
+    try {
+      await userRef.set({
+        xp: 0,
+        level: 0,
+        completedChallenges: 0,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      console.log(`Usuario ${event.params.uid} inicializado`);
+    } catch (err) {
+      console.error("Error en onUserCreate:", err);
+    }
+  }
+);
+
+// 3.b) Al crear una entry: recálculo puntual + totalPoints + XP + nivel
 exports.onNewEntry = onDocumentCreated(
   "challenges/{chId}/entries/{eId}",
   async event => {
-    const { chId, eId } = event.params;
+    const { chId } = event.params;
     const data = event.data.data();
-    // recalc puntual
-    const partDoc = await db
-      .collection("challenges").doc(chId)
-      .collection("participants").doc(data.userId)
-      .get();
-    if (!partDoc.exists) return null;
+    const userId = data.userId;
+    const entryRef = event.data.ref;
+    const userRef = db.doc(`users/${userId}`);
 
-    const challengeSnap = await db.collection("challenges").doc(chId).get();
-    const { activity, refWeight = partDoc.data().weight } = challengeSnap.data();
+    try {
+      // 1) carga participante y reto
+      const [partSnap, chSnap] = await Promise.all([
+        db.doc(`challenges/${chId}/participants/${userId}`).get(),
+        db.doc(`challenges/${chId}`).get()
+      ]);
+      if (!partSnap.exists || !chSnap.exists) return null;
 
-    const newPts = calcularPuntos(
-      data.value,
-      partDoc.data().weight,
-      refWeight,
-      activity.valorMaximo,
-      activity.multiplier
-    );
+      const weight = partSnap.data().weight;
+      const { activity: { valorMaximo, multiplier: defMul }, refWeight } = chSnap.data();
+      const pts = calcularPuntos(data.value, weight, refWeight, valorMaximo, data.multiplier ?? defMul);
 
-    const batch = db.batch();
-    batch.update(event.data.ref, { points: newPts });
-    batch.update(
-      db.collection("challenges").doc(chId)
-        .collection("participants").doc(data.userId),
-      { totalPoints: FieldValue.increment(newPts) }
-    );
-    await batch.commit();
-    console.log(`Entry ${eId} → ${newPts}pts`);
+      // 2) Batch atómico
+      const batch = db.batch();
+      batch.update(entryRef, { points: pts });
+      batch.update(
+        db.doc(`challenges/${chId}/participants/${userId}`),
+        { totalPoints: FieldValue.increment(pts) }
+      );
+      batch.update(userRef, { xp: FieldValue.increment(pts) });
+      await batch.commit();
+
+      // 3) Recalcula nivel
+      await recalcUserLevel(userRef);
+    } catch (err) {
+      console.error("Error en onNewEntry:", err);
+    }
   }
 );
 
-/**
- * Cada vez que cambia ANY DE ESTOS:
- *  • participants/{uid}  → recalcRefWeight
- *  • challenges/{chId}   → recalcAllPoints si cambió refWeight
- */
+// 3.c) Al borrar una entry: resta XP y nivel
+exports.onDeleteEntry = onDocumentDeleted(
+  "challenges/{chId}/entries/{eId}",
+  async event => {
+    const data = event.data.data();
+    const userId = data.userId;
+    const oldPts = data.points || 0;
+    if (oldPts === 0) return null;
+    const userRef = db.doc(`users/${userId}`);
+
+    try {
+      // Atómico
+      const batch = db.batch();
+      batch.update(userRef, { xp: FieldValue.increment(-oldPts) });
+      await batch.commit();
+      await recalcUserLevel(userRef);
+    } catch (err) {
+      console.error("Error en onDeleteEntry:", err);
+    }
+  }
+);
+
+// 3.d) Resto de triggers de retos...
 exports.recalcOnCreate = onDocumentCreated(
   "challenges/{chId}/participants/{uid}",
+  async event => { try { await recalcRefWeight(event.params.chId); } catch(e){console.error(e);} }
+);
+exports.recalcOnUpdate = onDocumentUpdated(
+  "challenges/{chId}/participants/{uid}",
+  async event => { try { await recalcRefWeight(event.params.chId); } catch(e){console.error(e);} }
+);
+exports.onParticipantDeleted = onDocumentDeleted(
+  "challenges/{chId}/participants/{uid}",
   async event => {
     const { chId, uid } = event.params;
-    console.log("🔥 recalcOnCreate:", chId, uid);
-    await recalcRefWeight(chId);
+    try {
+      const entries = await db.collection(`challenges/${chId}/entries`)
+        .where("userId","==",uid).get();
+      const batch = db.batch();
+      entries.forEach(e => batch.delete(e.ref));
+      await recalcRefWeight(chId);
+      await batch.commit();
+    } catch(e){ console.error(e); }
   }
 );
 
-exports.recalcOnUpdate = onDocumentUpdated(
-  "challenges/{chId}/participants/{uid}",
+exports.onChallengeEnd = onDocumentUpdated(
+  "challenges/{chId}",
   async event => {
-    const { chId, uid } = event.params;
-    console.log("🔥 recalcOnUpdate:", chId, uid);
-    await recalcRefWeight(chId);
-  }
-);exports.onParticipantDeleted = onDocumentDeleted(
-  "challenges/{chId}/participants/{uid}",
-  async event => {
-    const { chId, uid } = event.params;
+    const before = event.data.before.data();
+    const after  = event.data.after.data();
+    const chRef  = event.data.ref;
+    const nowMs  = admin.firestore.Timestamp.now().toMillis();
 
-    // 1) Borra todas las entries de este usuario
-    const entriesSnap = await db
-      .collection("challenges").doc(chId)
-      .collection("entries")
-      .where("userId", "==", uid)
+    // 1) Sólo si tiene endDate y aún no lo procesamos
+    if (!after.endDate || after.processedCompleted) return null;
+
+    const endBefore = before.endDate?.toMillis?.() || 0;
+    const endAfter  = after.endDate.toMillis();
+
+    // 2) Que el reto efectivamente acabe (por cambio de fecha o que ya esté pasado)
+    //    - Si endDate cambió, o si endDate ya está en el pasado
+    if (endAfter === endBefore && endAfter > nowMs) return null;
+
+    // 3) Leemos participantes y hacemos batch de incrementos
+    const partsSnap = await db
+      .collection("challenges")
+      .doc(event.params.chId)
+      .collection("participants")
       .get();
 
     const batch = db.batch();
-    entriesSnap.forEach(eDoc => batch.delete(eDoc.ref));
+    partsSnap.docs.forEach(part => {
+      // sólo cuenta si realmente participó (p. ej. totalPoints > 0)
+      if ((part.data().totalPoints || 0) > 0) {
+        const userRef = db.doc(`users/${part.id}`);
+        batch.update(userRef, {
+          completedChallenges: FieldValue.increment(1)
+        });
+      }
+    });
 
-    // 2) Recalcula refWeight
-    await recalcRefWeight(chId);
+    // 4) Marcamos el reto como procesado
+    batch.update(chRef, { processedCompleted: true });
 
-    // 3) Ejecuta el batch (solo deletes de entries)
-    await batch.commit();
-
-    console.log(`→ Eliminadas entradas de ${uid} en reto ${chId} y recalculado refWeight`);
+    return batch.commit();
   }
 );
 
 exports.recalcPointsOnRefWeightChange = onDocumentUpdated(
   "challenges/{chId}",
   async event => {
-    const before = event.data.before.data(), after = event.data.after.data();
+    const before = event.data.before.data();
+    const after  = event.data.after.data();
     if (before.refWeight !== after.refWeight) {
       await recalcAllPoints(event.params.chId);
     }
   }
 );
 
-/**
- * Cuando cambia weight en users/{uid}:
- *  • Actualiza weight en TODOS sus participants/
- *  • Para cada reto único: recalcRefWeight + recalcAllPoints
- */
 exports.onUserWeightChange = onDocumentUpdated(
   "users/{uid}",
   async event => {
-    const before = event.data.before.data(), after = event.data.after.data();
+    const before = event.data.before.data();
+    const after  = event.data.after.data();
     if (before.weight === after.weight) return null;
     const uid = event.params.uid, newW = after.weight;
-
-    // 1) actualiza participants.weight
-    const partsSnap = await db
-      .collectionGroup("participants")
-      .where("uid","==",uid)
-      .get();
-    if (partsSnap.empty) return null;
-
+    // actualiza todos sus participants.weight + recalc refs/points...
+    const parts = await db.collectionGroup("participants")
+      .where("uid","==",uid).get();
     const batch = db.batch();
     const retos = new Set();
-    partsSnap.forEach(ps => {
+    parts.forEach(ps => {
       batch.update(ps.ref, { weight: newW });
       retos.add(ps.ref.parent.parent.id);
     });
     await batch.commit();
-
-    // 2) para cada reto: recalcRefWeight + recalcAllPoints
-    for (const chId of retos) {
+    for (let chId of retos) {
       await recalcRefWeight(chId);
       await recalcAllPoints(chId);
     }

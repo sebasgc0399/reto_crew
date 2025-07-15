@@ -1,0 +1,12 @@
+.follow-stats {
+  display: flex;
+  gap: var(--spacing-lg);
+  justify-content: center;
+}
+
+.follow-stats {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  margin-top: var(--spacing-md);
+}

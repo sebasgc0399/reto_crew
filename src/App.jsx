@@ -3,6 +3,8 @@ import { Routes, Route }       from 'react-router-dom';
 import { useAuth }             from './contexts/AuthContext';
 
 import Home                   from './pages/Home';
+import Profile                from './pages/Profile';
+import Connections           from './pages/Connections';
 import Dashboard              from './pages/Dashboard';
 import Settings               from './pages/Settings';
 import ChallengesList         from './pages/ChallengesList';
@@ -140,6 +142,24 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Profile */}
+            <Route
+              path="/Profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route 
+              path="/profile/conexiones" 
+              element={
+              <ProtectedRoute>
+                <Connections />
+              </ProtectedRoute>
+            }/>
 
             {/* Dashboard principal */}
             <Route

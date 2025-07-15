@@ -1,0 +1,10 @@
+.card {
+  background: var(--bg-subtle);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  color:var(--text-primary)
+}
+.card.clickable { cursor: pointer; }
+.card h4 { margin: 0 0 var(--spacing-sm) 0; }

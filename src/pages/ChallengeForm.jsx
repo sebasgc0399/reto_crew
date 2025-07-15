@@ -170,6 +170,7 @@ export default function ChallengeForm() {
         endDate:         Timestamp.fromDate(endDate),
         activity:        activityPayload,
         weightBased,
+        processedCompleted: false,
         password:        password || null,
         maxParticipants
       };
