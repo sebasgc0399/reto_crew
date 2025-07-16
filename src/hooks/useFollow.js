@@ -19,37 +19,29 @@ export function useFollow(targetUid) {
   const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
-    if (!myUid) return;
+    if (!targetUid || !myUid) return;
 
     const followersCol = collection(db, 'users', targetUid, 'followers');
-    const followingCol = collection(db, 'users', myUid, 'following');
+    const followingCol = collection(db, 'users', targetUid, 'following');
 
-    // Escuchamos en tiempo real los cambios de conteo
-    const unsubFollowers = onSnapshot(followersCol, snap => {
+    const unsub1 = onSnapshot(followersCol, snap => {
       setFollowers(snap.size);
     });
-    const unsubFollowing = onSnapshot(followingCol, snap => {
+    const unsub2 = onSnapshot(followingCol, snap => {
       setFollowing(snap.size);
     });
-
-    // Sabemos si yo sigo al target
-    const unsubIsFollowing = onSnapshot(
+    const unsub3 = onSnapshot(
       doc(db, 'users', targetUid, 'followers', myUid),
-      docSnap => {
-        setIsFollowing(docSnap.exists());
-      }
+      snap => setIsFollowing(snap.exists())
     );
 
     return () => {
-      unsubFollowers();
-      unsubFollowing();
-      unsubIsFollowing();
+      unsub1(); unsub2(); unsub3();
     };
   }, [myUid, targetUid]);
 
   const follow = useCallback(async () => {
     if (!myUid) return;
-    // Agregamos la relación en ambos subcolecciones
     await Promise.all([
       setDoc(doc(db, 'users', targetUid, 'followers', myUid), {}),
       setDoc(doc(db, 'users', myUid, 'following', targetUid), {}),
@@ -58,7 +50,6 @@ export function useFollow(targetUid) {
 
   const unfollow = useCallback(async () => {
     if (!myUid) return;
-    // Borramos la relación en ambos sitios
     await Promise.all([
       deleteDoc(doc(db, 'users', targetUid, 'followers', myUid)),
       deleteDoc(doc(db, 'users', myUid, 'following', targetUid)),

@@ -84,3 +84,11 @@
   font-style: italic;
   margin-top: var(--spacing-lg);
 }
+
+.connections-list .connections-item {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.connections-list .connections-item:hover {
+  background: var(--border-light);
+}
