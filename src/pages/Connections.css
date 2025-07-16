@@ -1,19 +1,27 @@
 /* src/pages/Connections.css */
 
-/* --- Contenedor --- */
+/* --- Contenedor Principal --- */
 .connections-page {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   padding: var(--spacing-md);
+  min-height: 100%;
+  background: var(--bg-primary);
 }
 
-/* --- Tabs estilo Instagram --- */
+/* --- Tabs estilo Instagram/Social Media --- */
 .connections-tabs {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-xl);
   margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  z-index: 10;
 }
 
 .connections-tabs button {
@@ -23,29 +31,58 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  transition: color 0.2s ease, transform 0.2s ease;
+  padding: var(--spacing-sm) var(--spacing-md);
+  transition: all var(--transition-normal);
   color: var(--text-secondary);
+  position: relative;
+  min-width: 80px;
+  /* Área de toque más grande para móviles */
+  min-height: 48px;
+  border-radius: var(--radius-md);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .connections-tabs button:hover {
   color: var(--text-primary);
+  background: var(--bg-subtle);
+}
+
+.connections-tabs button:active {
+  transform: scale(0.98);
+  background: var(--primary-light);
 }
 
 .connections-tabs button.active {
   color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+/* Línea inferior para el tab activo */
+.connections-tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: var(--primary-color);
+  border-radius: 2px;
 }
 
 .connections-tabs .count {
-  font-size: 1.25rem;   /* número más grande */
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
   line-height: 1;
+  margin-bottom: var(--spacing-xs);
 }
 
 .connections-tabs .label {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   line-height: 1;
-  margin-top: 0.25rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* --- Lista de usuarios --- */
@@ -53,42 +90,255 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  flex: 1;
 }
 
-.connections-list li {
+.connections-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) 0;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
   border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  -webkit-tap-highlight-color: transparent;
+  /* Área de toque más grande */
+  min-height: 64px;
+  position: relative;
 }
 
+.connections-item:hover {
+  background: var(--bg-subtle);
+}
+
+.connections-item:active {
+  background: var(--primary-light);
+  transform: scale(0.99);
+}
+
+.connections-item:last-child {
+  border-bottom: none;
+}
+
+/* Efecto de ondulación al tocar */
+.connections-item::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(var(--primary-color), 0.1);
+  transition: width 0.3s ease, height 0.3s ease;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.connections-item:active::before {
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Avatar mejorado --- */
 .avatar-sm {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background-size: cover;
   background-position: center;
+  background-color: var(--bg-subtle);
   flex-shrink: 0;
+  border: 2px solid var(--border-light);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
 }
 
+.connections-item:hover .avatar-sm {
+  border-color: var(--primary-color);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+/* --- Nombre de usuario --- */
 .name {
   font-size: var(--font-size-base);
+  font-weight: 500;
   color: var(--text-primary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* --- Estado vacío --- */
+/* --- Estado vacío mejorado --- */
 .empty {
   text-align: center;
   color: var(--text-secondary);
+  font-size: var(--font-size-lg);
   font-style: italic;
-  margin-top: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  background: var(--bg-subtle);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border-color);
 }
 
-.connections-list .connections-item {
-  cursor: pointer;
-  transition: background 0.2s;
+/* --- Responsive Design --- */
+@media (max-width: 480px) {
+  .connections-page {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-md);
+  }
+  
+  .connections-tabs {
+    gap: var(--spacing-lg);
+    padding: var(--spacing-xs) 0;
+  }
+  
+  .connections-tabs button {
+    min-width: 70px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .connections-tabs .count {
+    font-size: var(--font-size-lg);
+  }
+  
+  .connections-tabs .label {
+    font-size: var(--font-size-xs);
+  }
+  
+  .connections-item {
+    padding: var(--spacing-sm) var(--spacing-md);
+    gap: var(--spacing-sm);
+    min-height: 56px;
+  }
+  
+  .avatar-sm {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .name {
+    font-size: var(--font-size-sm);
+  }
+  
+  .empty {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+  }
 }
-.connections-list .connections-item:hover {
+
+/* --- Pantallas más grandes --- */
+@media (min-width: 768px) {
+  .connections-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+  }
+  
+  .connections-tabs {
+    gap: var(--spacing-xl);
+  }
+  
+  .connections-item {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-xs);
+    border: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+  }
+  
+  .avatar-sm {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* --- Optimizaciones para dispositivos táctiles --- */
+@media (hover: none) and (pointer: coarse) {
+  .connections-item:hover {
+    background: transparent;
+  }
+  
+  .connections-item:hover .avatar-sm {
+    border-color: var(--border-light);
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+/* --- Tema oscuro - ajustes específicos --- */
+[data-theme="dark"] .connections-item::before {
+  background: rgba(33, 150, 243, 0.15);
+}
+
+/* --- Mejoras de accesibilidad --- */
+@media (prefers-reduced-motion: reduce) {
+  .connections-item,
+  .connections-tabs button,
+  .avatar-sm,
+  .connections-item::before {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .connections-item:active {
+    transform: none !important;
+  }
+  
+  .connections-tabs button:active {
+    transform: none !important;
+  }
+}
+
+/* --- Estados de focus para accesibilidad --- */
+.connections-tabs button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.connections-item:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
+}
+
+/* --- Animación de carga para la lista --- */
+.connections-list {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Separador visual sutil --- */
+.connections-item + .connections-item {
+  position: relative;
+}
+
+.connections-item + .connections-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(48px + var(--spacing-md) * 2);
+  right: var(--spacing-md);
+  height: 1px;
   background: var(--border-light);
+}
+
+@media (max-width: 480px) {
+  .connections-item + .connections-item::before {
+    left: calc(40px + var(--spacing-sm) * 2);
+    right: var(--spacing-sm);
+  }
 }
