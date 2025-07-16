@@ -1,28 +1,194 @@
+/* --- Botón Individual de Estadística --- */
 .follow-stat {
   background: var(--bg-subtle);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-sm);
   cursor: pointer;
   text-align: center;
-  flex: 1;
-  max-width: 140px;
-  transition: background var(--transition-normal), box-shadow var(--transition-normal);
+  flex: 1; /* Ocupa el espacio disponible de manera equitativa */
+  max-width: 140px; /* Ancho máximo para pantallas grandes */
+  min-width: 80px; /* Ancho mínimo para mantener legibilidad */
+  min-height: 64px; /* Altura mínima para área de toque adecuada */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-xs); /* Espacio entre número y etiqueta */
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  
+  /* Mejoras táctiles */
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
+/* --- Número (count) --- */
 .follow-stat strong {
   display: block;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-2xl); /* Número más grande para mejor legibilidad */
+  font-weight: 700; /* Peso extra para destacar */
   color: var(--text-primary);
+  line-height: 1.1; /* Línea más compacta */
+  margin: 0; /* Sin margen por defecto */
 }
 
+/* --- Etiqueta (label) --- */
 .follow-stat span {
   display: block;
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
+  font-weight: 500; /* Peso medio para mejor legibilidad */
+  line-height: 1.2;
+  margin: 0; /* Sin margen por defecto */
+  text-transform: capitalize; /* Primera letra en mayúscula */
 }
 
+/* --- Estados de Interacción --- */
 .follow-stat:hover {
-  background: var(--bg-subtle);
+  background: var(--primary-light);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px); /* Efecto de elevación sutil */
+}
+
+.follow-stat:active {
+  transform: translateY(0); /* Regresa a la posición original */
   box-shadow: var(--shadow-sm);
+  background: var(--bg-secondary);
+}
+
+.follow-stat:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* --- Efecto de ripple para mejor feedback táctil --- */
+.follow-stat::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: var(--primary-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+}
+
+.follow-stat:active::after {
+  width: 100%;
+  height: 100%;
+  opacity: 0.1;
+}
+
+/* --- Responsive para pantallas pequeñas --- */
+@media (max-width: 480px) {
+  .follow-stat {
+    padding: var(--spacing-sm) var(--spacing-xs);
+    min-height: 60px; /* Altura ligeramente menor */
+    max-width: 120px; /* Ancho máximo reducido */
+    min-width: 70px; /* Ancho mínimo reducido */
+  }
+
+  .follow-stat strong {
+    font-size: var(--font-size-xl); /* Número ligeramente más pequeño */
+  }
+
+  .follow-stat span {
+    font-size: var(--font-size-xs); /* Etiqueta más pequeña */
+  }
+}
+
+/* --- Responsive para pantallas muy pequeñas --- */
+@media (max-width: 360px) {
+  .follow-stat {
+    padding: var(--spacing-sm) var(--spacing-xs);
+    min-height: 56px; /* Altura mínima */
+    max-width: 100px; /* Ancho máximo muy reducido */
+    min-width: 60px; /* Ancho mínimo muy reducido */
+    gap: 2px; /* Espacio mínimo entre elementos */
+  }
+
+  .follow-stat strong {
+    font-size: var(--font-size-lg); /* Número más pequeño */
+  }
+
+  .follow-stat span {
+    font-size: var(--font-size-xs); /* Etiqueta muy pequeña */
+  }
+}
+
+/* --- Mejoras para dispositivos táctiles --- */
+@media (hover: none) and (pointer: coarse) {
+  .follow-stat:hover {
+    background: var(--bg-subtle); /* Desactiva hover en dispositivos táctiles */
+    border-color: var(--border-color);
+    box-shadow: none;
+    transform: none;
+  }
+
+  .follow-stat:active {
+    background: var(--primary-light);
+    border-color: var(--primary-color);
+    transform: scale(0.98); /* Efecto de "presión" */
+  }
+}
+
+/* --- Tema oscuro - ajustes específicos --- */
+[data-theme="dark"] .follow-stat {
+  background: var(--bg-secondary);
+  border-color: var(--border-light);
+}
+
+[data-theme="dark"] .follow-stat:hover {
+  background: var(--primary-light);
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .follow-stat:active {
+  background: var(--bg-subtle);
+}
+
+/* --- Accesibilidad mejorada --- */
+.follow-stat {
+  /* Área de toque mínima para accesibilidad */
+  min-height: 44px;
+}
+
+/* --- Animación de entrada --- */
+.follow-stat {
+  animation: slideInScale 0.3s ease-out;
+}
+
+@keyframes slideInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* --- Respeta las preferencias de movimiento reducido --- */
+@media (prefers-reduced-motion: reduce) {
+  .follow-stat,
+  .follow-stat::after {
+    animation: none;
+    transition: none;
+  }
+
+  .follow-stat:hover {
+    transform: none;
+  }
+
+  .follow-stat:active {
+    transform: none;
+  }
 }

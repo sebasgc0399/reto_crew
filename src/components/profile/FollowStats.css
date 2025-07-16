@@ -1,12 +1,50 @@
+/* --- Contenedor Principal de FollowStats --- */
 .follow-stats {
   display: flex;
-  gap: var(--spacing-lg);
-  justify-content: center;
+  gap: var(--spacing-md); /* Espacio entre los botones de estadísticas */
+  justify-content: center; /* Centra los botones en el contenedor */
+  align-items: stretch; /* Hace que todos los botones tengan la misma altura */
+  margin: var(--spacing-md) 0; /* Espacio vertical arriba y abajo */
+  padding: 0 var(--spacing-sm); /* Padding lateral para no pegar con los bordes */
 }
 
+/* --- Responsive para pantallas pequeñas --- */
+@media (max-width: 480px) {
+  .follow-stats {
+    gap: var(--spacing-sm); /* Reduce el espacio entre botones en móviles */
+    margin: var(--spacing-sm) 0; /* Reduce el margen vertical */
+    padding: 0 var(--spacing-xs); /* Padding lateral más pequeño */
+  }
+}
+
+/* --- Responsive para pantallas muy pequeñas --- */
+@media (max-width: 360px) {
+  .follow-stats {
+    gap: var(--spacing-xs); /* Espacio mínimo entre botones */
+    margin: var(--spacing-sm) 0;
+    padding: 0; /* Sin padding lateral en pantallas muy pequeñas */
+  }
+}
+
+/* --- Animación suave para la carga --- */
 .follow-stats {
-  display: flex;
-  gap: var(--spacing-md);
-  justify-content: center;
-  margin-top: var(--spacing-md);
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Respeta las preferencias de movimiento reducido --- */
+@media (prefers-reduced-motion: reduce) {
+  .follow-stats {
+    animation: none;
+  }
 }

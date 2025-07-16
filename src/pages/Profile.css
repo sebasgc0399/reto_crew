@@ -1,24 +1,32 @@
+/* --- Contenedor Principal de la Página --- */
 .profile-page {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
-  padding-bottom: var(--spacing-lg);
+  gap: var(--spacing-lg); /* Espacio entre los bloques principales (header, stats, etc.) */
+  padding-bottom: var(--spacing-lg); /* Espacio al final para no pegar con la barra de navegación */
 }
 
+/* --- Cabecera del Perfil --- */
 .profile-header {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
+  align-items: center; /* Centra verticalmente el avatar, nombre y botones */
+  gap: var(--spacing-md); /* Espacio entre avatar, info y acciones */
   position: relative;
 }
 
+/* --- Bloque de Información (Nombre y fecha) --- */
 .profile-info {
-  flex: 1;
+  flex: 1; /* Ocupa el espacio disponible, empujando las acciones a la derecha */
+  min-width: 0; /* MUY IMPORTANTE: Permite que el texto se encoja y se ajuste en móviles sin desbordar el contenedor */
 }
 
 .profile-info h2 {
   margin: 0;
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-2xl); /* Tamaño de fuente fluido que ya tienes */
+  font-weight: 700; /* Un poco más de peso para destacar el nombre */
+  color: var(--text-primary);
+  line-height: 1.2; /* Mejora el espaciado si el nombre ocupa dos líneas */
+  word-break: break-word; /* Evita que nombres de usuario muy largos rompan el layout */
 }
 
 .member-since {
@@ -27,40 +35,115 @@
   font-size: var(--font-size-sm);
 }
 
-/* Boton Seguir */
-.follow-action {
-  text-align: center;
-  margin: var(--spacing-lg) 0;
+/* --- Bloque de Acciones (Compartir, Seguir) --- */
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm); /* Espacio entre los botones de acción */
+  flex-shrink: 0; /* Evita que las acciones se encojan */
 }
 
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  transition: background-color var(--transition-fast),
-              color var(--transition-fast),
-              transform var(--transition-fast);
+/* --- Botón de Seguir con ancho fijo --- */
+.profile-actions .follow-button {
+  min-width: 140px; /* Ancho fijo para acomodar ambos textos */
+  width: 140px; /* Ancho fijo explícito */
+  text-align: center; /* Centra el texto */
+  white-space: nowrap; /* Evita que el texto se rompa */
+  overflow: hidden; /* Oculta cualquier desbordamiento */
+  text-overflow: ellipsis; /* Añade puntos suspensivos si es necesario */
+  justify-content: center; /* Centra el contenido del botón */
+  font-size: var(--font-size-sm); /* Tamaño de fuente más pequeño para que quepa */
+  padding: 0.5rem 0.75rem; /* Padding reducido para compensar el ancho fijo */
+  letter-spacing: 0.25px; /* Reduce el espaciado entre letras */
 }
 
-.btn-outline:hover {
-  transform: translateY(-1px);
+/* --- Botón de compartir --- */
+.profile-actions .share-button {
+  min-width: 44px; /* Área mínima de toque */
+  width: 44px; /* Ancho fijo para botón circular */
+  height: 44px; /* Altura fija para botón circular */
+  padding: 0; /* Sin padding extra */
+  border-radius: 50%; /* Completamente circular */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* No se encoge */
 }
 
-.btn-outline.follow:hover {
-  background: var(--primary-color);
-  color: var(--on-primary);
+/* --- Responsive para pantallas pequeñas --- */
+@media (max-width: 480px) {
+  .profile-header {
+    gap: var(--spacing-sm); /* Reduce el espacio en móviles */
+  }
+
+  .profile-info h2 {
+    font-size: var(--font-size-xl); /* Reduce el tamaño del título en móviles */
+  }
+
+  .member-since {
+    font-size: var(--font-size-xs); /* Reduce el tamaño del texto secundario */
+  }
+
+  .profile-actions .follow-button {
+    min-width: 120px; /* Reduce el ancho en móviles */
+    width: 120px;
+    font-size: var(--font-size-xs); /* Fuente más pequeña */
+    padding: 0.4rem 0.6rem; /* Padding más pequeño */
+  }
+
+  .profile-actions .share-button {
+    min-width: 40px; /* Botón más pequeño en móviles */
+    width: 40px;
+    height: 40px;
+  }
 }
 
-.btn-outline.unfollow {
-  border-color: var(--danger-color);
-  color: var(--danger-color);
+/* --- Responsive para pantallas muy pequeñas --- */
+@media (max-width: 360px) {
+  .profile-header {
+    gap: var(--spacing-xs); /* Espacio aún más reducido */
+  }
+
+  .profile-actions .follow-button {
+    min-width: 100px; /* Ancho mínimo en pantallas muy pequeñas */
+    width: 100px;
+    font-size: var(--font-size-xs);
+    padding: 0.35rem 0.5rem;
+    letter-spacing: 0.1px;
+  }
+
+  .profile-actions .share-button {
+    min-width: 38px;
+    width: 38px;
+    height: 38px;
+  }
 }
 
-.btn-outline.unfollow:hover {
-  background: var(--danger-color);
-  color: #fff;
+/* --- Mejoras adicionales para accesibilidad --- */
+.profile-actions .follow-button:focus,
+.profile-actions .share-button:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
+/* --- Animación suave para el cambio de estado --- */
+.profile-actions .follow-button {
+  transition: background-color var(--transition-normal), 
+              color var(--transition-normal),
+              border-color var(--transition-normal);
+}
+
+/* --- Evita problemas con flexbox en Safari e IE --- */
+.profile-actions {
+  -webkit-box-flex: 0;     /* Safari 6.1+ */
+  -webkit-flex-shrink: 0;  /* Safari 6.1+ */
+      -ms-flex-negative: 0; /* IE10 */
+          flex-shrink: 0;  /* Estándar */
+}
+
+.profile-info {
+  -webkit-box-flex: 1; /* Safari 6.1+ */
+  -webkit-flex: 1;     /* Safari 6.1+ */
+      -ms-flex: 1;     /* IE10 */
+          flex: 1;     /* Estándar */
+}

@@ -1,5 +1,29 @@
+/* --- Stats Grid Layout --- */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(2, 1fr); /* 2 columnas en móviles */
   gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+/* --- Responsive para pantallas más grandes --- */
+@media (min-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 columnas en desktop */
+    gap: var(--spacing-lg);
+  }
+}
+
+/* --- Responsive para pantallas pequeñas --- */
+@media (max-width: 480px) {
+  .stats-grid {
+    gap: var(--spacing-sm); /* Reduce el espacio en pantallas muy pequeñas */
+  }
+}
+
+/* --- Responsive para pantallas muy pequeñas --- */
+@media (max-width: 360px) {
+  .stats-grid {
+    gap: var(--spacing-xs); /* Espacio mínimo en pantallas muy pequeñas */
+  }
 }

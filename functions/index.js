@@ -125,6 +125,7 @@ exports.onUserCreate = onDocumentCreated(
         xp: 0,
         level: 0,
         completedChallenges: 0,
+        bests: {},
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
       console.log(`Usuario ${event.params.uid} inicializado`);
@@ -295,6 +296,83 @@ exports.onUserWeightChange = onDocumentUpdated(
       await recalcRefWeight(chId);
       await recalcAllPoints(chId);
     }
+  }
+);
+
+/**
+ * Cuando se borra una entry, si era la marca mejor para esa actividad,
+ * recalcula el siguiente mejor valor (o elimina la clave si ya no hay entradas).
+ */
+exports.onEntryDeletedUpdateBests = onDocumentDeleted(
+  "challenges/{chId}/entries/{eId}",
+  async (event) => {
+    const data = event.data.data();
+    const userId = data.userId;
+    const activityKey = data.activityKey;
+    const deletedValue = data.value;
+
+    const userRef = db.doc(`users/${userId}`);
+    const userSnap = await userRef.get();
+    if (!userSnap.exists()) return null;
+
+    const bests = userSnap.data().bests || {};
+    // Si la entry borrada NO coincide con la mejor marca actual, no hacemos nada
+    if (bests[activityKey] !== deletedValue) return null;
+
+    // Buscamos la siguiente mejor marca
+    const entriesSnap = await db
+      .collectionGroup("entries")
+      .where("userId", "==", userId)
+      .where("activityKey", "==", activityKey)
+      .orderBy("value", "desc")
+      .limit(1)
+      .get();
+
+    if (entriesSnap.empty) {
+      // Ya no hay marcas para esa actividad: borramos la clave
+      await userRef.update({
+        [`bests.${activityKey}`]: FieldValue.delete(),
+      });
+    } else {
+      // Actualizamos al siguiente valor más alto
+      const newBest = entriesSnap.docs[0].data().value;
+      await userRef.update({
+        [`bests.${activityKey}`]: newBest,
+      });
+    }
+  }
+);
+
+/**
+ * Cuando se elimina un participante de un reto, borramos todas sus entries
+ * (ya lo haces) y luego recalculamos *todas* sus mejores marcas desde cero.
+ */
+exports.onParticipantDeletedRecalcBests = onDocumentDeleted(
+  "challenges/{chId}/participants/{uid}",
+  async (event) => {
+    const userId = event.params.uid;
+    const userRef = db.doc(`users/${userId}`);
+
+    // 1) Obtenemos *todas* las entries de ese usuario
+    const entriesSnap = await db
+      .collectionGroup("entries")
+      .where("userId", "==", userId)
+      .get();
+
+    // 2) Agrupamos valor máximo por activityKey
+    const newBests = {};
+    entriesSnap.docs.forEach((docSnap) => {
+      const { activityKey, value } = docSnap.data();
+      if (
+        newBests[activityKey] == null ||
+        value > newBests[activityKey]
+      ) {
+        newBests[activityKey] = value;
+      }
+    });
+
+    // 3) Actualizamos el campo bests completo
+    await userRef.update({ bests: newBests });
   }
 );
 

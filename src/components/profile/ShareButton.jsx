@@ -26,7 +26,7 @@ export default function ShareButton() {
 
   return (
     <div className="share-wrapper">
-      <button className="share-btn" onClick={handleClick}>
+      <button className="btn share-btn" onClick={handleClick} aria-label="Compartir perfil">
         <Lottie
           lottieRef={lottieRef}
           animationData={animationData}

@@ -1,8 +1,39 @@
+/* src/components/profile/Avatar.css */
+
 .avatar {
-  width: 5rem;
-  height: 5rem;
+  /* Tamaño base para móviles */
+  width: 4.5rem;
+  height: 4.5rem;
+  
   background-size: cover;
   background-position: center;
+  background-color: var(--bg-subtle); /* Color de fondo mientras carga la imagen */
   border-radius: 50%;
+  border: 2px solid var(--border-light); /* Borde sutil usando tus variables */
+  box-shadow: var(--shadow-md); /* Sombra para darle profundidad */
+  flex-shrink: 0; /* Evita que el avatar se encoja en el layout flex */
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+/* Solo aplicar cursor:pointer si hay una función onClick */
+.avatar:not(style) {
+  cursor: default;
+}
+
+.avatar[style*="background-image"] {
   cursor: pointer;
+}
+
+
+.avatar:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Para pantallas más grandes, hacemos el avatar un poco más grande */
+@media (min-width: 768px) {
+  .avatar {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
 }

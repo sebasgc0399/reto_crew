@@ -1,18 +1,207 @@
+/* --- Contenedor Principal del Progreso de Nivel --- */
 .level-progress {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-sm);
-}
-.progress-bar {
-  width: 100%;
-  height: var(--spacing-sm);
-  background: var(--border-light);
-  border-radius: var(--radius-sm);
+  padding: var(--spacing-lg);
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  position: relative;
   overflow: hidden;
 }
+
+/* --- Título del Nivel --- */
+.level-progress h3 {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* --- Contenedor de la Barra de Progreso --- */
+.progress-bar {
+  width: 100%;
+  height: 12px; /* Altura más generosa para mejor visibilidad */
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
+}
+
+/* --- Relleno de la Barra de Progreso --- */
 .progress-fill {
   height: 100%;
-  background: var(--primary-color);
-  transition: width var(--transition-normal);
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+  transition: width var(--transition-slow);
+  border-radius: var(--radius-md);
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Efecto de brillo en la barra de progreso --- */
+.progress-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.3) 0%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    transparent 100%
+  );
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+/* --- Animación de pulso cuando la barra se llena --- */
+.progress-fill.full {
+  animation: pulseProgress 2s ease-in-out infinite;
+}
+
+@keyframes pulseProgress {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(25, 118, 210, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(25, 118, 210, 0);
+  }
+}
+
+/* --- Texto de XP --- */
+.level-progress small {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* --- Información adicional de XP (opcional) --- */
+.xp-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.xp-info .current-xp {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.xp-info .next-level {
+  font-weight: 500;
+}
+
+/* --- Responsive para pantallas pequeñas --- */
+@media (max-width: 480px) {
+  .level-progress {
+    padding: var(--spacing-md);
+    gap: var(--spacing-xs);
+  }
+
+  .level-progress h3 {
+    font-size: var(--font-size-lg);
+  }
+
+  .progress-bar {
+    height: 10px; /* Altura ligeramente reducida en móviles */
+  }
+
+  .level-progress small {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* --- Responsive para pantallas muy pequeñas --- */
+@media (max-width: 360px) {
+  .level-progress {
+    padding: var(--spacing-sm);
+  }
+
+  .level-progress h3 {
+    font-size: var(--font-size-base);
+  }
+
+  .progress-bar {
+    height: 8px;
+  }
+}
+
+/* --- Mejoras de accesibilidad --- */
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill {
+    transition: none;
+  }
+  
+  .progress-fill.full {
+    animation: none;
+  }
+}
+
+/* --- Soporte para tema oscuro mejorado --- */
+[data-theme="dark"] .progress-bar {
+  background: var(--bg-subtle);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .progress-fill {
+  background: linear-gradient(90deg, var(--primary-color), #42a5f5);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* --- Hover effect para interactividad --- */
+.level-progress:hover .progress-fill {
+  filter: brightness(1.1);
+}
+
+/* --- Animación de entrada --- */
+.level-progress {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Estados de carga --- */
+.level-progress.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.level-progress.loading .progress-fill {
+  background: var(--border-color);
+  animation: loadingShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingShimmer {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }

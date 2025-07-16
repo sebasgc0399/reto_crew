@@ -1,25 +1,38 @@
 /* src/components/profile/FollowButton.css */
-.btn {
-  padding: var(--spacing-sm) var(--spacing-md);
+
+/* Renombramos la clase base para evitar conflictos con la clase global .btn */
+.follow-button {
+  /* Heredamos estilos base de tu sistema de diseño */
+  padding: 0.6rem 1.2rem;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
   border-radius: var(--radius-md);
-  border: 1px solid var(--primary-color);
-  background: none;
+  border: 2px solid; /* Grosor de borde consistente */
+  background: transparent;
   cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
-.btn.follow {
+/* Estado para seguir */
+.follow-button.follow {
   color: var(--primary-color);
+  border-color: var(--primary-color);
 }
-.btn.follow:hover {
+.follow-button.follow:hover {
   background: var(--primary-light);
+  color: var(--primary-hover);
 }
 
-.btn.unfollow {
+/* Estado para dejar de seguir */
+.follow-button.unfollow {
+  color: var(--text-secondary); /* Color inicial menos llamativo */
+  border-color: var(--border-color);
+}
+.follow-button.unfollow:hover {
   color: var(--danger-color);
   border-color: var(--danger-color);
-}
-.btn.unfollow:hover {
   background: var(--bg-error);
-  color: var(--on-error);
 }

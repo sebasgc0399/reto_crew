@@ -8,7 +8,7 @@ export default function FollowButton({ targetUid }) {
 
   return (
     <button
-      className={`btn btn-outline ${isFollowing ? 'unfollow' : 'follow'}`}
+      className={`btn btn-primary follow-button ${isFollowing ? 'unfollow' : 'follow'}`}
       onClick={isFollowing ? unfollow : follow}
     >
       {isFollowing ? 'Dejar de seguir' : 'Seguir'}

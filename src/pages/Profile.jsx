@@ -1,7 +1,14 @@
 // src/pages/Profile.jsx
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore'
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs
+} from 'firebase/firestore'
 import { db } from '../firebaseConfig'
 import { useNavigate, useParams, Navigate } from 'react-router-dom'
 import { useFollow } from '../hooks/useFollow'
@@ -20,10 +27,9 @@ const xpForLevel = lvl => lvl * lvl * 100
 
 export default function Profile() {
   const { user, loading: authLoading } = useAuth()
-  const { name: slug }                 = useParams()       // /profile/:name
+  const { name: slug }                 = useParams()
   const navigate                       = useNavigate()
 
-  // 1) Estado
   const [profileUser, setProfileUser] = useState(null)
   const [notFound, setNotFound]       = useState(false)
   const [stats, setStats]             = useState({
@@ -35,7 +41,7 @@ export default function Profile() {
     bests: {}
   })
 
-  // 2) Hook de seguidores/seguidos
+  // Seguidores/Seguidos en tiempo real
   const targetUid = profileUser?.uid || user?.uid
   const {
     followers,
@@ -45,22 +51,19 @@ export default function Profile() {
     unfollow
   } = useFollow(targetUid)
 
-  // 3) Cargar Firestore (propio o ajeno)
+  // Cargar perfil y stats (incluye cálculo de globalRank)
   useEffect(() => {
     if (authLoading || !user) return
 
     ;(async () => {
       let uid
 
-      // ¿propio o ajeno?
+      // 1) Determinar UID (propio o ajeno)
       if (!slug || slug === user.name) {
         uid = user.uid
       } else {
-        const q = query(
-          collection(db, 'users'),
-          where('name', '==', slug)
-        )
-        const snaps = await getDocs(q)
+        const q      = query(collection(db, 'users'), where('name', '==', slug))
+        const snaps  = await getDocs(q)
         if (snaps.empty) {
           setNotFound(true)
           return
@@ -68,36 +71,49 @@ export default function Profile() {
         uid = snaps.docs[0].id
       }
 
-      const snap = await getDoc(doc(db, 'users', uid))
-      if (!snap.exists()) {
+      // 2) Leer tu documento
+      const userSnap = await getDoc(doc(db, 'users', uid))
+      if (!userSnap.exists()) {
         setNotFound(true)
         return
       }
-      const data = snap.data()
+      const data = userSnap.data()
 
+      // 3) Leer todos los usuarios para rank
+      const allSnap = await getDocs(collection(db, 'users'))
+      const users   = allSnap.docs.map(d => ({
+        uid: d.id,
+        xp:  d.data().xp || 0
+      }))
+      // orden descendente por xp
+      users.sort((a, b) => b.xp - a.xp)
+      // posición (1‑based)
+      const rank = users.findIndex(u => u.uid === uid)
+      const globalRank = rank >= 0 ? rank + 1 : null
+
+      // 4) Actualizar estado, incluyendo `bests`
       setProfileUser({
         uid,
         name: data.name,
         photoURL: data.photoURL
       })
       setStats({
-        createdAt: data.createdAt?.toDate() || null,
-        xp: data.xp || 0,
-        level: data.level || 1,
-        globalRank: data.globalRank || null,
+        createdAt:           data.createdAt?.toDate() || null,
+        xp:                  data.xp || 0,
+        level:               data.level || 1,
+        globalRank,
         completedChallenges: data.completedChallenges || 0,
-        bests: data.bests || {}
+        bests:               data.bests || {}   // <— recogemos las mejores marcas
       })
     })()
   }, [authLoading, user, slug, navigate])
 
-  // 4) Early‑returns tras haber llamado TODOS los hooks
-  if (authLoading)      return <Loader text="Cargando perfil…" />
-  if (!user)            return <Navigate to="/" replace />
-  if (notFound)         return <Navigate to="/404" replace />
-  if (!profileUser)     return <Loader text="Cargando perfil…" />
+  // Early returns
+  if (authLoading)  return <Loader text="Cargando perfil…" />
+  if (!user)        return <Navigate to="/" replace />
+  if (notFound)     return <Navigate to="/404" replace />
+  if (!profileUser) return <Loader text="Cargando perfil…" />
 
-  // 5) Render
   const { uid, name, photoURL } = profileUser
   const isOwnProfile = uid === user.uid
 
@@ -118,8 +134,7 @@ export default function Profile() {
             <p className="member-since">
               Miembro desde{' '}
               {stats.createdAt.toLocaleString('es-ES', {
-                month: 'long',
-                year: 'numeric'
+                month: 'long', year: 'numeric'
               })}
             </p>
           )}
@@ -158,7 +173,9 @@ export default function Profile() {
         globalRank={stats.globalRank}
         completedChallenges={stats.completedChallenges}
         bests={stats.bests}
-        onOpenAchievements={() => navigate(`/profile/${name}/achievements`)}
+        onOpenAchievements={() =>
+          navigate(`/profile/${name}/achievements`)
+        }
       />
     </div>
   )

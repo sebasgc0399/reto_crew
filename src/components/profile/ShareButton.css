@@ -1,34 +1,56 @@
+/* src/components/profile/ShareButton.css */
 
 .share-wrapper {
   position: relative;
-  display: inline-block;
+  display: flex; /* Usamos flex para centrar */
+  align-items: center;
+  justify-content: center;
 }
+
 .share-btn {
-  background: none;
-  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; /* Área de toque mínima recomendada */
+  height: 44px;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
   padding: 0;
   cursor: pointer;
-  width: 36px;
-  height: 36px;
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
 }
-.share-btn:hover { transform: scale(1.1); }
+
+.share-btn:hover {
+  transform: scale(1.1);
+  background-color: var(--primary-light);
+}
+
+.share-btn:active {
+  transform: scale(0.95); /* Feedback inmediato al tocar */
+}
+
 .share-msg {
   position: absolute;
-  top: 100%;
-  right: 0;
+  top: calc(100% + var(--spacing-sm)); /* Un poco más de espacio */
+  left: 50%;
+  transform: translateX(-50%); /* Centramos el mensaje debajo del botón */
+  
   background: var(--bg-secondary);
   color: var(--text-primary);
   padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
   font-size: var(--font-size-xs);
-  opacity: 0;
-  transform: translateY(4px);
+  white-space: nowrap; /* Evita que el texto se parta en dos líneas */
+  
+  /* La animación ya está bien, solo la mantenemos */
   animation: showShareMsg 2s ease-out forwards;
 }
 
 @keyframes showShareMsg {
-  0% { opacity: 0; transform: translateY(4px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(4px); }
+  0% { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(4px); }
 }

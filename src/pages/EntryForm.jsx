@@ -7,7 +7,8 @@ import {
   getDoc,
   addDoc,
   collection,
-  serverTimestamp
+  serverTimestamp,
+  updateDoc
 } from 'firebase/firestore';
 import { calcularPuntos }              from '../utils/points';
 import { db }                          from '../firebaseConfig';
@@ -96,6 +97,21 @@ export default function EntryForm() {
           createdAt:   serverTimestamp()
         }
       );
+
+      // 2) reviso y posiblemente actualizo bests en users/{uid}
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        const bests = userData.bests || {};
+        const prev = bests[ activity.key ];
+        // Si no existe marca o esta es “mejor” (aquí asumimos que mayor es mejor)
+        if (prev == null || base > prev) {
+          await updateDoc(userRef, {
+            [`bests.${activity.key}`]: base
+          });
+        }
+      }
 
       navigate(`/challenges/${chId}/dashboard`);
     } catch (e) {
