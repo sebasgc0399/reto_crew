@@ -4,6 +4,7 @@ import { useAuth }             from './contexts/AuthContext';
 
 import Home                   from './pages/Home';
 import Profile                from './pages/Profile';
+import Achievements           from './pages/Achievements';
 import Connections           from './pages/Connections';
 import Dashboard              from './pages/Dashboard';
 import Settings               from './pages/Settings';
@@ -118,7 +119,7 @@ export default function App() {
 
             {/* Dashboard específico del reto */}
             <Route
-              path="/challenges/:id/dashboard"
+              path="/profile/:id/dashboard"
               element={
                 <ProtectedRoute>
                   <ChallengeDashboard />
@@ -158,6 +159,16 @@ export default function App() {
             <Route
               path="/profile/:name"
               element={<Profile />}
+            />
+
+            {/* Página de logros */}
+            <Route
+              path="/profile/:name/achievements"
+              element={
+                <ProtectedRoute>
+                  <Achievements />
+                </ProtectedRoute>
+              }
             />
 
             {/* Si entras a /profile sin slug, te redirijo a tu propio perfil */}

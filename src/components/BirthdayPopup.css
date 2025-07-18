@@ -1,0 +1,63 @@
+/* src/components/BirthdayPopup.css */
+
+.birthday-dialog-paper {
+  border-radius: 12px;
+  padding: 0;
+  max-width: 350px;
+}
+
+.birthday-dialog-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 1rem 1.5rem;
+}
+
+.birthday-dialog-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1.5rem 1rem;
+}
+
+.birthday-datepicker-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  font-size: 1rem;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.birthday-datepicker-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.birthday-error-text {
+  margin-top: 0.5rem;
+  color: var(--danger-color);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.birthday-dialog-actions {
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem 1rem;
+}
+
+.birthday-btn-cancel,
+.birthday-btn-save {
+  flex: 1;
+  margin: 0 0.25rem;
+  text-transform: none;
+}
+
+.birthday-btn-cancel {
+  color: var(--text-secondary);
+}
+
+.birthday-btn-save {
+  background-color: var(--primary-color);
+}

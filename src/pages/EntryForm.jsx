@@ -4,6 +4,7 @@ import { useParams, useNavigate }      from 'react-router-dom';
 import { useAuth }                     from '../contexts/AuthContext';
 import {
   doc,
+  setDoc,
   getDoc,
   addDoc,
   collection,
@@ -98,18 +99,34 @@ export default function EntryForm() {
         }
       );
 
-      // 2) reviso y posiblemente actualizo bests en users/{uid}
+      // 2) Actualizar "bests" si supera marca anterior
       const userRef = doc(db, 'users', user.uid);
       const userSnap = await getDoc(userRef);
       if (userSnap.exists()) {
         const userData = userSnap.data();
         const bests = userData.bests || {};
-        const prev = bests[ activity.key ];
-        // Si no existe marca o esta es “mejor” (aquí asumimos que mayor es mejor)
+        const prev = bests[activity.key];
         if (prev == null || base > prev) {
           await updateDoc(userRef, {
             [`bests.${activity.key}`]: base
           });
+        }
+
+        // 3) Comprobar cumpleaños
+        if (userData.birthDate) {
+          const today = new Date();
+          const bday  = userData.birthDate.toDate();
+          if (
+            today.getDate()  === bday.getDate() &&
+            today.getMonth() === bday.getMonth()
+          ) {
+            // Otorgar badge "birthday"
+            await setDoc(
+              doc(db, 'users', user.uid, 'badges', 'birthday'),
+              { awardedAt: serverTimestamp() },
+              { merge: true }
+            );
+          }
         }
       }
 

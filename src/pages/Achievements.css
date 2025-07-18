@@ -1,0 +1,69 @@
+/* src/pages/Achievements.css */
+
+.achievements-page {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.badge-card {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-sm);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, filter 0.2s ease;
+  cursor: default;
+}
+.badge-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Desbloqueada: colores normales */
+.badge-card.unlocked {
+  filter: none;
+}
+
+/* Bloqueada: gris y semitransparente */
+.badge-card.locked {
+  filter: grayscale(100%) opacity(50%);
+}
+
+/* Icono y texto */
+.badge-icon {
+  font-size: 2rem;
+  margin-bottom: var(--spacing-xs);
+}
+.badge-title {
+  font-size: var(--font-size-sm);
+  margin: var(--spacing-xs) 0;
+}
+.badge-desc {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+/* Icono de candado sobre las bloqueadas */
+.badge-overlay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 1.25rem;
+}
+
+/* Responsive: menos columnas en móviles muy pequeños */
+@media (max-width: 480px) {
+  .achievements-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--spacing-md);
+  }
+}

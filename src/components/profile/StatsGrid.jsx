@@ -1,6 +1,7 @@
 // src/components/profile/StatsGrid.jsx
 import React from 'react';
 import StatCard from './StatCard';
+import { ACTIVITIES } from '../../constants/activities';
 import './StatsGrid.css';
 
 export default function StatsGrid({ globalRank, completedChallenges, bests, onOpenAchievements }) {
@@ -12,19 +13,25 @@ export default function StatsGrid({ globalRank, completedChallenges, bests, onOp
     return num.toString();
   };
 
-  // Renderiza el listado (máximo 3, luego "+n más")
+  // Función para renderizar las mejores marcas usando labels y unidades
   const formatBests = (bests) => {
     if (!bests || Object.keys(bests).length === 0) {
       return <span className="empty-state">Sin marcas aún</span>;
     }
+
     const entries = Object.entries(bests);
+    const displayItems = entries.slice(0, 3).map(([actKey, val]) => {
+      const cfg = ACTIVITIES[actKey] || { label: actKey, unit: '' };
+      return (
+        <li key={actKey}>
+          <strong>{cfg.label}:</strong> {val} {cfg.unit}
+        </li>
+      );
+    });
+
     return (
       <ul>
-        {entries.slice(0, 3).map(([act, val]) => (
-          <li key={act}>
-            <strong>{act}:</strong> {val}
-          </li>
-        ))}
+        {displayItems}
         {entries.length > 3 && (
           <li className="more-indicator">
             +{entries.length - 3} más

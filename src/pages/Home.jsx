@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebaseConfig';
 import { GoogleAuthProvider, signInWithPopup, updateProfile } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, updateDoc, Timestamp } from 'firebase/firestore';
 import GoogleButton from '../components/GoogleButton';
 import NamePopup     from '../components/NamePopup';
+import BirthdayPopup from '../components/BirthdayPopup'
 import PageTitle from '../components/PageTitle';
 import Subtitle from '../components/Subtitle';
 import Lottie from 'lottie-react';
@@ -14,6 +15,7 @@ import './Home.css';
 export default function Home() {
   const [error, setError]         = useState('');
   const [showNamePopup, setShowNamePopup] = useState(false);
+  const [showBirthdayPopup, setShowBirthdayPopup] = useState(false)
   const [pendingUser, setPendingUser]     = useState(null);
   const navigate = useNavigate();
 
@@ -42,37 +44,52 @@ export default function Home() {
         });
       }
 
-      // 3) Comprobamos si ya tiene nombre
-      if (data.name) {
-        navigate('/dashboard', { replace: true });
+      // 3) nombre
+      if (!data.name) {
+        setPendingUser(fu)
+        setShowNamePopup(true)
+      } else if (!data.birthDate) {
+        // 4) si ya tiene nombre pero no birthDate
+        setPendingUser(fu)
+        setShowBirthdayPopup(true)
       } else {
-        setPendingUser(fu);
-        setShowNamePopup(true);
+        navigate('/dashboard', { replace: true })
       }
     } catch (e) {
-      console.error(e);
-      setError('No fue posible autenticarse. Intenta de nuevo.');
+      console.error(e)
+      setError('No fue posible autenticarse. Intenta de nuevo.')
     }
   }
 
   const handleNameSubmit = async trimmedName => {
-    if (!pendingUser) return;
+    if (!pendingUser) return
     try {
-      // 1) Actualizar displayName en Auth
-      await updateProfile(auth.currentUser, { displayName: trimmedName });
+      await updateProfile(auth.currentUser, { displayName: trimmedName })
+      const userRef = doc(db, 'users', pendingUser.uid)
+      await updateDoc(userRef, { name: trimmedName })
 
-      // 2) Actualizar name en Firestore
-      const userRef = doc(db, 'users', pendingUser.uid);
-      await updateDoc(userRef, { name: trimmedName });
-
-      // 3) Cerrar popup y redirigir
-      setShowNamePopup(false);
-      navigate('/dashboard', { replace: true });
+      setShowNamePopup(false)
+      setShowBirthdayPopup(true)
     } catch (e) {
-      console.error('Error guardando nombre:', e);
-      setError('No fue posible guardar el nombre. Intenta de nuevo.');
+      console.error(e)
+      setError('No fue posible guardar el nombre.')
     }
-  };
+  }
+
+  const handleBirthdaySubmit = async date => {
+    if (!pendingUser) return
+    try {
+      const userRef = doc(db, 'users', pendingUser.uid)
+      await updateDoc(userRef, {
+        birthDate: Timestamp.fromDate(date)
+      })
+      setShowBirthdayPopup(false)
+      navigate('/dashboard', { replace: true })
+    } catch (e) {
+      console.error(e)
+      setError('No fue posible guardar la fecha de nacimiento.')
+    }
+  }
 
   return (
     <div className="home-container">
@@ -93,6 +110,12 @@ export default function Home() {
         onClose={() => setShowNamePopup(false)}
         onSubmit={handleNameSubmit}
         currentUid={pendingUser?.uid}
+      />
+
+      <BirthdayPopup
+        open={showBirthdayPopup}
+        onClose={() => setShowBirthdayPopup(false)}
+        onSubmit={handleBirthdaySubmit}
       />
 
     </div>
