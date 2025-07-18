@@ -46,6 +46,10 @@ export default function ChallengeCard({ challenge, onDeleted, onUpdated }) {
   const isOwner = user?.uid === createdBy;
   const [isParticipant, setIsParticipant] = useState(false);
 
+  // Nuevo: saber si ya expiró el reto
+  const Expired = endDate.toDate();
+  const isExpired = new Date() > Expired;
+
   // Estados y handlers para el diálogo de toggle privacidad
   const [privacyDialogOpen, setPrivacyDialogOpen] = useState(false);
   const [newPassword, setNewPassword]             = useState('');
@@ -227,8 +231,8 @@ export default function ChallengeCard({ challenge, onDeleted, onUpdated }) {
           {menuOpen && (
             <ul className="challenge-card__dropdown">
               {isOwner && <li onClick={handleTogglePrivacy}>{password ? 'Hacer público' : 'Hacer privado'}</li>}
-              {isOwner && <li onClick={() => { setMenuOpen(false); navigate(`/challenges/${id}/edit`); }}>Editar</li>}
-              {isOwner && <li onClick={() => { setMenuOpen(false); setConfirmDeleteOpen(true); }}>Eliminar</li>}
+              {isOwner && !isExpired && <li onClick={() => { setMenuOpen(false); navigate(`/challenges/${id}/edit`); }}>Editar</li>}
+              {isOwner && !isExpired && <li onClick={() => { setMenuOpen(false); setConfirmDeleteOpen(true); }}>Eliminar</li>}
               {!isOwner && isParticipant && <li onClick={() => { setMenuOpen(false); setConfirmLeaveOpen(true); }}>Salir</li>}
             </ul>
           )}

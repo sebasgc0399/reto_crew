@@ -44,6 +44,15 @@ const DateInput = forwardRef(({ value, onClick, label, error }, ref) => (
   </div>
 ));
 
+// ———— Auxiliar para convertir cualquier Date “local” en media noche UTC−5 ————
+function toBogotaMidnight(date) {
+  const y = date.getFullYear();
+  const m = date.getMonth();
+  const d = date.getDate();
+  // La medianoche en UTC−5 corresponde a las 05:00 UTC
+  return new Date(Date.UTC(y, m, d, 5, 0, 0));
+}
+
 export default function ChallengeForm() {
   const { id }       = useParams();
   const isEdit       = Boolean(id);
@@ -154,6 +163,10 @@ export default function ChallengeForm() {
     if (!validate()) return;
 
     try {
+      /// Alineamos fechas a medianoche en Bogotá (UTC−5)
+      const startUtc5 = toBogotaMidnight(startDate);
+      const endUtc5   = toBogotaMidnight(endDate);
+
       // 3) Prepara el payload del reto
       const activityPayload = {
         key:        activityKey,
@@ -166,8 +179,8 @@ export default function ChallengeForm() {
       const payload = {
         title,
         description,
-        startDate:       Timestamp.fromDate(startDate),
-        endDate:         Timestamp.fromDate(endDate),
+        startDate:       Timestamp.fromDate(startUtc5),
+        endDate:         Timestamp.fromDate(endUtc5),
         activity:        activityPayload,
         weightBased,
         processedCompleted: false,

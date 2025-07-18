@@ -11,6 +11,9 @@ admin.initializeApp();
 const db = admin.firestore();
 const FieldValue = admin.firestore.FieldValue;
 
+// importamos el scheduler de Cloud Functions V2
+const { onSchedule } = require("firebase-functions/v2/scheduler");
+
 function calcularPuntos(valor, pesoUsuario, pesoReferencia, valorMaximo, multiplicador = 1) {
   const valorNormalizado = valor <= valorMaximo
     ? valor / valorMaximo
@@ -221,46 +224,61 @@ exports.onParticipantDeleted = onDocumentDeleted(
   }
 );
 
-exports.onChallengeEnd = onDocumentUpdated(
-  "challenges/{chId}",
-  async event => {
-    const before = event.data.before.data();
-    const after  = event.data.after.data();
-    const chRef  = event.data.ref;
-    const nowMs  = admin.firestore.Timestamp.now().toMillis();
+/**
+ * Cada día a las 00:00 hora de Bogotá (UTC−5), busca todos los retos
+ * vencidos (endDate <= now) que no estén procesados, incrementa
+ * completedChallenges por cada participante que tenga puntos > 0,
+ * y marca el reto como procesado.
+ */
+exports.processExpiredChallenges = onSchedule(
+  {
+    schedule: "0 0 * * *",           // 00:00 todos los días
+    timeZone: "America/Bogota"       // zona horaria UTC−5
+  },
+  async () => {
+    const nowTs = admin.firestore.Timestamp.now();
 
-    // 1) Sólo si tiene endDate y aún no lo procesamos
-    if (!after.endDate || after.processedCompleted) return null;
-
-    const endBefore = before.endDate?.toMillis?.() || 0;
-    const endAfter  = after.endDate.toMillis();
-
-    // 2) Que el reto efectivamente acabe (por cambio de fecha o que ya esté pasado)
-    //    - Si endDate cambió, o si endDate ya está en el pasado
-    if (endAfter === endBefore && endAfter > nowMs) return null;
-
-    // 3) Leemos participantes y hacemos batch de incrementos
-    const partsSnap = await db
+    // 1) Buscar retos vencidos y sin procesar
+    const expiredSnap = await db
       .collection("challenges")
-      .doc(event.params.chId)
-      .collection("participants")
+      .where("endDate", "<=", nowTs)
+      .where("processedCompleted", "==", false)
       .get();
 
+    if (expiredSnap.empty) {
+      console.log("No hay retos expirados para procesar.");
+      return null;
+    }
+
     const batch = db.batch();
-    partsSnap.docs.forEach(part => {
-      // sólo cuenta si realmente participó (p. ej. totalPoints > 0)
-      if ((part.data().totalPoints || 0) > 0) {
-        const userRef = db.doc(`users/${part.id}`);
-        batch.update(userRef, {
-          completedChallenges: FieldValue.increment(1)
-        });
-      }
-    });
 
-    // 4) Marcamos el reto como procesado
-    batch.update(chRef, { processedCompleted: true });
+    // 2) Para cada reto, leer sus participantes y actualizar usuarios
+    for (const chDoc of expiredSnap.docs) {
+      const chId = chDoc.id;
+      const partsSnap = await db
+        .collection("challenges")
+        .doc(chId)
+        .collection("participants")
+        .get();
 
-    return batch.commit();
+      partsSnap.docs.forEach(part => {
+        const totalPts = part.data().totalPoints || 0;
+        if (totalPts > 0) {
+          const userRef = db.doc(`users/${part.id}`);
+          batch.update(userRef, {
+            completedChallenges: FieldValue.increment(1)
+          });
+        }
+      });
+
+      // 3) Marcar el reto como procesado
+      batch.update(chDoc.ref, { processedCompleted: true });
+    }
+
+    // 4) Ejecutar las actualizaciones en un solo commit
+    await batch.commit();
+    console.log(`Procesados ${expiredSnap.size} retos expirados.`);
+    return null;
   }
 );
 

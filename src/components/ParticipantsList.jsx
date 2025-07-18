@@ -19,6 +19,7 @@ export default function ParticipantsList({ challengeId }) {
   const [participants, setParticipants] = useState([]);
   const [loading, setLoading]           = useState(true);
   const [isCreator, setIsCreator]       = useState(false);
+  const [endDate, setEndDate]           = useState(null);
   // Para controlar cuál menú está abierto
   const [openMenuFor, setOpenMenuFor]   = useState(null);
   const menusRef                        = useRef({});
@@ -27,8 +28,11 @@ export default function ParticipantsList({ challengeId }) {
   useEffect(() => {
     if (!challengeId || !user) return;
     (async () => {
-      const chSnap = await getDoc(doc(db, 'challenges', challengeId));
-      setIsCreator(chSnap.exists() && chSnap.data().createdBy === user.uid);
+      const chDoc = await getDoc(doc(db, 'challenges', challengeId));
+      if (!chDoc.exists()) return;
+      const { createdBy, endDate: ed } = chDoc.data();
+      setIsCreator(createdBy === user.uid);
+      setEndDate(ed?.toDate() || null);
     })();
   }, [challengeId, user]);
 
@@ -64,7 +68,12 @@ export default function ParticipantsList({ challengeId }) {
     return () => document.removeEventListener('click', handleOutside);
   }, [openMenuFor]);
 
-  // 4) Acciones
+  // 4) Calcular si estamos en el “día de gracia” tras endDate
+  const now = new Date();
+  const withinGracePeriod =
+    endDate && now.getTime() <= endDate.getTime() + 24 * 60 * 60 * 1000;
+
+  // 5) Acciones
   const handleRemove = async uidToRemove => {
     if (!window.confirm('¿Eliminar a este participante?')) return;
     setLoading(true);
@@ -139,7 +148,7 @@ export default function ParticipantsList({ challengeId }) {
 >
               <span>{p.name}</span>
 
-              {isCreator && p.uid !== user.uid && (
+              {isCreator && p.uid !== user.uid && withinGracePeriod &&(
                 <div
                   className="participants-list__menu"
                   ref={el => (menusRef.current[p.uid] = el)}
