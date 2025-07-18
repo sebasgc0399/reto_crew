@@ -15,6 +15,7 @@ import JoinChallenge          from './pages/JoinChallenge';
 import EntryForm              from './pages/EntryForm';
 import ChallengeDashboard     from './pages/ChallengeDashboard';
 import MyChallenges           from './pages/MyChallenges';
+import ExerciseCapture        from './pages/ExerciseCapture';
 
 import ProtectedRoute         from './components/ProtectedRoute';
 import PublicRoute            from './components/PublicRoute';
@@ -113,6 +114,15 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <EntryForm />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/challenges/:id/capture"
+              element={
+                <ProtectedRoute>
+                  <ExerciseCapture />
                 </ProtectedRoute>
               }
             />

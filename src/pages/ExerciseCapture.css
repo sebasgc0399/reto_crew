@@ -1,0 +1,148 @@
+/* src/pages/ExerciseCapture.css */
+
+/* --- Contenedor Principal de la Página --- */
+.capture-page {
+  display: flex;
+  flex-direction: column;
+  /* Ocupa todo el alto disponible en el layout principal */
+  height: 100%;
+  width: 100%;
+  /* Añade un poco de espacio alrededor, usando tus variables globales */
+  padding: var(--spacing-sm);
+  gap: var(--spacing-md);
+  box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+}
+
+/* --- Contenedor del Video y Canvas --- */
+.video-container {
+  position: relative;
+  width: 100%;
+  /* Usamos flex-grow para que ocupe el espacio vertical disponible */
+  flex-grow: 1;
+  /* max-width previene que se haga demasiado grande en monitores de escritorio */
+  max-width: 720px;
+  margin: 0 auto; /* Centra el contenedor si la pantalla es más ancha que max-width */
+  background: #000;
+  border-radius: var(--radius-lg); /* Bordes redondeados consistentes */
+  box-shadow: var(--shadow-md);
+  overflow: hidden; /* Asegura que el video no se salga de los bordes redondeados */
+  /* Mantiene una relación de aspecto de 4:3, común en webcams */
+  aspect-ratio: 4 / 3;
+}
+
+.input-video,
+.output-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Rellena el contenedor sin distorsionar la imagen */
+}
+
+/* --- Espejar AMBOS, el video y el canvas, para que se alineen --- */
+.input-video,
+.output-canvas {
+  transform: scaleX(-1);
+}
+
+/* --- Panel de Controles --- */
+.controls {
+  display: flex;
+  /* Permite que los elementos se muevan a la siguiente línea en pantallas pequeñas */
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  align-items: center;
+  justify-content: center; /* Centra los controles */
+  width: 100%;
+  padding: var(--spacing-sm);
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-md);
+  flex-shrink: 0; /* Evita que los controles se encojan */
+}
+
+.controls .label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* --- Estilos para el Select y Botones --- */
+.controls select {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-base);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.controls select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+/* --- Botones: Aplicamos la clase .btn global que ya tienes --- */
+/* Asegúrate de añadir className="btn" a tus botones en el JSX */
+.controls .btn {
+  /* La clase .btn de index.css ya define la mayoría de los estilos */
+  padding: var(--spacing-sm) var(--spacing-md); /* Ajuste de padding para este contexto */
+}
+
+.controls .btn-back {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.controls .btn-back:hover {
+  background-color: var(--border-light);
+}
+
+
+/* --- Contador de Repeticiones --- */
+.controls .count {
+  font-weight: bold;
+  font-size: var(--font-size-lg);
+  color: var(--primary-color);
+  background-color: var(--primary-light);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-lg);
+  min-width: 100px; /* Ancho mínimo para que no cambie de tamaño constantemente */
+  text-align: center;
+}
+
+/* --- Mensaje de Error --- */
+.error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: var(--spacing-lg);
+  text-align: center;
+  color: var(--danger-color);
+  background-color: var(--bg-error);
+  border: 1px solid var(--border-error);
+  border-radius: var(--radius-md);
+}
+
+/* --- Media Query para pantallas más grandes (Tablets y Escritorio) --- */
+@media (min-width: 768px) {
+  .capture-page {
+    /* Aumentamos el espacio en pantallas más grandes */
+    padding: var(--spacing-md);
+    gap: var(--spacing-lg);
+  }
+
+  .controls {
+    /* Evita que los controles se envuelvan en pantallas grandes */
+    flex-wrap: nowrap;
+    width: auto; /* El ancho se ajusta al contenido */
+    max-width: 100%;
+    padding: var(--spacing-md);
+  }
+}
